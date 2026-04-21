@@ -240,9 +240,9 @@ export default function Hero() {
         {/* Bottom stack */}
         <motion.div
           style={{ opacity: titleOpacity, x: titleX }}
-          className="absolute inset-x-6 md:inset-x-10 bottom-8 md:bottom-14 flex flex-col gap-5 md:gap-8 will-change-transform"
+          className="absolute inset-x-6 md:inset-x-10 bottom-5 sm:bottom-8 md:bottom-14 flex flex-col gap-4 sm:gap-5 md:gap-8 will-change-transform"
         >
-          <h1 className="font-display hero-line text-[clamp(2.6rem,10vw,11rem)] tracking-[-0.035em] -ml-[0.02em] text-ink mix-blend-multiply">
+          <h1 className="font-display hero-line text-[clamp(2.2rem,8.8vw,4.8rem)] md:text-[clamp(2.6rem,10vw,11rem)] tracking-[-0.035em] -ml-[0.02em] text-ink mix-blend-multiply">
             {WORDS.map((w) => (
               <span key={w} className="block">
                 {w === "Johnson" ? (
@@ -262,7 +262,7 @@ export default function Hero() {
             className="flex flex-col gap-5 md:gap-7"
           >
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start">
-              <p className="md:col-span-8 text-base md:text-xl leading-snug max-w-xl text-ink/90">
+              <p className="md:col-span-8 text-[0.95rem] sm:text-base md:text-xl leading-snug max-w-xl text-ink/90">
                 {SUB}
               </p>
 
@@ -274,7 +274,7 @@ export default function Hero() {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2.5 md:gap-3">
               <HeroButton href="#work" label="Portfolio." />
               <HeroButton href="#contact" label="Contact." variant="outline" />
             </div>

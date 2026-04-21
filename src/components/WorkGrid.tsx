@@ -35,7 +35,7 @@ export default function WorkGrid() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 md:gap-6 bento-grid">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 bento-grid">
         {PROJECTS.map((p, i) => (
           <motion.div
             key={p.slug}

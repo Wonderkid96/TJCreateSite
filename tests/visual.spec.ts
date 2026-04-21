@@ -70,9 +70,16 @@ test("home page — smoke + visual", async ({ page }, testInfo) => {
   page.on("requestfailed", (req) => {
     const url = req.url();
     if (ALLOWED_MISSING.some((s) => url.includes(s))) return;
-    // Videos abort mid-stream during scroll — that's expected, not an error.
+    // Videos cancel mid-stream when they scroll out of view — the browser
+    // aborts the in-flight range request. This is expected behaviour, not
+    // a broken resource. WebKit reports these as `fetch` rather than
+    // `media`, so match on URL extension too.
     if (req.resourceType() === "media") return;
-    failedRequests.push(`NETFAIL ${req.method()} ${url} — ${req.failure()?.errorText}`);
+    if (/\.(mp4|webm|m4v|mov)(\?|$)/i.test(url)) return;
+    const err = req.failure()?.errorText ?? "";
+    // "cancelled" / "aborted" are user-triggered (scroll) and not failures.
+    if (/cancel|abort/i.test(err)) return;
+    failedRequests.push(`NETFAIL ${req.method()} ${url} — ${err}`);
   });
 
   await page.goto("/", { waitUntil: "domcontentloaded" });
@@ -164,6 +171,87 @@ test("nav menu opens + closes", async ({ page }, testInfo) => {
   // Close via clicking the hamburger again
   await page.getByRole("button", { name: /close menu/i }).click();
   await expect(panel).not.toBeVisible({ timeout: 5000 });
+});
+
+test("project modals — every kind renders media at non-zero size", async ({
+  page,
+}, testInfo) => {
+  // Only need to run this once per device tier (it's layout-agnostic).
+  // Run on desktop-chromium + mobile-webkit for coverage, skip the rest.
+  const project = testInfo.project.name;
+  if (project !== "desktop-chromium" && project !== "mobile-webkit") {
+    testInfo.skip();
+    return;
+  }
+
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.waitForTimeout(2000);
+
+  // Walk the DOM for every clickable project tile. Skip tiles whose click
+  // opens an external URL (externalUrl in content.ts) — those use
+  // window.open and would navigate or popup-block the test.
+  const tileCount = await page.locator(".bento-cell button").count();
+  const failures: string[] = [];
+
+  for (let i = 0; i < tileCount; i++) {
+    const tile = page.locator(".bento-cell button").nth(i);
+    const label = (await tile.textContent()) ?? `tile ${i}`;
+    // `Wrong Places` has externalUrl set and opens YouTube — skip.
+    if (/wrong places/i.test(label)) continue;
+
+    await tile.scrollIntoViewIfNeeded();
+    await tile.click();
+    await page.waitForTimeout(1200);
+
+    const mediaWrap = page.locator(".fixed.z-\\[90\\] [class*='col-span-8']").first();
+    // Alternate selector if the class-based one fails in a given browser
+    const rect = await mediaWrap.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      const hasVisibleMedia = !!el.querySelector(
+        "img[src]:not([src='']), video[src]:not([src='']), canvas",
+      );
+      const firstMedia = el.querySelector(
+        "img, video, canvas",
+      ) as HTMLElement | null;
+      return {
+        w: Math.round(r.width),
+        h: Math.round(r.height),
+        hasMedia: hasVisibleMedia,
+        tag: firstMedia?.tagName.toLowerCase() ?? null,
+      };
+    });
+
+    const title = label.split("\n")[0]?.slice(0, 40).trim();
+
+    if (rect.h < 100 || rect.w < 100) {
+      failures.push(
+        `"${title}" modal media collapsed: ${rect.w}×${rect.h} (tag=${rect.tag})`,
+      );
+    } else if (!rect.hasMedia) {
+      failures.push(`"${title}" modal has no renderable media element`);
+    }
+
+    await page.screenshot({
+      path: join(SHOT_DIR, `${project}-modal-${i}.png`),
+      fullPage: false,
+    });
+
+    // Close the modal via the close button
+    const close = page.getByRole("button", { name: /close/i }).first();
+    if (await close.isVisible().catch(() => false)) {
+      await close.click();
+      await page.waitForTimeout(600);
+    } else {
+      // Fall back: Escape key closes via keydown handler
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(600);
+    }
+  }
+
+  expect(
+    failures,
+    `[${project}] modal failures:\n  ${failures.join("\n  ")}`,
+  ).toHaveLength(0);
 });
 
 test("theme toggle flips --paper/--ink", async ({ page }, testInfo) => {

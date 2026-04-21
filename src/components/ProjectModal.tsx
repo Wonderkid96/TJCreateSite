@@ -79,7 +79,11 @@ export default function ProjectModal({ project, onClose }: Props) {
             <div className="flex-1 overflow-y-auto" data-lenis-prevent>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-10 p-6 md:p-10">
                 <div
-                  className="md:col-span-8 relative w-full overflow-hidden rounded-[2px]"
+                  // Fixed aspect + minimum height give the media area an
+                  // intrinsic size. Without this, every `kind` collapses to
+                  // 0×0 because its children are all absolute / fill, and
+                  // grid row stretch can't pick up a height to match.
+                  className="md:col-span-8 relative w-full overflow-hidden rounded-[2px] aspect-[4/5] md:aspect-auto md:min-h-[65vh] lg:min-h-[70vh]"
                   style={{ background: project.bg ?? "#111" }}
                 >
                   <ModalMedia project={project} />

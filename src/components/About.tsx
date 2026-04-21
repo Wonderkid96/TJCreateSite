@@ -41,8 +41,6 @@ export default function About() {
         </div>
 
         <div className="hidden md:block font-mono text-[11px] uppercase tracking-[0.2em] text-muted text-right">
-          Lincoln, UK
-          <br />
           Est. 2022
         </div>
       </div>
@@ -99,7 +97,7 @@ export default function About() {
       <div className="mt-16 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-line pt-8">
         {[
           { k: "Discipline", v: "Graphic · Motion · 3D", dot: false },
-          { k: "Based in", v: "Lincoln, UK", dot: false },
+          { k: "Mode", v: "Remote / Hybrid", dot: false },
           { k: "Currently", v: "Accepting projects", dot: true },
         ].map((item, index) => (
           <div

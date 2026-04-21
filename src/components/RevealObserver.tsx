@@ -32,6 +32,13 @@ export default function RevealObserver() {
     const elements = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
     if (!elements.length) return;
 
+    // Dynamic trigger window by viewport: start when content is just entering
+    // view, and only reverse once it meaningfully leaves the screen.
+    const vh = window.innerHeight;
+    const topInsetPx = Math.round(Math.max(0, Math.min(20, vh * 0.015)));
+    const bottomInsetPx = Math.round(Math.max(18, Math.min(72, vh * 0.06)));
+    const threshold = window.innerWidth < 768 ? 0.07 : 0.1;
+
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -50,8 +57,8 @@ export default function RevealObserver() {
         }
       },
       {
-        threshold: 0.12,
-        rootMargin: "0px 0px -10% 0px",
+        threshold,
+        rootMargin: `-${topInsetPx}px 0px -${bottomInsetPx}px 0px`,
       }
     );
 

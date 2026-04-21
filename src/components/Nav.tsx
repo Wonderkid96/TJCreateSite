@@ -62,7 +62,7 @@ export default function Nav() {
         <div className="hidden md:flex items-center gap-4 font-mono text-[11px] uppercase tracking-[0.2em]">
           <div className="flex items-center gap-2">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-            <span>Lincoln, UK</span>
+            <span>Studio time</span>
             <span className="text-muted">·</span>
             <span>{time}</span>
           </div>
@@ -127,7 +127,7 @@ export default function Nav() {
             </nav>
             <div className="flex items-center gap-2 px-6 py-4 font-mono text-[10px] uppercase tracking-[0.2em] text-muted border-t border-line">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-              <span>Lincoln, UK</span>
+              <span>Studio time</span>
               <span>·</span>
               <span>{time}</span>
             </div>

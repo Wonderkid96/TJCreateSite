@@ -127,7 +127,7 @@ export default function Contact() {
           <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50 mb-2">
             Location
           </div>
-          <div className="text-lg">Lincoln, UK</div>
+          <div className="text-lg">Remote / Worldwide</div>
         </div>
       </div>
 

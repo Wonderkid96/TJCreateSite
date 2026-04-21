@@ -57,7 +57,6 @@ export const metadata: Metadata = {
     "record label design",
     "album artwork",
     "motion graphics",
-    "Lincoln UK",
     "Toby Johnson",
     "TJCreate",
   ],

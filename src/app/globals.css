@@ -202,6 +202,11 @@ a {
   --reveal-dur: 980ms;
 }
 
+[data-reveal="section"] {
+  --reveal-x: -34px;
+  --reveal-dur: 900ms;
+}
+
 [data-reveal="body"] {
   --reveal-x: -24px;
   --reveal-dur: 860ms;
@@ -215,6 +220,20 @@ a {
 [data-reveal="item"] {
   --reveal-x: -16px;
   --reveal-dur: 760ms;
+}
+
+/* Fast "typing-like" text reveal. Reversible when scrolling back. */
+[data-reveal="text"] {
+  --reveal-x: -10px;
+  --reveal-dur: 240ms;
+  clip-path: inset(0 100% 0 0);
+  filter: blur(1px);
+  transition-property: opacity, transform, clip-path, filter;
+}
+
+[data-reveal="text"].is-visible {
+  clip-path: inset(0 0 0 0);
+  filter: blur(0);
 }
 
 @media (prefers-reduced-motion: reduce) {

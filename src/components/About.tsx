@@ -56,7 +56,7 @@ export default function About() {
               src="/work/imported/portraits/toby-about.jpg"
               alt="Portrait of Toby Johnson"
               fill
-              className="object-cover object-[50%_28%] scale-[1.08]"
+              className="object-cover object-[52%_84%] scale-[1.02]"
               sizes="(max-width: 768px) 100vw, (max-width: 1280px) 34vw, 420px"
             />
           </div>

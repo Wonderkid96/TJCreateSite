@@ -20,6 +20,12 @@ const PNGs = [
   "new-soil.png",
   "women-in-jazz.png",
   "tjc.png",
+  // Artist logos
+  "jgrrey.png",
+  "hot-wax.png",
+  "corto-alto.png",
+  "joshua-baraka.png",
+  "pace.png",
 ];
 
 // Potrace options — tuned for flat logo tracing at 256×256 source resolution.
@@ -48,19 +54,18 @@ async function traceOne(name) {
   });
 }
 
-const missing = [];
+// Skip PNGs that no longer exist on disk (they were cleaned up after their
+// SVG siblings were produced). Only trace ones still present.
+const toTrace = [];
 for (const png of PNGs) {
   try {
     await fs.access(path.join(LOGOS_DIR, png));
+    toTrace.push(png);
   } catch {
-    missing.push(png);
+    // source PNG gone — SVG already exists, skip.
   }
 }
-if (missing.length) {
-  console.error("Missing source PNGs:", missing);
-  process.exit(1);
-}
 
-console.log(`Tracing ${PNGs.length} logo(s) with Potrace…`);
-for (const png of PNGs) await traceOne(png);
+console.log(`Tracing ${toTrace.length} logo(s) with Potrace…`);
+for (const png of toTrace) await traceOne(png);
 console.log("Done.");

@@ -72,7 +72,7 @@ export default function ProjectModal({ project, onClose }: Props) {
             <div className="flex-1 overflow-y-auto" data-lenis-prevent>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-10 p-6 md:p-10">
                 <div
-                  className="md:col-span-8 relative aspect-[4/5] md:aspect-[4/3] w-full overflow-hidden rounded-[2px]"
+                  className="md:col-span-8 relative w-full overflow-hidden rounded-[2px]"
                   style={{ background: project.bg ?? "#111" }}
                 >
                   <ModalMedia project={project} />
@@ -96,7 +96,7 @@ export default function ProjectModal({ project, onClose }: Props) {
                   </dl>
 
                   <div className="mt-auto font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
-                    More detail on request —{" "}
+                    More detail on request.{" "}
                     <a
                       href={`mailto:hello@tjcreate.co.uk?subject=${encodeURIComponent("RE: " + project.title)}`}
                       data-cursor="hover"

@@ -17,7 +17,7 @@ export default function WorkGrid() {
       <div className="flex items-end justify-between mb-16 md:mb-24">
         <div>
           <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted mb-4">
-            [ 01 — My Work ]
+            [ 01 / My Work ]
           </div>
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
@@ -52,7 +52,13 @@ export default function WorkGrid() {
               project={p}
               index={i}
               parallaxStrength={PARALLAX[i % PARALLAX.length]}
-              onOpen={() => setActive(p)}
+              onOpen={() => {
+                if (p.externalUrl) {
+                  window.open(p.externalUrl, "_blank", "noopener,noreferrer");
+                } else {
+                  setActive(p);
+                }
+              }}
             />
           </motion.div>
         ))}

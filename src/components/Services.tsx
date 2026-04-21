@@ -5,11 +5,24 @@ import { SERVICES } from "@/lib/content";
 
 export default function Services() {
   return (
-    <section id="services" className="relative px-6 md:px-10 py-24 md:py-40 bg-ink text-paper">
+    <section
+      id="services"
+      className="relative px-6 md:px-10 py-24 md:py-40 bg-ink text-paper"
+      // Pin the CSS variables locally so Services stays dark-with-cream even
+      // when the site is in dark mode (where --paper is normally dark).
+      style={
+        {
+          "--paper": "#f4f1e9",
+          "--ink": "#0a0a0a",
+          "--muted": "#8a8378",
+          "--line": "rgba(244, 241, 233, 0.14)",
+        } as React.CSSProperties
+      }
+    >
       <div className="flex items-end justify-between mb-16 md:mb-24">
         <div>
           <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 mb-4">
-            [ 02 — Services ]
+            [ 02 / Services ]
           </div>
           <motion.h2
             initial={{ opacity: 0, y: 30 }}

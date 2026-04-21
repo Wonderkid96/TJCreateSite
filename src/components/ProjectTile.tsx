@@ -8,8 +8,9 @@ import {
   useSpring,
   useTransform,
 } from "motion/react";
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import type { Project } from "@/lib/content";
+import ScrambleText from "./ScrambleText";
 
 type Props = {
   project: Project;
@@ -18,7 +19,7 @@ type Props = {
   onOpen?: () => void;
 };
 
-export default function ProjectTile({
+function ProjectTile({
   project,
   index,
   parallaxStrength = 40,
@@ -27,6 +28,7 @@ export default function ProjectTile({
   const ref = useRef<HTMLButtonElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [hovered, setHovered] = useState(false);
 
   // Cursor tilt
   const mx = useMotionValue(0);
@@ -47,11 +49,13 @@ export default function ProjectTile({
     [parallaxStrength, -parallaxStrength]
   );
 
-  // Autoplay native-looping videos when in viewport.
-  // "falling" kind drives its own ping-pong loop inside FallingOnSky, skip here.
+  // Autoplay looping videos when in viewport.
+  // "falling" drives its own ping-pong inside FallingOnSky (skip here).
+  // `pingPong: true` projects run a manual RAF ping-pong below.
   const fallingKind = project.kind === "falling";
+  const pingPong = project.pingPong ?? false;
   useEffect(() => {
-    if (fallingKind) return;
+    if (fallingKind || pingPong) return;
     const v = videoRef.current;
     if (!v) return;
     const io = new IntersectionObserver(
@@ -68,7 +72,39 @@ export default function ProjectTile({
     );
     io.observe(v);
     return () => io.disconnect();
-  }, [fallingKind]);
+  }, [fallingKind, pingPong]);
+
+  // Ping-pong playback — forward, then reverse, forever. No loop-reset jump.
+  useEffect(() => {
+    if (!pingPong) return;
+    const v = videoRef.current;
+    if (!v) return;
+    let raf = 0;
+    let last = performance.now();
+    let dir = 1;
+    v.pause();
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      if (v.readyState < 2 || !v.duration || Number.isNaN(v.duration)) {
+        last = now;
+        return;
+      }
+      const delta = (now - last) / 1000;
+      last = now;
+      const next = v.currentTime + dir * delta;
+      if (next >= v.duration - 0.05) {
+        v.currentTime = v.duration - 0.05;
+        dir = -1;
+      } else if (next <= 0.05) {
+        v.currentTime = 0.05;
+        dir = 1;
+      } else {
+        v.currentTime = next;
+      }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [pingPong]);
 
   const onMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     const el = ref.current;
@@ -80,11 +116,14 @@ export default function ProjectTile({
   const onLeave = () => {
     mx.set(0);
     my.set(0);
+    setHovered(false);
   };
+  const onEnter = () => setHovered(true);
 
   const kind = project.kind ?? "image";
-  const cursorLabel =
-    kind === "video"
+  const cursorLabel = project.externalUrl
+    ? "YOUTUBE ↗"
+    : kind === "video"
       ? "PLAY"
       : kind === "falling"
         ? "WATCH"
@@ -97,12 +136,21 @@ export default function ProjectTile({
       ref={ref}
       type="button"
       onClick={onOpen}
+      onMouseEnter={onEnter}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       data-cursor="view"
       data-cursor-label={cursorLabel}
       className="hover-tile group relative block w-full h-full text-left"
-      style={{ perspective: "1000px" }}
+      // Pin --paper/--ink locally so overlay text stays readable on both
+      // light and dark themes (tiles always sit over darkened imagery).
+      style={
+        {
+          perspective: "1000px",
+          "--paper": "#f4f1e9",
+          "--ink": "#0a0a0a",
+        } as React.CSSProperties
+      }
     >
       <motion.div
         style={{ rotateX: rX, rotateY: rY, transformStyle: "preserve-3d" }}
@@ -114,8 +162,14 @@ export default function ProjectTile({
         >
           <motion.div
             ref={mediaRef}
-            className="absolute inset-[-8%]"
-            style={{ y: mediaY }}
+            className="absolute"
+            // Inset equal to 1.3× parallaxStrength on every side so the media
+            // always extends beyond the tile further than the max Y translation,
+            // guaranteeing the tile's own background never leaks through.
+            style={{
+              y: mediaY,
+              inset: `-${Math.ceil(parallaxStrength * 1.3)}px`,
+            }}
           >
             {kind === "image" && project.image && (
               <Image
@@ -151,10 +205,14 @@ export default function ProjectTile({
               <video
                 ref={videoRef}
                 src={project.video}
+                poster={project.videoPoster}
                 muted
                 loop
                 playsInline
-                preload="metadata"
+                // ping-pong tiles need the browser to know duration + a
+                // seekable index, so they stay on "metadata". Regular tiles
+                // defer all fetches until the IntersectionObserver plays them.
+                preload={pingPong ? "metadata" : "none"}
                 onEnded={(e) => {
                   // Belt + braces: restart manually if the browser drops the loop.
                   const el = e.currentTarget;
@@ -169,6 +227,7 @@ export default function ProjectTile({
           </motion.div>
         </div>
 
+
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/55 pointer-events-none" />
 
         <div className="absolute top-4 left-4 right-4 flex items-start justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90 mix-blend-difference">
@@ -182,7 +241,7 @@ export default function ProjectTile({
               {project.category} · {project.client}
             </div>
             <div className="font-display text-3xl md:text-5xl leading-none tracking-tight">
-              {project.title}
+              <ScrambleText text={project.title} active={hovered} />
             </div>
           </div>
           <div className="hidden md:flex flex-col items-end gap-1 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/70">
@@ -195,6 +254,12 @@ export default function ProjectTile({
     </button>
   );
 }
+
+// Tiles live inside a motion.div grid in WorkGrid — without memo, every
+// parent animation frame would re-render all 15 tiles. Props are stable
+// (project objects are module-level, onOpen is a parent arrow), so shallow
+// equality is sufficient.
+export default memo(ProjectTile);
 
 function FallingOnSky({
   videoRef,
@@ -269,16 +334,6 @@ function FallingOnSky({
         />
       </div>
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30 pointer-events-none" />
-      <style jsx>{`
-        @keyframes cloudDrift {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-10%);
-          }
-        }
-      `}</style>
     </>
   );
 }

@@ -11,6 +11,20 @@
   --line: rgba(10, 10, 10, 0.12);
 }
 
+:root[data-theme="dark"] {
+  --paper: #0a0a0a;
+  --ink: #f4f1e9;
+  --ink-soft: #e8e4d9;
+  --muted: #8a8378;
+  --line: rgba(244, 241, 233, 0.14);
+}
+
+html,
+body {
+  transition: background-color 420ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    color 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
 @theme inline {
   --color-paper: var(--paper);
   --color-ink: var(--ink);
@@ -80,6 +94,35 @@ html.lenis body {
 }
 
 /* Marquee now runs via Framer Motion (see Marquee.tsx) — previous CSS keyframes removed. */
+
+/* Tunnel rings are static now — no expansion animation. The cursor-follow
+   on the wrapper provides all the movement. */
+
+/* Rotating conic-gradient angle for animated button borders. @property lets
+   the browser interpolate a custom <angle> variable smoothly. */
+@property --hero-a {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes heroSpin {
+  to {
+    --hero-a: 360deg;
+  }
+}
+
+/* Cloud drift — used by the falling-on-sky tile + modal to pan the cloud
+   layer slowly left. Declared globally (not via <style jsx>) so it stays
+   visible to Tailwind's purge pass. */
+@keyframes cloudDrift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-10%);
+  }
+}
 
 .hover-tile:hover .hover-tile-media {
   transform: scale(1.04);

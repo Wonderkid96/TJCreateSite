@@ -1,12 +1,12 @@
 "use client";
 
 import { motion, useAnimationFrame, useMotionValue } from "motion/react";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 type LogoItem = {
   name: string;
   logo: string | null;
+  url?: string;
 };
 
 type Props = {
@@ -17,8 +17,17 @@ type Props = {
 const SPEEDS = { normal: 22, fast: 50 } as const;
 const RESUME_DELAY_MS = 1200;
 
+// Colours pulled from Toby's palette, picked at random on hover so every pass
+// feels fresh and the wordmark doesn't look like it was forced into one brand.
+const HOVER_COLOURS = ["#E6352A", "#C8DB45", "#C4A9D0"] as const;
+
+const CONTAINER_H_CLASS = "h-40 md:h-48";
+// Each slot sits at 75% of the container height, uniform width, generous gap
+// between them so logos breathe.
+const SLOT_CLASS =
+  "shrink-0 flex items-center justify-center h-[75%] w-40 md:w-48";
+
 export default function LogoMarquee({ items, speed = "normal" }: Props) {
-  // Duplicate once so we can wrap seamlessly when auto-scrolling.
   const row = [...items, ...items];
   const x = useMotionValue(0);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -85,7 +94,7 @@ export default function LogoMarquee({ items, speed = "normal" }: Props) {
   return (
     <div
       ref={wrapRef}
-      className="relative w-full overflow-hidden py-10 md:py-14 border-y border-line select-none bg-paper"
+      className={`relative w-full overflow-hidden border-y border-line select-none bg-paper ${CONTAINER_H_CLASS}`}
     >
       <motion.div
         ref={trackRef}
@@ -100,31 +109,84 @@ export default function LogoMarquee({ items, speed = "normal" }: Props) {
           scheduleResume();
         }}
         style={{ x }}
-        className="flex items-center gap-16 md:gap-24 whitespace-nowrap cursor-grab active:cursor-grabbing will-change-transform"
+        className="flex items-center gap-16 md:gap-24 whitespace-nowrap cursor-grab active:cursor-grabbing will-change-transform h-full"
       >
         {row.map((item, i) => (
-          <div
-            key={`${item.name}-${i}`}
-            className="relative shrink-0 flex items-center justify-center h-12 md:h-14 opacity-70 hover:opacity-100 transition-opacity duration-500"
-            aria-label={item.name}
-          >
-            {item.logo ? (
-              <Image
-                src={item.logo}
-                alt={item.name}
-                width={200}
-                height={56}
-                className="h-full w-auto object-contain"
-                unoptimized={item.logo.endsWith(".svg")}
-              />
-            ) : (
-              <span className="font-sans font-bold tracking-tight text-ink text-xl md:text-2xl px-2">
-                {item.name}
-              </span>
-            )}
-          </div>
+          <LogoSlot key={`${item.name}-${i}`} item={item} pausedRef={paused} />
         ))}
       </motion.div>
+    </div>
+  );
+}
+
+function LogoSlot({ item, pausedRef }: { item: LogoItem; pausedRef: boolean }) {
+  // Default is "var(--ink)" — flips automatically with the theme so logos
+  // read as dark on cream (light mode) and cream on dark (dark mode).
+  const [color, setColor] = useState<string>("var(--ink)");
+
+  const onEnter = () => {
+    setColor(
+      HOVER_COLOURS[Math.floor(Math.random() * HOVER_COLOURS.length)],
+    );
+  };
+  const onLeave = () => setColor("var(--ink)");
+
+  const inner = item.logo ? (
+    <div
+      aria-hidden
+      className="h-full w-full transition-colors duration-500 ease-[cubic-bezier(.2,.8,.2,1)]"
+      style={{
+        backgroundColor: color,
+        WebkitMaskImage: `url(${item.logo})`,
+        maskImage: `url(${item.logo})`,
+        WebkitMaskSize: "contain",
+        maskSize: "contain",
+        WebkitMaskRepeat: "no-repeat",
+        maskRepeat: "no-repeat",
+        WebkitMaskPosition: "center",
+        maskPosition: "center",
+      }}
+    />
+  ) : (
+    <span
+      className="font-sans font-bold tracking-tight text-xl md:text-2xl leading-tight transition-colors duration-500"
+      style={{ color }}
+    >
+      {item.name}
+    </span>
+  );
+
+  const baseClass = `${SLOT_CLASS} opacity-80 hover:opacity-100 transition-opacity duration-500`;
+
+  if (item.url) {
+    return (
+      <a
+        href={item.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${item.name} (opens in new tab)`}
+        data-cursor="hover"
+        className={baseClass}
+        onMouseEnter={onEnter}
+        onMouseLeave={onLeave}
+        onClick={(e) => {
+          // Suppress nav while the marquee is being drag-scrubbed.
+          if (pausedRef) e.preventDefault();
+        }}
+      >
+        {inner}
+      </a>
+    );
+  }
+
+  return (
+    <div
+      className={baseClass}
+      aria-label={item.name}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+    >
+      {inner}
     </div>
   );
 }

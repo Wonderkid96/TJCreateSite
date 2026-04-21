@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform, type MotionValue } from "motion/react"
 import { useRef } from "react";
 
 const PARAGRAPH =
-  "I'm a graphic and motion designer based in Lincoln, UK. I work with record labels, artists, and ambitious brands on identity, motion, and editorial. I care about type that has a point of view, films that don't waste your time, and printed things that feel like objects. If your project calls for any of those, let's talk.";
+  "I'm Toby Johnson, a creative partner for ambitious brands, agencies and creators. With nearly 10 years in graphic and motion design, I integrate quickly into teams and deliver work that's clear and effective.";
 
 export default function About() {
   const ref = useRef<HTMLDivElement>(null);
@@ -19,7 +19,7 @@ export default function About() {
     <section id="about" ref={ref} className="relative px-6 md:px-10 py-24 md:py-40">
       <div className="flex items-start justify-between mb-16 md:mb-24">
         <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
-          [ 04 — About ]
+          [ 04 / About ]
         </div>
         <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted text-right">
           Lincoln, UK
@@ -34,7 +34,9 @@ export default function About() {
             Bio
           </div>
           <div className="mt-3 text-sm text-muted leading-relaxed">
-            BA, University of Bristol. Now based in Lincoln.
+            University of Bristol. Solo artist + designer.
+            <br />
+            Now based in Lincoln.
           </div>
         </div>
 
@@ -49,22 +51,61 @@ export default function About() {
 
       <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-6 border-t border-line pt-10">
         {[
-          { k: "Discipline", v: "Graphic · Motion · 3D" },
-          { k: "Based in", v: "Lincoln, UK" },
-          { k: "Working since", v: "2022" },
-          { k: "Currently", v: "Accepting projects" },
+          { k: "Discipline", v: "Graphic · Motion · 3D", dot: false, splitCommas: false },
+          {
+            k: "Clients",
+            v: "Agencies, Labels, Artists, Brands",
+            dot: false,
+            splitCommas: true,
+          },
+          { k: "Based in", v: "Lincoln, UK", dot: false, splitCommas: false },
+          { k: "Currently", v: "Accepting projects", dot: true, splitCommas: false },
         ].map((item) => (
           <div key={item.k}>
             <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted mb-2">
               {item.k}
             </div>
-            <div className="font-display text-2xl md:text-3xl leading-tight">
-              {item.v}
+            <div className="font-display text-2xl md:text-3xl leading-tight inline-flex items-center gap-3 flex-wrap">
+              {item.splitCommas ? <CommaSplit text={item.v} /> : item.v}
+              {item.dot && (
+                <span
+                  aria-hidden
+                  className="relative inline-flex h-2.5 w-2.5 shrink-0"
+                >
+                  <span
+                    className="absolute inset-0 rounded-full opacity-70 animate-ping"
+                    style={{ backgroundColor: "#80EF80" }}
+                  />
+                  <span
+                    className="relative inline-block rounded-full h-2.5 w-2.5"
+                    style={{ backgroundColor: "#80EF80" }}
+                  />
+                </span>
+              )}
             </div>
           </div>
         ))}
       </div>
     </section>
+  );
+}
+
+function CommaSplit({ text }: { text: string }) {
+  // Replace each comma with a red full stop in the brand accent. The trailing
+  // space after the comma is preserved as natural word spacing.
+  const parts = text.split(",").map((p) => p.trim());
+  return (
+    <>
+      {parts.map((p, i) => (
+        <span key={i}>
+          {p}
+          {i < parts.length - 1 && (
+            <span className="text-accent">.</span>
+          )}
+          {i < parts.length - 1 && " "}
+        </span>
+      ))}
+    </>
   );
 }
 

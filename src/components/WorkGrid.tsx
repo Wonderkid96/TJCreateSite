@@ -14,7 +14,7 @@ export default function WorkGrid() {
 
   return (
     <section id="work" className="relative px-6 md:px-10 py-24 md:py-40">
-      <div className="flex items-end justify-between mb-16 md:mb-24">
+      <div className="mb-16 md:mb-24 flex items-end justify-between">
         <div>
           <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted mb-4">
             [ 01 / My Work ]
@@ -29,7 +29,8 @@ export default function WorkGrid() {
             My <span className="italic">work</span>
           </motion.h2>
         </div>
-        <div className="hidden md:block font-mono text-[11px] uppercase tracking-[0.2em] text-muted max-w-[24ch] text-right">
+
+        <div className="hidden md:block font-mono text-[10px] lg:text-[11px] uppercase tracking-[0.12em] lg:tracking-[0.2em] text-muted whitespace-nowrap text-right">
           A mix of print, identity, and motion. Click any tile for a closer look.
         </div>
       </div>

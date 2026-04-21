@@ -20,10 +20,14 @@ export default function RevealObserver() {
       for (const el of textEls) {
         if (el.dataset.reveal) continue;
         if (el.closest("[data-no-auto-text-reveal], a, button, summary")) continue;
+        if (window.getComputedStyle(el).display === "inline") continue;
         el.dataset.reveal = "text";
         el.dataset.revealOnce = "false";
+        enhanceTypewriter(el);
       }
     }
+
+    document.documentElement.classList.add("reveal-mounted");
 
     const elements = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
     if (!elements.length) return;
@@ -52,8 +56,38 @@ export default function RevealObserver() {
     );
 
     elements.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    return () => {
+      io.disconnect();
+      document.documentElement.classList.remove("reveal-mounted");
+    };
   }, []);
 
   return null;
+}
+
+function enhanceTypewriter(el: HTMLElement) {
+  if (el.dataset.typewriterReady === "true") return;
+  // Only transform simple text blocks; skip richer markup to avoid breaking it.
+  const hasElementChildren = Array.from(el.childNodes).some(
+    (n) => n.nodeType === Node.ELEMENT_NODE
+  );
+  if (hasElementChildren) return;
+
+  const raw = (el.textContent ?? "").replace(/\s+/g, " ").trim();
+  if (!raw) return;
+
+  el.dataset.typewriterReady = "true";
+  el.setAttribute("aria-label", raw);
+  el.textContent = "";
+
+  const words = raw.split(" ");
+  const center = (words.length - 1) / 2;
+  words.forEach((word, i) => {
+    const span = document.createElement("span");
+    span.className = "tw-word";
+    span.style.setProperty("--tw-d", String(Math.abs(i - center)));
+    span.textContent = word;
+    el.appendChild(span);
+    if (i < words.length - 1) el.appendChild(document.createTextNode(" "));
+  });
 }

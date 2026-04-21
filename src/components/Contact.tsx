@@ -2,12 +2,8 @@
 
 import {
   motion,
-  useMotionTemplate,
-  useMotionValue,
-  useSpring,
-  useTransform,
 } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Contact() {
   return (
@@ -225,246 +221,83 @@ export default function Contact() {
 }
 
 /**
- * 3D TUNNEL — four walls (floor / ceiling / left / right) rendered as real
- * 3D planes receding into negative Z. CSS `perspective` + `perspective-origin`
- * give true geometric perspective, so the repeating "CLICK HERE." text on
- * each wall tapers naturally toward the vanishing point. The vanishing point
- * follows the cursor by shifting the perspective-origin.
+ * Tunnel block placeholder — tunnel visuals are temporarily disabled.
+ * Keep the click target and center lockup clear/stable while iterating.
  */
 function TunnelBlock() {
-  const ref = useRef<HTMLAnchorElement>(null);
-  const [size, setSize] = useState({ w: 0, h: 0 });
-
-  // Cursor as fraction 0–1 across the block. Default centre.
-  const mx = useMotionValue(0.5);
-  const my = useMotionValue(0.5);
-  const smx = useSpring(mx, { damping: 30, stiffness: 180, mass: 0.5 });
-  const smy = useSpring(my, { damping: 30, stiffness: 180, mass: 0.5 });
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const sync = () => setSize({ w: el.offsetWidth, h: el.offsetHeight });
-    sync();
-    const ro = new ResizeObserver(sync);
-    ro.observe(el);
-
-    const onMove = (e: MouseEvent) => {
-      const r = el.getBoundingClientRect();
-      mx.set((e.clientX - r.left) / r.width);
-      my.set((e.clientY - r.top) / r.height);
-    };
-    const onLeave = () => {
-      mx.set(0.5);
-      my.set(0.5);
-    };
-    el.addEventListener("mousemove", onMove);
-    el.addEventListener("mouseleave", onLeave);
-    return () => {
-      ro.disconnect();
-      el.removeEventListener("mousemove", onMove);
-      el.removeEventListener("mouseleave", onLeave);
-    };
-  }, [mx, my]);
-
-  const originX = useTransform(smx, (v) => v * 100);
-  const originY = useTransform(smy, (v) => v * 100);
-  const perspectiveOrigin = useMotionTemplate`${originX}% ${originY}%`;
-  // Depth fog: radial gradient centred on the vanishing point, fading from
-  // fully transparent near the block edges to solid ink in the middle. Tracks
-  // the cursor via the same spring-smoothed motion values.
-  const fogGradient = useMotionTemplate`radial-gradient(ellipse 60% 60% at ${originX}% ${originY}%, rgba(10,10,10,0.78) 0%, rgba(10,10,10,0.58) 22%, rgba(10,10,10,0.24) 56%, rgba(10,10,10,0.06) 100%)`;
-
-  const ready = size.w > 0 && size.h > 0;
-
   return (
     <a
-      ref={ref}
       href="mailto:hello@tjcreate.co.uk"
       data-cursor="view"
-      data-cursor-label=" "
+      data-cursor-label="LET'S TALK"
       aria-label="Email hello@tjcreate.co.uk"
       className="relative block w-full mx-auto overflow-hidden h-[48vh] sm:h-[52vh] md:h-[58vh] lg:h-[62vh] min-h-[300px] max-h-[78vh] select-none"
-      style={{ backgroundColor: "#0a0a0a" }}
+      style={{
+        background:
+          "radial-gradient(ellipse 55% 45% at 50% 50%, rgba(244,241,233,0.06) 0%, rgba(10,10,10,0.25) 32%, rgba(10,10,10,0.88) 100%)",
+      }}
     >
-      {ready && (
-        <motion.div
-          className="absolute inset-0"
-          style={{
-            perspective: "700px",
-            perspectiveOrigin,
-            backgroundColor: "#0a0a0a",
-          }}
-        >
-          <div
-            className="relative w-full h-full"
-            style={{ transformStyle: "preserve-3d" }}
-          >
-            {/* depth fog rendered AFTER the walls so it sits on top and fades
-                far-back text into the vanishing point. pointer-events: none so
-                the mailto click still reaches the <a>. */}
-            <Wall orientation="floor" width={size.w} height={size.h} />
-            <Wall orientation="ceiling" width={size.w} height={size.h} />
-            <Wall orientation="left" width={size.w} height={size.h} />
-            <Wall orientation="right" width={size.w} height={size.h} />
-            <motion.div
-              className="pointer-events-none absolute inset-0"
-              style={{ backgroundImage: fogGradient }}
-            />
-            <TunnelCenterText width={size.w} height={size.h} />
-          </div>
-        </motion.div>
-      )}
+      <div
+        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+        aria-hidden
+      >
+        <TypeLine />
+      </div>
     </a>
   );
 }
 
-function TunnelCenterText({ width, height }: { width: number; height: number }) {
-  const minDim = Math.min(width, height);
-  const fontSize = Math.max(66, Math.min(190, minDim * 0.34));
-  return (
-    <div
-      className="pointer-events-none absolute"
-      style={{
-        left: "50%",
-        top: "50%",
-        transform: `translate(-50%, -50%) translateZ(-${Math.round(TUNNEL_DEPTH * 0.7)}px)`,
-      }}
-      aria-hidden
-    >
-      <div
-        className="font-display leading-[0.9] tracking-tight text-paper whitespace-nowrap"
-        style={{
-          fontSize,
-          textShadow:
-            "0 2px 0 rgba(10,10,10,0.2), 0 10px 26px rgba(10,10,10,0.18)",
-        }}
-      >
-        Click <span className="italic">here</span>
-        <span className="text-accent">.</span>
-      </div>
-    </div>
-  );
-}
+function TypeLine() {
+  const full = "Let's talk";
+  const [count, setCount] = useState(0);
+  const [hovered, setHovered] = useState(false);
 
-// Depth of the tunnel along -Z in pixels. Must be large enough that the far
-// end converges to a visible vanishing point.
-const TUNNEL_DEPTH = 1400;
+  useEffect(() => {
+    setCount(0);
+    const timer = window.setInterval(() => {
+      setCount((prev) => {
+        if (prev >= full.length) {
+          window.clearInterval(timer);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, 66);
+    return () => window.clearInterval(timer);
+  }, []);
 
-function Wall({
-  orientation,
-  width,
-  height,
-}: {
-  orientation: "floor" | "ceiling" | "left" | "right";
-  width: number;
-  height: number;
-}) {
-  const depth = TUNNEL_DEPTH;
-  const isHorizontal = orientation === "floor" || orientation === "ceiling";
-
-  let rotation: string;
-  let origin: string;
-  let cssWidth: number;
-  let cssHeight: number;
-  let cssLeft: number;
-  let cssTop: number;
-
-  if (orientation === "floor") {
-    rotation = "rotateX(90deg)";
-    origin = "bottom center";
-    cssWidth = width;
-    cssHeight = depth;
-    cssLeft = 0;
-    cssTop = height - depth;
-  } else if (orientation === "ceiling") {
-    rotation = "rotateX(-90deg)";
-    origin = "top center";
-    cssWidth = width;
-    cssHeight = depth;
-    cssLeft = 0;
-    cssTop = 0;
-  } else if (orientation === "left") {
-    rotation = "rotateY(90deg)";
-    origin = "top left";
-    cssWidth = depth;
-    cssHeight = height;
-    cssLeft = 0;
-    cssTop = 0;
-  } else {
-    rotation = "rotateY(-90deg)";
-    origin = "top right";
-    cssWidth = depth;
-    cssHeight = height;
-    cssLeft = width - depth;
-    cssTop = 0;
-  }
-
-  const innerW = isHorizontal ? cssWidth : cssHeight;
-  const innerH = isHorizontal ? cssHeight : cssWidth;
-  const innerRotate =
-    orientation === "left" ? 90 : orientation === "right" ? -90 : 0;
-
-  const fontSize = Math.max(20, Math.min(width, height) * 0.1);
-  const rowGap = fontSize * 1.8;
-  const rowCount = Math.max(2, Math.ceil(depth / rowGap));
-  const tokensPerRow = Math.max(4, Math.ceil((innerW * 1.2) / (fontSize * 6)));
+  const typed = full.slice(0, count);
 
   return (
     <div
+      className="pointer-events-auto font-display leading-[0.9] tracking-tight whitespace-nowrap text-white transition-transform duration-300 ease-[cubic-bezier(.2,.8,.2,1)]"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onTouchStart={() => setHovered(false)}
       style={{
-        position: "absolute",
-        left: cssLeft,
-        top: cssTop,
-        width: cssWidth,
-        height: cssHeight,
-        transformOrigin: origin,
-        transform: rotation,
-        backgroundColor: "#0a0a0a",
-        overflow: "hidden",
+        fontSize: "clamp(2.4rem, 8vw, 7.6rem)",
+        textShadow: "0 1px 0 rgba(10,10,10,0.14), 0 8px 20px rgba(10,10,10,0.1)",
+        transform: hovered
+          ? "translateX(-0.95ch) scale(0.96)"
+          : "translateX(0) scale(1)",
       }}
     >
-      <div
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-          width: innerW,
-          height: innerH,
-          transform: isHorizontal
-            ? "translate(-50%, -50%)"
-            : `translate(-50%, -50%) rotate(${innerRotate}deg)`,
-          transformOrigin: "center center",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            padding: `${rowGap * 0.25}px 0`,
-            color: "#F4F1E9",
-            fontFamily: "var(--font-sans), system-ui, sans-serif",
-            fontWeight: 700,
-            fontSize,
-            lineHeight: 1,
-            whiteSpace: "nowrap",
-            letterSpacing: "-0.01em",
-          }}
+      {typed}
+      <span className="inline-flex items-end align-baseline text-accent">
+        <span className="inline-block">.</span>
+        <span
+          className={`inline-block overflow-hidden align-bottom transition-[width] duration-240 ease-[steps(2,end)] ${hovered ? "w-[2ch]" : "w-0"}`}
         >
-          {Array.from({ length: rowCount }).map((_, i) => (
-            <div key={i} className="flex gap-6 px-4">
-              {Array.from({ length: tokensPerRow }).map((_, j) => (
-                <span key={j} className="shrink-0">
-                  LET&apos;S TALK<span style={{ color: "#E6352A" }}>.</span>
-                </span>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
+          ..
+        </span>
+        <motion.span
+          className="inline-block align-baseline"
+          animate={{ opacity: [1, 0, 1] }}
+          transition={{ duration: 0.85, repeat: Infinity, ease: "linear" }}
+        >
+          |
+        </motion.span>
+      </span>
     </div>
   );
 }

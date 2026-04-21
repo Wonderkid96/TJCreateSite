@@ -230,9 +230,9 @@ export default function Hero() {
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.2)_100%)]" />
 
         {/* Top chrome */}
-        <div className="absolute top-24 md:top-28 inset-x-6 md:inset-x-10 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.2em] text-ink/70">
+        <div className="absolute top-24 md:top-28 inset-x-6 md:inset-x-10 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.2em] text-white/90">
           <span>[ Portfolio / 2026 ]</span>
-          <span className="hidden md:inline">
+          <span className="hidden md:inline text-white/85">
             Est. Lincoln, UK · Available for select projects
           </span>
         </div>

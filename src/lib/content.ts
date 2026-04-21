@@ -23,7 +23,7 @@ export const PROJECTS: Project[] = [
     slug: "together-we-stand",
     title: "Together We Stand",
     client: "Brighton Dome",
-    year: "2025",
+    year: "2026",
     category: "Print",
     tags: ["Poster", "Event"],
     blurb:
@@ -36,7 +36,7 @@ export const PROJECTS: Project[] = [
     slug: "grumble",
     title: "Grumble / The Pylons",
     client: "Band Campaign",
-    year: "2025",
+    year: "2026",
     category: "Identity",
     tags: ["Identity", "Photography"],
     blurb:
@@ -49,7 +49,7 @@ export const PROJECTS: Project[] = [
     slug: "jgrrey",
     title: "Jgrrey",
     client: "Gig Poster",
-    year: "2024",
+    year: "2025",
     category: "Graphic",
     tags: ["Poster", "Music"],
     blurb:
@@ -62,7 +62,7 @@ export const PROJECTS: Project[] = [
     slug: "falling-on-sky",
     title: "Your Cries Falling",
     client: "Toby Johnson",
-    year: "2024",
+    year: "2025",
     category: "Motion",
     tags: ["Motion", "Release"],
     blurb:
@@ -74,7 +74,7 @@ export const PROJECTS: Project[] = [
     slug: "filtered-gig",
     title: "Filtered",
     client: "Gig Poster",
-    year: "2024",
+    year: "2025",
     category: "Graphic",
     tags: ["Poster", "Music"],
     blurb:
@@ -87,7 +87,7 @@ export const PROJECTS: Project[] = [
     slug: "offcut",
     title: "Offcut",
     client: "Product Packaging",
-    year: "2024",
+    year: "2025",
     category: "Print",
     tags: ["Packaging", "3D"],
     blurb:
@@ -100,7 +100,7 @@ export const PROJECTS: Project[] = [
     slug: "liar-liar",
     title: "Liar Liar",
     client: "Visualiser",
-    year: "2024",
+    year: "2025",
     category: "Motion",
     tags: ["Motion", "Music Video"],
     blurb:
@@ -114,7 +114,7 @@ export const PROJECTS: Project[] = [
     slug: "fashion-tiles",
     title: "Fashion Tiles",
     client: "Editorial Motion",
-    year: "2024",
+    year: "2025",
     category: "Motion",
     tags: ["Motion", "Editorial"],
     blurb:
@@ -125,10 +125,24 @@ export const PROJECTS: Project[] = [
     bg: "#0a0a0a",
   },
   {
+    slug: "headphone-animation",
+    title: "Headphone Animation",
+    client: "TJCreate",
+    year: "2026",
+    category: "Motion",
+    tags: ["Motion", "3D", "Product"],
+    blurb:
+      "16:9 headphone animation study focused on smooth product movement, lighting passes and a clean loop-ready finish.",
+    video: "/work/imported/motion/headphone-animation.mp4",
+    videoPoster: "/work/imported/posters-video/headphone-animation.jpg",
+    kind: "video",
+    bg: "#0a0a0a",
+  },
+  {
     slug: "heart-motion",
     title: "Heart",
     client: "Brand Motion",
-    year: "2024",
+    year: "2025",
     category: "Motion",
     tags: ["Motion", "Loop"],
     blurb:
@@ -156,7 +170,7 @@ export const PROJECTS: Project[] = [
     slug: "baraka-loop",
     title: "Joshua Baraka",
     client: "Release Loop",
-    year: "2025",
+    year: "2026",
     category: "Motion",
     tags: ["Motion", "Release"],
     blurb:
@@ -171,7 +185,7 @@ export const PROJECTS: Project[] = [
     slug: "wonderkid",
     title: "Wonderkid",
     client: "Packaging Mockup",
-    year: "2024",
+    year: "2025",
     category: "Graphic",
     tags: ["Packaging", "Mockup"],
     blurb:
@@ -184,7 +198,7 @@ export const PROJECTS: Project[] = [
     slug: "carousel-square",
     title: "Carousel",
     client: "Social Motion",
-    year: "2024",
+    year: "2025",
     category: "Motion",
     tags: ["Motion", "Social"],
     blurb:
@@ -198,7 +212,7 @@ export const PROJECTS: Project[] = [
     slug: "jb-wrong-places",
     title: "Wrong Places",
     client: "Joshua Baraka",
-    year: "2024",
+    year: "2025",
     category: "Motion",
     tags: ["Lyric Video", "Motion"],
     blurb:

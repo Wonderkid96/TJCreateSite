@@ -179,9 +179,9 @@ a {
 
 /* Global reveal system: apply data-reveal + optional delay via
    style={{ "--reveal-delay": "120ms" }} to slide elements in from left. */
-[data-reveal] {
+html.reveal-mounted [data-reveal] {
   --reveal-x: -24px;
-  --reveal-dur: 860ms;
+  --reveal-dur: 620ms;
   --reveal-delay: 0ms;
   opacity: 0;
   transform: translate3d(var(--reveal-x), 0, 0);
@@ -192,48 +192,72 @@ a {
   will-change: opacity, transform;
 }
 
-[data-reveal].is-visible {
+html.reveal-mounted [data-reveal].is-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0);
 }
 
 [data-reveal="heading"] {
   --reveal-x: -34px;
-  --reveal-dur: 980ms;
+  --reveal-dur: 700ms;
 }
 
 [data-reveal="section"] {
   --reveal-x: -34px;
-  --reveal-dur: 900ms;
+  --reveal-dur: 650ms;
 }
 
 [data-reveal="body"] {
   --reveal-x: -24px;
-  --reveal-dur: 860ms;
+  --reveal-dur: 560ms;
 }
 
 [data-reveal="media"] {
   --reveal-x: -20px;
-  --reveal-dur: 900ms;
+  --reveal-dur: 620ms;
 }
 
 [data-reveal="item"] {
   --reveal-x: -16px;
-  --reveal-dur: 760ms;
+  --reveal-dur: 460ms;
 }
 
-/* Fast "typing-like" text reveal. Reversible when scrolling back. */
+/* Fast text reveal with center-origin expansion (prevents right-edge clumping
+   for right-aligned copy blocks). Reversible on scroll back. */
 [data-reveal="text"] {
-  --reveal-x: -10px;
-  --reveal-dur: 240ms;
-  clip-path: inset(0 100% 0 0);
-  filter: blur(1px);
-  transition-property: opacity, transform, clip-path, filter;
+  --reveal-x: 0px;
+  --reveal-dur: 200ms;
+  transition-property: opacity;
 }
 
 [data-reveal="text"].is-visible {
-  clip-path: inset(0 0 0 0);
+  opacity: 1;
+}
+
+/* Per-word typewriter-style reveal for simple text nodes.
+   Fast in/out and reversible on scroll-back. */
+[data-reveal="text"] .tw-word {
+  --tw-step: 26ms;
+  display: inline-block;
+  opacity: 0;
+  filter: blur(2px);
+  transform: translate3d(0, 0.22em, 0);
+  transition:
+    opacity 90ms steps(1, end),
+    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 180ms linear;
+  transition-delay: calc(var(--tw-d, 0) * var(--tw-step));
+}
+
+[data-reveal="text"].is-visible .tw-word {
+  opacity: 1;
   filter: blur(0);
+  transform: translate3d(0, 0, 0);
+}
+
+[data-reveal="text"]:not(.is-visible) .tw-word {
+  /* Faster reverse so the out feels responsive while scrolling back. */
+  transition-delay: 0ms;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -146,7 +146,10 @@ function Word({
 }) {
   const opacity = useTransform(progress, range, [0.18, 1]);
   return (
-    <motion.span style={{ opacity }} className="inline-block mr-[0.25em]">
+    <motion.span
+      style={{ opacity }}
+      className="bio-word inline-block mr-[0.25em] transition-[color,transform] duration-220 ease-[cubic-bezier(.2,.8,.2,1)]"
+    >
       {children}
     </motion.span>
   );

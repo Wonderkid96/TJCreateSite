@@ -175,6 +175,11 @@ a {
   .hero-btn-lift:hover {
     transform: translateY(-2px);
   }
+
+  .bio-word:hover {
+    color: var(--accent);
+    transform: translateY(-2px);
+  }
 }
 
 /* Global reveal system: apply data-reveal + optional delay via

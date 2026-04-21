@@ -277,9 +277,7 @@ function TypeLine() {
       style={{
         fontSize: "clamp(2.4rem, 8vw, 7.6rem)",
         textShadow: "0 1px 0 rgba(10,10,10,0.14), 0 8px 20px rgba(10,10,10,0.1)",
-        transform: hovered
-          ? "translateX(-0.95ch) scale(0.96)"
-          : "translateX(0) scale(1)",
+        transform: hovered ? "scale(0.96)" : "scale(1)",
       }}
     >
       {typed}

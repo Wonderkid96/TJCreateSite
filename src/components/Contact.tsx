@@ -20,11 +20,26 @@ export default function Contact() {
       }
       className="relative px-6 md:px-10 pt-16 md:pt-20 pb-24 md:pb-32 bg-ink text-paper overflow-hidden"
     >
-      <div className="flex items-start justify-between mb-10 md:mb-14">
-        <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60">
-          [ 05 / Contact ]
+      {/* Section header — matches Work / Services / About framing:
+          small mono slug + big serif heading on the left, aligned right
+          label on the far side. */}
+      <div className="flex items-end justify-between mb-16 md:mb-24">
+        <div>
+          <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 mb-4">
+            [ 05 / Contact ]
+          </div>
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
+            className="font-display text-[clamp(2.2rem,6.5vw,4.6rem)] lg:text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
+          >
+            Say <span className="italic">hello</span>
+          </motion.h2>
         </div>
-        <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 text-right">
+
+        <div className="hidden md:block font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 text-right max-w-[24ch]">
           Let&apos;s make
           <br />
           something!
@@ -270,7 +285,7 @@ function TypeLine() {
 
   return (
     <div
-      className="pointer-events-auto font-display leading-[0.9] tracking-tight whitespace-nowrap text-white transition-transform duration-300 ease-[cubic-bezier(.2,.8,.2,1)]"
+      className="pointer-events-auto font-display leading-[0.9] tracking-tight whitespace-nowrap text-white relative inline-block transition-transform duration-300 ease-[cubic-bezier(.2,.8,.2,1)]"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onTouchStart={() => setHovered(false)}
@@ -281,10 +296,19 @@ function TypeLine() {
       }}
     >
       {typed}
-      <span className="inline-flex items-end align-baseline text-accent">
-        <span className="inline-block">.</span>
+      <span className="text-accent">.</span>
+      {/* Animated tail — the extra dots + cursor live in an absolute
+          container that flows OUT from the period's right edge. The base
+          "Let's talk." stays centred in its parent; only this cluster
+          grows on hover, so the cursor appears to "type" the new dots
+          without shifting the main text. */}
+      <span
+        aria-hidden
+        className="absolute left-full top-0 inline-flex items-end whitespace-nowrap text-accent"
+      >
         <span
-          className={`inline-block overflow-hidden align-bottom transition-[width] duration-240 ease-[steps(2,end)] ${hovered ? "w-[2ch]" : "w-0"}`}
+          className="inline-block overflow-hidden align-bottom transition-[width] duration-[240ms] ease-[steps(2,end)]"
+          style={{ width: hovered ? "2ch" : "0" }}
         >
           ..
         </span>

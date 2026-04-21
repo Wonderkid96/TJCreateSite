@@ -8,6 +8,7 @@ import Cursor from "@/components/Cursor";
 import RevealObserver from "@/components/RevealObserver";
 import BackToTop from "@/components/BackToTop";
 import Nav from "@/components/Nav";
+import Splash from "@/components/Splash";
 import { ThemeProvider, NO_FLASH_SNIPPET } from "@/components/ThemeProvider";
 
 const display = Instrument_Serif({
@@ -144,6 +145,7 @@ export default function RootLayout({
       </head>
       <body className="bg-paper text-ink">
         <ThemeProvider>
+          <Splash />
           <SmoothScroll />
           <RevealObserver />
           <Cursor />

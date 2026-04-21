@@ -45,3 +45,8 @@ next-env.d.ts
 
 # local tooling
 /.claude/
+
+# playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/

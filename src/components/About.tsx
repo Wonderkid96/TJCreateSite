@@ -46,7 +46,8 @@ export default function About() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 md:items-stretch">
-        <div className="md:col-span-6">
+        {/* Portrait: ~35% on desktop so it doesn't dominate the text. */}
+        <div className="md:col-span-4">
           <div
             className="relative w-full md:max-w-none aspect-[4/5] md:aspect-auto md:h-full md:min-h-[460px] overflow-hidden rounded-[2px] border border-line/60 bg-ink/5"
           >
@@ -55,12 +56,12 @@ export default function About() {
               alt="Portrait of Toby Johnson"
               fill
               className="object-cover object-[52%_84%] scale-[1.02]"
-              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 34vw, 420px"
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 24vw, 300px"
             />
           </div>
         </div>
 
-        <div className="md:col-span-6">
+        <div className="md:col-span-8">
           <div
             className="h-full border border-line/60 bg-paper/40 rounded-[2px] p-6 md:p-10 flex flex-col justify-between"
           >

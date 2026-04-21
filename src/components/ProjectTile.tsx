@@ -11,6 +11,13 @@ import {
 import { memo, useEffect, useRef, useState } from "react";
 import type { Project } from "@/lib/content";
 import ScrambleText from "./ScrambleText";
+import {
+  FALLING_FRAME_COUNT,
+  FALLING_FRAME_HEIGHT,
+  FALLING_FRAME_WIDTH,
+  getFallingFrameByIndex,
+  preloadFallingFrames,
+} from "@/lib/falling-frames";
 
 type Props = {
   project: Project;
@@ -241,7 +248,7 @@ function ProjectTile({
               />
             )}
 
-            {kind === "falling" && <FallingOnSky videoRef={videoRef} />}
+            {kind === "falling" && <FallingOnSky />}
           </motion.div>
         </div>
 
@@ -279,43 +286,55 @@ function ProjectTile({
 // equality is sufficient.
 export default memo(ProjectTile);
 
-function FallingOnSky({
-  videoRef,
-}: {
-  videoRef: React.RefObject<HTMLVideoElement | null>;
-}) {
-  // Ping-pong playback: advance currentTime forward until end, then backward,
-  // avoiding the jarring loop reset.
+function FallingOnSky() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
   useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
+    preloadFallingFrames();
+  }, []);
+
+  // Ping-pong playback — draw to canvas in a rAF loop. Runs continuously;
+  // paints whatever frames have decoded so far and fills in as more load.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const FPS = 24;
     let raf = 0;
     let last = performance.now();
+    let t = 0;
     let dir = 1;
-    // We drive currentTime manually, so pause the native playback.
-    v.pause();
+    let lastIdx = -1;
+    const totalT = FALLING_FRAME_COUNT / FPS;
+
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
-      if (v.readyState < 2 || !v.duration || Number.isNaN(v.duration)) {
-        last = now;
-        return;
-      }
-      const delta = (now - last) / 1000;
+      const delta = Math.min(0.1, (now - last) / 1000);
       last = now;
-      const next = v.currentTime + dir * delta;
-      if (next >= v.duration - 0.05) {
-        v.currentTime = v.duration - 0.05;
+      t += dir * delta;
+      if (t >= totalT) {
+        t = totalT;
         dir = -1;
-      } else if (next <= 0.05) {
-        v.currentTime = 0.05;
+      } else if (t <= 0) {
+        t = 0;
         dir = 1;
-      } else {
-        v.currentTime = next;
       }
+      const idx = Math.min(
+        FALLING_FRAME_COUNT - 1,
+        Math.max(0, Math.floor(t * FPS)),
+      );
+      if (idx === lastIdx) return;
+      const img = getFallingFrameByIndex(idx);
+      if (!img || !img.complete || img.naturalWidth === 0) return;
+      lastIdx = idx;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [videoRef]);
+  }, []);
 
   return (
     <>
@@ -336,12 +355,10 @@ function FallingOnSky({
         }}
       />
       <div className="absolute inset-0 flex items-center justify-center">
-        <video
-          ref={videoRef}
-          src="/work/imported/motion/falling-alpha.mp4"
-          muted
-          playsInline
-          preload="auto"
+        <canvas
+          ref={canvasRef}
+          width={FALLING_FRAME_WIDTH}
+          height={FALLING_FRAME_HEIGHT}
           className="h-[55%] w-auto object-contain"
           style={{
             WebkitMaskImage:

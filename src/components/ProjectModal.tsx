@@ -2,8 +2,15 @@
 
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Project } from "@/lib/content";
+import {
+  FALLING_FRAME_COUNT,
+  FALLING_FRAME_HEIGHT,
+  FALLING_FRAME_WIDTH,
+  getFallingFrameByIndex,
+  preloadFallingFrames,
+} from "@/lib/falling-frames";
 
 type Props = {
   project: Project | null;
@@ -197,41 +204,82 @@ function ModalMedia({ project }: { project: Project }) {
   }
 
   if (kind === "falling") {
-    return (
-      <>
-        <Image
-          src="/work/imported/bg/sky-long.avif"
-          alt=""
-          fill
-          sizes="66vw"
-          className="object-cover"
-        />
-        <div
-          className="absolute inset-0 opacity-60 mix-blend-screen"
-          style={{
-            backgroundImage: "url(/work/imported/bg/cloud-long.avif)",
-            backgroundSize: "cover",
-          }}
-        />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <video
-            src="/work/imported/motion/falling-alpha.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="h-[70%] w-auto object-contain"
-            style={{
-              WebkitMaskImage:
-                "radial-gradient(ellipse 55% 65% at 50% 50%, black 55%, transparent 92%)",
-              maskImage:
-                "radial-gradient(ellipse 55% 65% at 50% 50%, black 55%, transparent 92%)",
-            }}
-          />
-        </div>
-      </>
-    );
+    return <FallingModalMedia />;
   }
 
   return null;
+}
+
+function FallingModalMedia() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    preloadFallingFrames();
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const FPS = 24;
+    let raf = 0;
+    let last = performance.now();
+    let t = 0;
+    let lastIdx = -1;
+    const totalT = FALLING_FRAME_COUNT / FPS;
+
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      const delta = Math.min(0.1, (now - last) / 1000);
+      last = now;
+      t = (t + delta) % totalT;
+      const idx = Math.min(
+        FALLING_FRAME_COUNT - 1,
+        Math.max(0, Math.floor(t * FPS)),
+      );
+      if (idx === lastIdx) return;
+      const img = getFallingFrameByIndex(idx);
+      if (!img || !img.complete || img.naturalWidth === 0) return;
+      lastIdx = idx;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return (
+    <>
+      <Image
+        src="/work/imported/bg/sky-long.avif"
+        alt=""
+        fill
+        sizes="66vw"
+        className="object-cover"
+      />
+      <div
+        className="absolute inset-0 opacity-60 mix-blend-screen"
+        style={{
+          backgroundImage: "url(/work/imported/bg/cloud-long.avif)",
+          backgroundSize: "cover",
+        }}
+      />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <canvas
+          ref={canvasRef}
+          width={FALLING_FRAME_WIDTH}
+          height={FALLING_FRAME_HEIGHT}
+          className="h-[70%] w-auto object-contain"
+          style={{
+            WebkitMaskImage:
+              "radial-gradient(ellipse 55% 65% at 50% 50%, black 55%, transparent 92%)",
+            maskImage:
+              "radial-gradient(ellipse 55% 65% at 50% 50%, black 55%, transparent 92%)",
+          }}
+        />
+      </div>
+    </>
+  );
 }

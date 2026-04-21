@@ -7,6 +7,13 @@ import {
   useTransform,
 } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import {
+  FALLING_FRAME_COUNT,
+  FALLING_FRAME_HEIGHT,
+  FALLING_FRAME_WIDTH,
+  getFallingFrame,
+  preloadFallingFrames,
+} from "@/lib/falling-frames";
 
 const WORDS = ["Toby", "Johnson"];
 const SUB =
@@ -17,8 +24,49 @@ const CLOUD_ASPECT = 3269 / 8125;
 
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const framesReadyRef = useRef(false);
+  // Target frame index, updated on every scroll event. A rAF loop reads
+  // it and draws at most once per animation frame — keeps draws smooth
+  // even when scroll events fire faster than 60Hz.
+  const targetProgressRef = useRef(0);
+
+  useEffect(() => {
+    preloadFallingFrames(() => {
+      framesReadyRef.current = true;
+    });
+  }, []);
+
+  // rAF draw loop — paints the current target frame to canvas. Runs for
+  // the life of the component; cheap when idle (draws only on change).
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    let raf = 0;
+    let lastDrawn = -1;
+    const loop = () => {
+      raf = requestAnimationFrame(loop);
+      const p = targetProgressRef.current;
+      const idx = Math.min(
+        FALLING_FRAME_COUNT - 1,
+        Math.max(0, Math.floor(p * FALLING_FRAME_COUNT)),
+      );
+      if (idx === lastDrawn) return;
+      const img = getFallingFrame(p);
+      // Paint whatever is loaded now — don't gate on full readiness. The
+      // first frame is available almost instantly since it starts loading
+      // at the top of the module; subsequent frames fill in as they arrive.
+      if (!img || !img.complete || img.naturalWidth === 0) return;
+      lastDrawn = idx;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   // Scroll progress (0 → 1 across the hero's sticky scroll range).
   const progress = useMotionValue(0);
@@ -98,11 +146,10 @@ export default function Hero() {
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  // Scroll-scrub the falling-man video.
+  // Scroll -> target progress. Actual draw happens in the rAF loop above
+  // so we never paint more than once per frame regardless of scroll rate.
   useMotionValueEvent(progress, "change", (p) => {
-    const v = videoRef.current;
-    if (!v || !v.duration || Number.isNaN(v.duration)) return;
-    v.currentTime = Math.min(v.duration - 0.05, p * v.duration);
+    targetProgressRef.current = p;
   });
 
   // Responsive parallax — translate each layer by (layerH - viewportH) at max
@@ -209,12 +256,12 @@ export default function Hero() {
           style={{ scale: fallingScale }}
           className="absolute inset-0 flex items-center justify-center pointer-events-none will-change-transform"
         >
-          <video
-            ref={videoRef}
-            src="/work/imported/motion/falling-alpha.mp4"
-            muted
-            playsInline
-            preload="auto"
+          {/* Falling man — canvas driven by rAF draws of pre-decoded
+              ImageBitmaps. See src/lib/falling-frames.ts. */}
+          <canvas
+            ref={canvasRef}
+            width={FALLING_FRAME_WIDTH}
+            height={FALLING_FRAME_HEIGHT}
             className="h-[42%] sm:h-[46%] md:h-[50%] lg:h-[56%] w-auto object-contain"
             style={{
               WebkitMaskImage:

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Instrument_Serif, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
@@ -150,6 +151,7 @@ export default function RootLayout({
           <Nav />
           {children}
           <BackToTop />
+          <SpeedInsights />
         </ThemeProvider>
         <Script
           id="ld-person"

@@ -133,7 +133,7 @@ export default function Hero() {
     <section
       id="top"
       ref={ref}
-      className="relative w-full h-[180vh] sm:h-[220vh] md:h-[260vh] lg:h-[280vh]"
+      className="relative w-full h-[260vh] sm:h-[280vh] md:h-[300vh] lg:h-[320vh]"
     >
       <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-[#c9d8e2]">
         {/* Sky */}
@@ -221,18 +221,22 @@ export default function Hero() {
 
           <motion.div
             style={{ opacity: subOpacity, x: subX }}
-            className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-end"
+            className="flex flex-col gap-5 md:gap-7"
           >
-            <div className="hidden md:block md:col-span-1 font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60">
-              <div>↓</div>
-              <div className="mt-2">Scroll</div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start">
+              <p className="md:col-span-8 text-base md:text-xl leading-snug max-w-xl text-ink/90">
+                {SUB}
+              </p>
+
+              <div className="hidden md:flex md:col-span-4 md:justify-end font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60 text-right">
+                <div>
+                  <div>↓</div>
+                  <div className="mt-2">Scroll</div>
+                </div>
+              </div>
             </div>
 
-            <p className="md:col-span-6 text-base md:text-xl leading-snug max-w-xl text-ink/90">
-              {SUB}
-            </p>
-
-            <div className="md:col-span-5 flex flex-wrap gap-3 md:justify-end">
+            <div className="flex flex-wrap gap-3">
               <HeroButton href="#work" label="Portfolio." />
               <HeroButton href="#contact" label="Contact." variant="outline" />
             </div>

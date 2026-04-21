@@ -13,20 +13,33 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      className="relative px-6 md:px-10 py-24 md:py-40 bg-ink text-paper overflow-hidden"
+      // Pin --paper and --ink locally so the section is always dark
+      // regardless of theme — the tunnel + its labels + the contact
+      // grid are designed against a permanent dark background.
+      style={
+        {
+          "--paper": "#f4f1e9",
+          "--ink": "#0a0a0a",
+        } as React.CSSProperties
+      }
+      className="relative px-6 md:px-10 pt-16 md:pt-20 pb-24 md:pb-32 bg-ink text-paper overflow-hidden"
     >
-      <div className="flex items-start justify-between mb-16 md:mb-24">
-        <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60">
-          [ 05 / Contact ]
-        </div>
-        <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 text-right">
-          Let&apos;s make
-          <br />
-          something!
+      <div className="relative">
+        <TunnelBlock />
+
+        {/* Labels overlaid on top of the tunnel block. pointer-events-none so
+            they don't swallow the block's mailto click / cursor tracking. */}
+        <div className="pointer-events-none absolute inset-0 flex items-start justify-between p-5 md:p-7 z-10">
+          <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/70 mix-blend-difference">
+            [ 05 / Contact ]
+          </div>
+          <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/70 text-right mix-blend-difference">
+            Let&apos;s make
+            <br />
+            something!
+          </div>
         </div>
       </div>
-
-      <TunnelBlock />
 
       <a
         href="mailto:hello@tjcreate.co.uk"
@@ -180,6 +193,10 @@ function TunnelBlock() {
   const originX = useTransform(smx, (v) => v * 100);
   const originY = useTransform(smy, (v) => v * 100);
   const perspectiveOrigin = useMotionTemplate`${originX}% ${originY}%`;
+  // Depth fog: radial gradient centred on the vanishing point, fading from
+  // fully transparent near the block edges to solid ink in the middle. Tracks
+  // the cursor via the same spring-smoothed motion values.
+  const fogGradient = useMotionTemplate`radial-gradient(ellipse 60% 60% at ${originX}% ${originY}%, #0a0a0a 0%, rgba(10,10,10,0.85) 18%, rgba(10,10,10,0.35) 45%, rgba(10,10,10,0) 75%)`;
 
   const ready = size.w > 0 && size.h > 0;
 
@@ -190,7 +207,7 @@ function TunnelBlock() {
       data-cursor="view"
       data-cursor-label=" "
       aria-label="Email hello@tjcreate.co.uk"
-      className="relative block overflow-hidden -mx-6 md:-mx-10 h-[60vh] sm:h-[65vh] md:h-[72vh] select-none"
+      className="relative block overflow-hidden aspect-[4/3] md:aspect-[16/10] max-h-[85vh] select-none"
       style={{ backgroundColor: "#0a0a0a" }}
     >
       {ready && (
@@ -206,12 +223,21 @@ function TunnelBlock() {
             className="relative w-full h-full"
             style={{ transformStyle: "preserve-3d" }}
           >
+            {/* depth fog rendered AFTER the walls so it sits on top and fades
+                far-back text into the vanishing point. pointer-events: none so
+                the mailto click still reaches the <a>. */}
             <Wall orientation="floor" width={size.w} height={size.h} />
             <Wall orientation="ceiling" width={size.w} height={size.h} />
             <Wall orientation="left" width={size.w} height={size.h} />
             <Wall orientation="right" width={size.w} height={size.h} />
           </div>
         </motion.div>
+      )}
+      {ready && (
+        <motion.div
+          className="pointer-events-none absolute inset-0"
+          style={{ backgroundImage: fogGradient }}
+        />
       )}
     </a>
   );
@@ -292,18 +318,70 @@ function Wall({
     cssTop = 0;
   }
 
-  // Only the right wall needs a text-flow reversal.
-  const rtl = orientation === "right";
+  // Every wall now has rows that stack along the DEPTH axis (= rings around
+  // the tunnel cross-section). For horizontal walls this is already the case.
+  // For vertical walls we wrap the text layer in an inner container whose
+  // dimensions are swapped and rotate it 90° — so the flex-column layout
+  // places rows along depth instead of along block height.
+  const innerW = isHorizontal ? cssWidth : cssHeight; // block's cross-section
+  const innerH = isHorizontal ? cssHeight : cssWidth; // = depth
+  const innerRotate =
+    orientation === "left" ? 90 : orientation === "right" ? -90 : 0;
 
-  // Font size + row metrics. Rows stack along the element's CSS y-axis; row
-  // contents stream along the element's CSS x-axis.
   const fontSize = Math.max(20, Math.min(width, height) * 0.1);
   const rowGap = fontSize * 1.8;
-  const rowStackLen = cssHeight; // CSS y spans this
-  const rowRunLen = cssWidth; // CSS x spans this
-  const rowCount = Math.max(2, Math.ceil(rowStackLen / rowGap));
-  // Pack enough tokens per row so the wall stays full after perspective.
-  const tokensPerRow = Math.max(4, Math.ceil((rowRunLen * 1.2) / (fontSize * 6)));
+  // Rows always stack along depth (= innerH).
+  const rowCount = Math.max(2, Math.ceil(innerH / rowGap));
+  // Each row runs across the wall's cross-section (= innerW).
+  const tokensPerRow = Math.max(4, Math.ceil((innerW * 1.2) / (fontSize * 6)));
+
+  const innerLayer = (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        padding: `${rowGap * 0.25}px 0`,
+        color: "#F4F1E9",
+        fontFamily: "var(--font-sans), system-ui, sans-serif",
+        fontWeight: 700,
+        fontSize,
+        lineHeight: 1,
+        whiteSpace: "nowrap",
+        letterSpacing: "-0.01em",
+      }}
+    >
+      {Array.from({ length: rowCount }).map((_, i) => (
+        <div key={i} className="flex gap-6 px-4">
+          {Array.from({ length: tokensPerRow }).map((_, j) => (
+            <span key={j} className="shrink-0">
+              CLICK HERE<span style={{ color: "#E6352A" }}>.</span>
+            </span>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+
+  const content = isHorizontal ? (
+    innerLayer
+  ) : (
+    <div
+      style={{
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        width: innerW,
+        height: innerH,
+        transform: `translate(-50%, -50%) rotate(${innerRotate}deg)`,
+        transformOrigin: "center center",
+      }}
+    >
+      {innerLayer}
+    </div>
+  );
 
   return (
     <div
@@ -319,38 +397,7 @@ function Wall({
         overflow: "hidden",
       }}
     >
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          padding: `${rowGap * 0.25}px 0`,
-          color: "#F4F1E9",
-          fontFamily: "var(--font-sans), system-ui, sans-serif",
-          fontWeight: 700,
-          fontSize,
-          lineHeight: 1,
-          whiteSpace: "nowrap",
-          letterSpacing: "-0.01em",
-          direction: rtl ? "rtl" : "ltr",
-          unicodeBidi: rtl ? "bidi-override" : "normal",
-        }}
-        // Keep the orientation attribute only for horizontal walls so we can
-        // stretch rows across the wall width via the token loop (below).
-        data-orient={isHorizontal ? "h" : "v"}
-      >
-        {Array.from({ length: rowCount }).map((_, i) => (
-          <div key={i} className="flex gap-6 px-4">
-            {Array.from({ length: tokensPerRow }).map((_, j) => (
-              <span key={j} className="shrink-0">
-                CLICK HERE<span style={{ color: "#E6352A" }}>.</span>
-              </span>
-            ))}
-          </div>
-        ))}
-      </div>
+      {content}
     </div>
   );
 }

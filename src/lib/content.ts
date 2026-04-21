@@ -218,7 +218,7 @@ export const CLIENTS_WITH_LOGOS = [
   {
     name: "Mahogany",
     logo: "/work/imported/logos/mahogany.svg",
-    url: "https://mahogany.co",
+    url: "https://www.youtube.com/@MahoganySessions",
   },
   {
     name: "Marathon Artists",

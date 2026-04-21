@@ -8,6 +8,7 @@ import RevealObserver from "@/components/RevealObserver";
 import BackToTop from "@/components/BackToTop";
 import Nav from "@/components/Nav";
 import { ThemeProvider, NO_FLASH_SNIPPET } from "@/components/ThemeProvider";
+import { Analytics } from "@vercel/analytics/next";
 
 const display = Instrument_Serif({
   variable: "--font-display",
@@ -157,6 +158,7 @@ export default function RootLayout({
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }}
         />
+        <Analytics />
       </body>
     </html>
   );

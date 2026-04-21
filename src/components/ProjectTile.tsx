@@ -29,6 +29,13 @@ function ProjectTile({
   const mediaRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hovered, setHovered] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [dayNightIsNight, setDayNightIsNight] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);
+  }, []);
 
   // Cursor tilt
   const mx = useMotionValue(0);
@@ -54,8 +61,9 @@ function ProjectTile({
   // `pingPong: true` projects run a manual RAF ping-pong below.
   const fallingKind = project.kind === "falling";
   const pingPong = project.pingPong ?? false;
+  const pingPongEnabled = pingPong && !isTouchDevice;
   useEffect(() => {
-    if (fallingKind || pingPong) return;
+    if (fallingKind || pingPongEnabled) return;
     const v = videoRef.current;
     if (!v) return;
     const io = new IntersectionObserver(
@@ -72,11 +80,11 @@ function ProjectTile({
     );
     io.observe(v);
     return () => io.disconnect();
-  }, [fallingKind, pingPong]);
+  }, [fallingKind, pingPongEnabled]);
 
   // Ping-pong playback — forward, then reverse, forever. No loop-reset jump.
   useEffect(() => {
-    if (!pingPong) return;
+    if (!pingPongEnabled) return;
     const v = videoRef.current;
     if (!v) return;
     let raf = 0;
@@ -104,7 +112,15 @@ function ProjectTile({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [pingPong]);
+  }, [pingPongEnabled]);
+
+  useEffect(() => {
+    if (!isTouchDevice || project.kind !== "day-night") return;
+    const id = window.setInterval(() => {
+      setDayNightIsNight((prev) => !prev);
+    }, 3200);
+    return () => window.clearInterval(id);
+  }, [isTouchDevice, project.kind]);
 
   const onMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     const el = ref.current;
@@ -189,14 +205,16 @@ function ProjectTile({
                   alt={`${project.title} (day)`}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover transition-opacity duration-[700ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-100 group-hover:opacity-0"
+                  className="object-cover transition-opacity duration-[1200ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-100 group-hover:opacity-0"
+                  style={{ opacity: isTouchDevice ? (dayNightIsNight ? 0 : 1) : undefined }}
                 />
                 <Image
                   src={project.imageHover}
                   alt={`${project.title} (night)`}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover transition-opacity duration-[700ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-0 group-hover:opacity-100"
+                  className="object-cover transition-opacity duration-[1200ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-0 group-hover:opacity-100"
+                  style={{ opacity: isTouchDevice ? (dayNightIsNight ? 1 : 0) : undefined }}
                 />
               </>
             )}
@@ -212,7 +230,7 @@ function ProjectTile({
                 // ping-pong tiles need the browser to know duration + a
                 // seekable index, so they stay on "metadata". Regular tiles
                 // defer all fetches until the IntersectionObserver plays them.
-                preload={pingPong ? "metadata" : "none"}
+                preload={pingPongEnabled ? "metadata" : "none"}
                 onEnded={(e) => {
                   // Belt + braces: restart manually if the browser drops the loop.
                   const el = e.currentTarget;
@@ -240,8 +258,8 @@ function ProjectTile({
             <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/80 mb-1">
               {project.category} · {project.client}
             </div>
-            <div className="font-display text-3xl md:text-5xl leading-none tracking-tight">
-              <ScrambleText text={project.title} active={hovered} />
+            <div className="font-display text-3xl md:text-4xl lg:text-5xl leading-none tracking-tight">
+              <ScrambleText text={project.title} active={hovered} lockWidth />
             </div>
           </div>
           <div className="hidden md:flex flex-col items-end gap-1 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/70">

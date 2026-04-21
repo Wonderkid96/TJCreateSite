@@ -20,6 +20,9 @@ const RESUME_DELAY_MS = 1200;
 // Colours pulled from Toby's palette, picked at random on hover so every pass
 // feels fresh and the wordmark doesn't look like it was forced into one brand.
 const HOVER_COLOURS = ["#E6352A", "#C8DB45", "#C4A9D0"] as const;
+// A/B toggle for default logo weight without touching every logo asset.
+// "strong" = crisp ink (recommended), "muted" = softer look.
+const LOGO_TONE: "strong" | "muted" = "strong";
 
 const CONTAINER_H_CLASS = "h-40 md:h-48";
 // Each slot sits at 75% of the container height, uniform width, generous gap
@@ -156,7 +159,9 @@ function LogoSlot({ item, pausedRef }: { item: LogoItem; pausedRef: boolean }) {
     </span>
   );
 
-  const baseClass = `${SLOT_CLASS} opacity-80 hover:opacity-100 transition-opacity duration-500`;
+  const toneClass =
+    LOGO_TONE === "strong" ? "opacity-100" : "opacity-80 hover:opacity-100";
+  const baseClass = `${SLOT_CLASS} ${toneClass} transition-opacity duration-500`;
 
   if (item.url) {
     return (

@@ -24,28 +24,24 @@ export default function Contact() {
       }
       className="relative px-6 md:px-10 pt-16 md:pt-20 pb-24 md:pb-32 bg-ink text-paper overflow-hidden"
     >
-      <div className="relative">
-        <TunnelBlock />
-
-        {/* Labels overlaid on top of the tunnel block. pointer-events-none so
-            they don't swallow the block's mailto click / cursor tracking. */}
-        <div className="pointer-events-none absolute inset-0 flex items-start justify-between p-5 md:p-7 z-10">
-          <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/70 mix-blend-difference">
-            [ 05 / Contact ]
-          </div>
-          <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/70 text-right mix-blend-difference">
-            Let&apos;s make
-            <br />
-            something!
-          </div>
+      <div className="flex items-start justify-between mb-10 md:mb-14">
+        <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60">
+          [ 05 / Contact ]
+        </div>
+        <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 text-right">
+          Let&apos;s make
+          <br />
+          something!
         </div>
       </div>
+
+      <TunnelBlock />
 
       <a
         href="mailto:hello@tjcreate.co.uk"
         data-cursor="view"
         data-cursor-label="EMAIL"
-        className="block group mt-16 md:mt-24"
+        className="block group mt-10 md:mt-14"
       >
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -139,6 +135,87 @@ export default function Contact() {
         </div>
       </div>
 
+      <div className="mt-14 md:mt-16 border-t border-paper/20 pt-10 md:pt-12">
+        <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 mb-5">
+          Legal
+        </div>
+
+        <div className="space-y-3">
+          <details className="group rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 md:px-5 md:py-4">
+            <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/85">
+                Terms &amp; Conditions
+              </span>
+              <span
+                aria-hidden
+                className="text-paper/70 transition-transform duration-300 group-open:rotate-45"
+              >
+                +
+              </span>
+            </summary>
+            <ul className="mt-4 border-t border-paper/15 pt-4 space-y-2.5 text-sm md:text-[15px] leading-relaxed text-paper/80">
+              <li>
+                Project scope, timelines and fees are agreed in writing before work starts.
+              </li>
+              <li>
+                Client-supplied assets (logos, photography, copy, music) must have rights cleared
+                by the client.
+              </li>
+              <li>
+                Unless otherwise agreed in writing, usage rights for final deliverables transfer
+                after full payment.
+              </li>
+              <li>
+                For legal queries or a project-specific agreement, email{" "}
+                <a
+                  href="mailto:hello@tjcreate.co.uk"
+                  className="underline decoration-paper/40 underline-offset-4 hover:text-accent transition-colors"
+                >
+                  hello@tjcreate.co.uk
+                </a>
+                .
+              </li>
+            </ul>
+          </details>
+
+          <details className="group rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 md:px-5 md:py-4">
+            <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/85">
+                Privacy Policy
+              </span>
+              <span
+                aria-hidden
+                className="text-paper/70 transition-transform duration-300 group-open:rotate-45"
+              >
+                +
+              </span>
+            </summary>
+            <ul className="mt-4 border-t border-paper/15 pt-4 space-y-2.5 text-sm md:text-[15px] leading-relaxed text-paper/80">
+              <li>
+                Personal details you share (for example by email) are used only to reply to your
+                enquiry and manage project communication.
+              </li>
+              <li>Information is not sold or shared for third-party marketing.</li>
+              <li>
+                Data is kept only as long as needed for communication, project delivery and basic
+                business records.
+              </li>
+              <li>
+                You can request access, correction or deletion of your personal information by
+                emailing{" "}
+                <a
+                  href="mailto:hello@tjcreate.co.uk"
+                  className="underline decoration-paper/40 underline-offset-4 hover:text-accent transition-colors"
+                >
+                  hello@tjcreate.co.uk
+                </a>
+                .
+              </li>
+            </ul>
+          </details>
+        </div>
+      </div>
+
       <div className="mt-24 flex items-end justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50">
         <div>© Toby Johnson, 2026</div>
         <div>Made in Lincoln</div>
@@ -196,7 +273,7 @@ function TunnelBlock() {
   // Depth fog: radial gradient centred on the vanishing point, fading from
   // fully transparent near the block edges to solid ink in the middle. Tracks
   // the cursor via the same spring-smoothed motion values.
-  const fogGradient = useMotionTemplate`radial-gradient(ellipse 60% 60% at ${originX}% ${originY}%, #0a0a0a 0%, rgba(10,10,10,0.85) 18%, rgba(10,10,10,0.35) 45%, rgba(10,10,10,0) 75%)`;
+  const fogGradient = useMotionTemplate`radial-gradient(ellipse 60% 60% at ${originX}% ${originY}%, rgba(10,10,10,0.78) 0%, rgba(10,10,10,0.58) 22%, rgba(10,10,10,0.24) 56%, rgba(10,10,10,0.06) 100%)`;
 
   const ready = size.w > 0 && size.h > 0;
 
@@ -207,7 +284,7 @@ function TunnelBlock() {
       data-cursor="view"
       data-cursor-label=" "
       aria-label="Email hello@tjcreate.co.uk"
-      className="relative block overflow-hidden aspect-[4/3] md:aspect-[16/10] max-h-[85vh] select-none"
+      className="relative block w-full mx-auto overflow-hidden h-[48vh] sm:h-[52vh] md:h-[58vh] lg:h-[62vh] min-h-[300px] max-h-[78vh] select-none"
       style={{ backgroundColor: "#0a0a0a" }}
     >
       {ready && (
@@ -230,16 +307,43 @@ function TunnelBlock() {
             <Wall orientation="ceiling" width={size.w} height={size.h} />
             <Wall orientation="left" width={size.w} height={size.h} />
             <Wall orientation="right" width={size.w} height={size.h} />
+            <motion.div
+              className="pointer-events-none absolute inset-0"
+              style={{ backgroundImage: fogGradient }}
+            />
+            <TunnelCenterText width={size.w} height={size.h} />
           </div>
         </motion.div>
       )}
-      {ready && (
-        <motion.div
-          className="pointer-events-none absolute inset-0"
-          style={{ backgroundImage: fogGradient }}
-        />
-      )}
     </a>
+  );
+}
+
+function TunnelCenterText({ width, height }: { width: number; height: number }) {
+  const minDim = Math.min(width, height);
+  const fontSize = Math.max(66, Math.min(190, minDim * 0.34));
+  return (
+    <div
+      className="pointer-events-none absolute"
+      style={{
+        left: "50%",
+        top: "50%",
+        transform: `translate(-50%, -50%) translateZ(-${Math.round(TUNNEL_DEPTH * 0.7)}px)`,
+      }}
+      aria-hidden
+    >
+      <div
+        className="font-display leading-[0.9] tracking-tight text-paper whitespace-nowrap"
+        style={{
+          fontSize,
+          textShadow:
+            "0 2px 0 rgba(10,10,10,0.2), 0 10px 26px rgba(10,10,10,0.18)",
+        }}
+      >
+        Click <span className="italic">here</span>
+        <span className="text-accent">.</span>
+      </div>
+    </div>
   );
 }
 
@@ -256,16 +360,9 @@ function Wall({
   width: number;
   height: number;
 }) {
-  const isHorizontal = orientation === "floor" || orientation === "ceiling";
   const depth = TUNNEL_DEPTH;
+  const isHorizontal = orientation === "floor" || orientation === "ceiling";
 
-  // Each wall is a flat rectangle positioned so one of its edges is coincident
-  // with a block boundary, then rotated 90° around that edge so the opposite
-  // edge swings into -Z. Crucially, we pick positions + rotation directions
-  // such that the element's NATURAL front face (normal +Z before rotation)
-  // ends up facing INTO the tunnel (toward the viewer inside), so no
-  // back-face mirror correction is needed — except the right wall, where
-  // reading order ends up reversed (fixed below with direction: rtl).
   let rotation: string;
   let origin: string;
   let cssWidth: number;
@@ -274,10 +371,6 @@ function Wall({
   let cssTop: number;
 
   if (orientation === "floor") {
-    // Element sits stacked UP from block's bottom edge (top: height-depth).
-    // rotate around bottom edge (co-planar with block's bottom) by +90° X,
-    // swinging the top edge into -Z. Normal becomes -Y (faces the viewer
-    // looking down into the tunnel).
     rotation = "rotateX(90deg)";
     origin = "bottom center";
     cssWidth = width;
@@ -285,9 +378,6 @@ function Wall({
     cssLeft = 0;
     cssTop = height - depth;
   } else if (orientation === "ceiling") {
-    // Element hangs DOWN from block's top edge. Rotate around top edge by
-    // -90° X, swinging the bottom edge into -Z. Normal becomes +Y (down in
-    // CSS) → faces the viewer who sits below the ceiling.
     rotation = "rotateX(-90deg)";
     origin = "top center";
     cssWidth = width;
@@ -295,9 +385,6 @@ function Wall({
     cssLeft = 0;
     cssTop = 0;
   } else if (orientation === "left") {
-    // Element extends RIGHT from block's left edge. Rotate around left edge
-    // by +90° Y, swinging the right edge into -Z. Normal becomes +X — faces
-    // the viewer who is to the right of this wall.
     rotation = "rotateY(90deg)";
     origin = "top left";
     cssWidth = depth;
@@ -305,11 +392,6 @@ function Wall({
     cssLeft = 0;
     cssTop = 0;
   } else {
-    // Right wall: element extends LEFT from block's right edge. Rotate around
-    // right edge by -90° Y, swinging the left edge into -Z. Normal becomes -X
-    // — faces the viewer who is to the left of this wall. BUT reading order
-    // ends up far-to-near, so we apply direction: rtl on the text layer to
-    // reverse character flow without mirroring letter shapes.
     rotation = "rotateY(-90deg)";
     origin = "top right";
     cssWidth = depth;
@@ -318,70 +400,15 @@ function Wall({
     cssTop = 0;
   }
 
-  // Every wall now has rows that stack along the DEPTH axis (= rings around
-  // the tunnel cross-section). For horizontal walls this is already the case.
-  // For vertical walls we wrap the text layer in an inner container whose
-  // dimensions are swapped and rotate it 90° — so the flex-column layout
-  // places rows along depth instead of along block height.
-  const innerW = isHorizontal ? cssWidth : cssHeight; // block's cross-section
-  const innerH = isHorizontal ? cssHeight : cssWidth; // = depth
+  const innerW = isHorizontal ? cssWidth : cssHeight;
+  const innerH = isHorizontal ? cssHeight : cssWidth;
   const innerRotate =
     orientation === "left" ? 90 : orientation === "right" ? -90 : 0;
 
   const fontSize = Math.max(20, Math.min(width, height) * 0.1);
   const rowGap = fontSize * 1.8;
-  // Rows always stack along depth (= innerH).
-  const rowCount = Math.max(2, Math.ceil(innerH / rowGap));
-  // Each row runs across the wall's cross-section (= innerW).
+  const rowCount = Math.max(2, Math.ceil(depth / rowGap));
   const tokensPerRow = Math.max(4, Math.ceil((innerW * 1.2) / (fontSize * 6)));
-
-  const innerLayer = (
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        padding: `${rowGap * 0.25}px 0`,
-        color: "#F4F1E9",
-        fontFamily: "var(--font-sans), system-ui, sans-serif",
-        fontWeight: 700,
-        fontSize,
-        lineHeight: 1,
-        whiteSpace: "nowrap",
-        letterSpacing: "-0.01em",
-      }}
-    >
-      {Array.from({ length: rowCount }).map((_, i) => (
-        <div key={i} className="flex gap-6 px-4">
-          {Array.from({ length: tokensPerRow }).map((_, j) => (
-            <span key={j} className="shrink-0">
-              CLICK HERE<span style={{ color: "#E6352A" }}>.</span>
-            </span>
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-
-  const content = isHorizontal ? (
-    innerLayer
-  ) : (
-    <div
-      style={{
-        position: "absolute",
-        left: "50%",
-        top: "50%",
-        width: innerW,
-        height: innerH,
-        transform: `translate(-50%, -50%) rotate(${innerRotate}deg)`,
-        transformOrigin: "center center",
-      }}
-    >
-      {innerLayer}
-    </div>
-  );
 
   return (
     <div
@@ -397,7 +424,47 @@ function Wall({
         overflow: "hidden",
       }}
     >
-      {content}
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          width: innerW,
+          height: innerH,
+          transform: isHorizontal
+            ? "translate(-50%, -50%)"
+            : `translate(-50%, -50%) rotate(${innerRotate}deg)`,
+          transformOrigin: "center center",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            padding: `${rowGap * 0.25}px 0`,
+            color: "#F4F1E9",
+            fontFamily: "var(--font-sans), system-ui, sans-serif",
+            fontWeight: 700,
+            fontSize,
+            lineHeight: 1,
+            whiteSpace: "nowrap",
+            letterSpacing: "-0.01em",
+          }}
+        >
+          {Array.from({ length: rowCount }).map((_, i) => (
+            <div key={i} className="flex gap-6 px-4">
+              {Array.from({ length: tokensPerRow }).map((_, j) => (
+                <span key={j} className="shrink-0">
+                  LET&apos;S TALK<span style={{ color: "#E6352A" }}>.</span>
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

@@ -4,6 +4,8 @@ import Script from "next/script";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
+import RevealObserver from "@/components/RevealObserver";
+import BackToTop from "@/components/BackToTop";
 import Nav from "@/components/Nav";
 import { ThemeProvider, NO_FLASH_SNIPPET } from "@/components/ThemeProvider";
 
@@ -142,10 +144,12 @@ export default function RootLayout({
       <body className="bg-paper text-ink">
         <ThemeProvider>
           <SmoothScroll />
+          <RevealObserver />
           <Cursor />
           <div className="grain" aria-hidden />
           <Nav />
           {children}
+          <BackToTop />
         </ThemeProvider>
         <Script
           id="ld-person"

@@ -10,6 +10,8 @@ type Props = {
   /** Total effect duration (ms). Each letter resolves within this window. */
   duration?: number;
   className?: string;
+  /** Reserve width so scrambling never reflows surrounding layout. */
+  lockWidth?: boolean;
 };
 
 const CHAR_POOL =
@@ -23,7 +25,31 @@ export default function ScrambleText({
   colors = ["#E6352A", "#C8DB45", "#C4A9D0"],
   duration = 650,
   className = "",
+  lockWidth = false,
 }: Props) {
+  if (lockWidth) {
+    return (
+      <span className="relative inline-grid align-baseline" aria-label={text}>
+        <span aria-hidden className={`${className} invisible`}>
+          {text}
+        </span>
+        <span aria-hidden className="absolute inset-0">
+          {active ? (
+            <Scrambler
+              key={text}
+              text={text}
+              colors={colors}
+              duration={duration}
+              className={className}
+            />
+          ) : (
+            <span className={className}>{text}</span>
+          )}
+        </span>
+      </span>
+    );
+  }
+
   // When inactive, render the clean text as a plain span. When active,
   // mount the animated variant — re-mounting resets state cleanly and
   // avoids setState-in-effect churn.

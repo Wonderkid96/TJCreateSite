@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { Project } from "@/lib/content";
 
 type Props = {
@@ -128,6 +128,21 @@ function Meta({ k, v }: { k: string; v: string }) {
 
 function ModalMedia({ project }: { project: Project }) {
   const kind = project.kind ?? "image";
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [dayNightIsNight, setDayNightIsNight] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);
+  }, []);
+
+  useEffect(() => {
+    if (!isTouchDevice || kind !== "day-night") return;
+    const id = window.setInterval(() => {
+      setDayNightIsNight((prev) => !prev);
+    }, 3200);
+    return () => window.clearInterval(id);
+  }, [isTouchDevice, kind]);
 
   if (kind === "image" && project.image) {
     return (
@@ -149,17 +164,19 @@ function ModalMedia({ project }: { project: Project }) {
           alt={`${project.title} (day)`}
           fill
           sizes="66vw"
-          className="object-contain p-2 md:p-4 transition-opacity duration-[700ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-100 group-hover:opacity-0"
+          className="object-contain p-2 md:p-4 transition-opacity duration-[1200ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-100 group-hover:opacity-0"
+          style={{ opacity: isTouchDevice ? (dayNightIsNight ? 0 : 1) : undefined }}
         />
         <Image
           src={project.imageHover}
           alt={`${project.title} (night)`}
           fill
           sizes="66vw"
-          className="object-contain p-2 md:p-4 transition-opacity duration-[700ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-0 group-hover:opacity-100"
+          className="object-contain p-2 md:p-4 transition-opacity duration-[1200ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-0 group-hover:opacity-100"
+          style={{ opacity: isTouchDevice ? (dayNightIsNight ? 1 : 0) : undefined }}
         />
         <div className="absolute bottom-3 right-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90 bg-ink/70 px-2 py-1 rounded-sm pointer-events-none">
-          Hover → flip
+          {isTouchDevice ? "Day ↔ Night" : "Hover → flip"}
         </div>
       </div>
     );

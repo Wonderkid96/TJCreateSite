@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
 import { useRef } from "react";
 
@@ -7,66 +8,110 @@ const PARAGRAPH =
   "I'm Toby Johnson, a creative partner for ambitious brands, agencies and creators. With nearly 10 years in graphic and motion design, I integrate quickly into teams and deliver work that's clear and effective.";
 
 export default function About() {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLElement>(null);
+  const ruleRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "center center"],
   });
+  const { scrollYProgress: ruleProgress } = useScroll({
+    target: ruleRef,
+    offset: ["start 92%", "start 52%"],
+  });
+  const ruleScaleX = useTransform(ruleProgress, [0, 1], [0, 1]);
 
   const words = PARAGRAPH.split(" ");
 
   return (
     <section id="about" ref={ref} className="relative px-6 md:px-10 py-24 md:py-40">
-      <div className="flex items-start justify-between mb-16 md:mb-24">
-        <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
-          [ 04 / About ]
+      <div className="flex items-end justify-between mb-16 md:mb-24">
+        <div>
+          <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted mb-4">
+            [ 04 / About ]
+          </div>
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
+            className="font-display text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
+          >
+            About <span className="italic">Me</span>
+          </motion.h2>
         </div>
-        <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted text-right">
+
+        <div className="hidden md:block font-mono text-[11px] uppercase tracking-[0.2em] text-muted text-right">
           Lincoln, UK
           <br />
           Est. 2022
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
-        <div className="md:col-span-2 md:sticky md:top-32 self-start">
-          <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
-            Bio
-          </div>
-          <div className="mt-3 text-sm text-muted leading-relaxed">
-            University of Bristol. Solo artist + designer.
-            <br />
-            Now based in Lincoln.
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 md:items-stretch">
+        <div className="md:col-span-6">
+          <div
+            className="relative w-full md:max-w-none aspect-[4/5] md:aspect-auto md:h-full md:min-h-[460px] overflow-hidden rounded-[2px] border border-line/60 bg-ink/5"
+          >
+            <Image
+              src="/work/imported/portraits/toby-about.jpg"
+              alt="Portrait of Toby Johnson"
+              fill
+              className="object-cover object-[50%_28%] scale-[1.08]"
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 34vw, 420px"
+            />
           </div>
         </div>
 
-        <p className="md:col-span-10 font-display text-[clamp(1.8rem,4.2vw,3.8rem)] leading-[1.15] tracking-tight">
-          {words.map((w, i) => {
-            const start = i / words.length;
-            const end = start + 1 / words.length;
-            return <Word key={i} progress={scrollYProgress} range={[start, end]}>{w}</Word>;
-          })}
-        </p>
+        <div className="md:col-span-6">
+          <div
+            className="h-full border border-line/60 bg-paper/40 rounded-[2px] p-6 md:p-10 flex flex-col justify-between"
+          >
+            <p className="max-w-[24ch] font-display text-[clamp(1.45rem,3vw,2.8rem)] lg:text-[clamp(1.8rem,4.2vw,3.8rem)] leading-[1.15] tracking-tight">
+              {words.map((w, i) => {
+                const start = i / words.length;
+                const end = start + 1 / words.length;
+                return (
+                  <Word key={i} progress={scrollYProgress} range={[start, end]}>
+                    {w}
+                  </Word>
+                );
+              })}
+            </p>
+
+            <div className="mt-8">
+              <motion.div
+                ref={ruleRef}
+                className="h-[2px] w-full rounded-full origin-left"
+                style={{
+                  scaleX: ruleScaleX,
+                  background:
+                    "linear-gradient(90deg, #E6352A 0%, #F4F1E9 38%, #C8DB45 68%, #C4A9D0 100%)",
+                }}
+              />
+              <p className="mt-5 text-sm md:text-base text-muted max-w-[58ch] leading-relaxed">
+                Lincoln, UK
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-6 border-t border-line pt-10">
+      <div className="mt-16 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-line pt-8">
         {[
-          { k: "Discipline", v: "Graphic · Motion · 3D", dot: false, splitCommas: false },
-          {
-            k: "Clients",
-            v: "Agencies, Labels, Artists, Brands",
-            dot: false,
-            splitCommas: true,
-          },
-          { k: "Based in", v: "Lincoln, UK", dot: false, splitCommas: false },
-          { k: "Currently", v: "Accepting projects", dot: true, splitCommas: false },
-        ].map((item) => (
-          <div key={item.k}>
+          { k: "Discipline", v: "Graphic · Motion · 3D", dot: false },
+          { k: "Based in", v: "Lincoln, UK", dot: false },
+          { k: "Currently", v: "Accepting projects", dot: true },
+        ].map((item, index) => (
+          <div
+            key={item.k}
+            data-reveal="item"
+            style={{ "--reveal-delay": `${90 + index * 80}ms` } as React.CSSProperties}
+          >
             <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted mb-2">
               {item.k}
             </div>
             <div className="font-display text-2xl md:text-3xl leading-tight inline-flex items-center gap-3 flex-wrap">
-              {item.splitCommas ? <CommaSplit text={item.v} /> : item.v}
+              {item.v}
               {item.dot && (
                 <span
                   aria-hidden
@@ -87,25 +132,6 @@ export default function About() {
         ))}
       </div>
     </section>
-  );
-}
-
-function CommaSplit({ text }: { text: string }) {
-  // Replace each comma with a red full stop in the brand accent. The trailing
-  // space after the comma is preserved as natural word spacing.
-  const parts = text.split(",").map((p) => p.trim());
-  return (
-    <>
-      {parts.map((p, i) => (
-        <span key={i}>
-          {p}
-          {i < parts.length - 1 && (
-            <span className="text-accent">.</span>
-          )}
-          {i < parts.length - 1 && " "}
-        </span>
-      ))}
-    </>
   );
 }
 

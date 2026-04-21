@@ -24,7 +24,7 @@ export default function WorkGrid() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
-            className="font-display text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
+            className="font-display text-[clamp(2.2rem,6.5vw,4.6rem)] lg:text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
           >
             My <span className="italic">work</span>
           </motion.h2>

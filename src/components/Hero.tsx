@@ -6,8 +6,7 @@ import {
   useMotionValueEvent,
   useTransform,
 } from "motion/react";
-import { useEffect, useId, useRef, useState } from "react";
-import ScrambleText from "./ScrambleText";
+import { useEffect, useRef, useState } from "react";
 
 const WORDS = ["Toby", "Johnson"];
 const SUB =
@@ -19,6 +18,7 @@ const CLOUD_ASPECT = 3269 / 8125;
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Scroll progress (0 → 1 across the hero's sticky scroll range).
   const progress = useMotionValue(0);
@@ -89,6 +89,15 @@ export default function Hero() {
     };
   }, [progress]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 767px)");
+    const sync = () => setIsMobile(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
   // Scroll-scrub the falling-man video.
   useMotionValueEvent(progress, "change", (p) => {
     const v = videoRef.current;
@@ -98,14 +107,21 @@ export default function Hero() {
 
   // Responsive parallax — translate each layer by (layerH - viewportH) at max
   // scroll so the image always fully covers the viewport.
-  const safeTranslate = (aspect: number, p: number) => {
+  const skyWidthVw = isMobile ? 132 : 100;
+  const cloudWidthVw = isMobile ? 144 : 100;
+  const safeTranslate = (aspect: number, p: number, widthVw = 100) => {
     if (typeof window === "undefined") return 0;
-    const layerH = window.innerWidth / aspect;
+    const layerW = window.innerWidth * (widthVw / 100);
+    const layerH = layerW / aspect;
     const max = Math.max(0, layerH - window.innerHeight);
     return -p * max;
   };
-  const skyY = useTransform(progress, (p) => safeTranslate(SKY_ASPECT, p));
-  const cloudY = useTransform(progress, (p) => safeTranslate(CLOUD_ASPECT, p));
+  const skyY = useTransform(progress, (p) =>
+    safeTranslate(SKY_ASPECT, p, skyWidthVw)
+  );
+  const cloudY = useTransform(progress, (p) =>
+    safeTranslate(CLOUD_ASPECT, p, cloudWidthVw)
+  );
 
   const fallingScale = useTransform(progress, [0, 0.5, 1], [0.98, 1, 1.04]);
 
@@ -133,35 +149,57 @@ export default function Hero() {
     <section
       id="top"
       ref={ref}
+      // Keep hero typography/controls in a fixed ink-on-paper palette in both
+      // light and dark modes; clouds stay bright so dark text reads best.
+      style={
+        {
+          "--ink": "#0a0a0a",
+          "--paper": "#f4f1e9",
+        } as React.CSSProperties
+      }
       className="relative w-full h-[260vh] sm:h-[280vh] md:h-[300vh] lg:h-[320vh]"
     >
       <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-[#c9d8e2]">
         {/* Sky */}
         <motion.div
-          style={{ y: skyY, height: `calc(100vw / ${SKY_ASPECT})` }}
-          className="absolute inset-x-0 top-0 w-full will-change-transform"
+          style={{
+            y: skyY,
+            x: "-50%",
+            left: "50%",
+            width: `${skyWidthVw}vw`,
+            height: `calc(${skyWidthVw}vw / ${SKY_ASPECT})`,
+          }}
+          className="absolute top-0 will-change-transform"
         >
           <div
             className="h-full w-full"
             style={{
               backgroundImage: "url(/work/imported/bg/sky-long.avif)",
-              backgroundSize: "100% 100%",
+              backgroundSize: "cover",
               backgroundRepeat: "no-repeat",
+              backgroundPosition: "center top",
             }}
           />
         </motion.div>
 
         {/* Clouds */}
         <motion.div
-          style={{ y: cloudY, height: `calc(100vw / ${CLOUD_ASPECT})` }}
-          className="absolute inset-x-0 top-0 w-full will-change-transform mix-blend-screen opacity-95"
+          style={{
+            y: cloudY,
+            x: "-50%",
+            left: "50%",
+            width: `${cloudWidthVw}vw`,
+            height: `calc(${cloudWidthVw}vw / ${CLOUD_ASPECT})`,
+          }}
+          className="absolute top-0 will-change-transform mix-blend-screen opacity-95"
         >
           <div
             className="h-full w-full"
             style={{
               backgroundImage: "url(/work/imported/bg/cloud-long.avif)",
-              backgroundSize: "100% 100%",
+              backgroundSize: "cover",
               backgroundRepeat: "no-repeat",
+              backgroundPosition: "center top",
             }}
           />
         </motion.div>
@@ -177,7 +215,7 @@ export default function Hero() {
             muted
             playsInline
             preload="auto"
-            className="h-[36%] sm:h-[42%] md:h-[50%] lg:h-[56%] w-auto object-contain"
+            className="h-[42%] sm:h-[46%] md:h-[50%] lg:h-[56%] w-auto object-contain"
             style={{
               WebkitMaskImage:
                 "radial-gradient(ellipse 55% 70% at 50% 48%, black 58%, transparent 92%)",
@@ -256,106 +294,17 @@ function HeroButton({
   label: string;
   variant?: "solid" | "outline";
 }) {
-  const [hovered, setHovered] = useState(false);
-  const [dims, setDims] = useState({ w: 0, h: 0 });
-  const anchorRef = useRef<HTMLAnchorElement>(null);
-  // Stable, guaranteed-unique gradient id per button instance.
-  const gradId = useId();
-
-  // Measure the button's actual rendered size so the SVG can trace exactly
-  // its pill perimeter — no offset, no letterboxed overlay.
-  useEffect(() => {
-    const el = anchorRef.current;
-    if (!el) return;
-    const update = () => {
-      setDims({ w: el.offsetWidth, h: el.offsetHeight });
-    };
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
   const base =
-    "relative inline-flex items-center gap-2 px-5 md:px-6 py-3 rounded-full font-sans font-semibold tracking-tight text-base md:text-lg group transition-colors duration-300";
+    "hero-btn-lift relative inline-flex items-center gap-2 px-5 md:px-6 py-3 rounded-full font-sans font-semibold tracking-tight text-base md:text-lg transition-colors transition-transform duration-300";
   const skin =
     variant === "solid"
-      ? "bg-ink text-paper hover:bg-ink/95"
-      : "border border-ink text-ink hover:bg-ink hover:text-paper";
-
-  const { w, h } = dims;
-  const strokeW = 2;
-  // Pill radius = half the shorter side. Because h < w for pill buttons, h/2.
-  const r = h > 0 ? h / 2 - strokeW / 2 : 0;
+      ? "border border-ink bg-ink text-paper hover:border-accent hover:bg-accent"
+      : "border border-ink text-ink hover:border-accent hover:text-accent";
 
   return (
-    <a
-      ref={anchorRef}
-      href={href}
-      data-cursor="hover"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className={`${base} ${skin}`}
-    >
-      {/* Trim-path stroke — SVG sized to exact button dimensions so the rect
-          traces the actual pill perimeter, not an offset shape. */}
-      {w > 0 && (
-        <svg
-          aria-hidden
-          className="absolute inset-0 pointer-events-none"
-          width={w}
-          height={h}
-          viewBox={`0 0 ${w} ${h}`}
-        >
-          <defs>
-            <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#E6352A" />
-              <stop offset="33%" stopColor="#C8DB45" />
-              <stop offset="66%" stopColor="#C4A9D0" />
-              <stop offset="100%" stopColor="#E6352A" />
-              <animateTransform
-                attributeName="gradientTransform"
-                type="rotate"
-                from="0 0.5 0.5"
-                to="360 0.5 0.5"
-                dur="4s"
-                repeatCount="indefinite"
-              />
-            </linearGradient>
-          </defs>
-          <rect
-            x={strokeW / 2}
-            y={strokeW / 2}
-            width={w - strokeW}
-            height={h - strokeW}
-            rx={r}
-            ry={r}
-            fill="none"
-            stroke={`url(#${gradId})`}
-            strokeWidth={strokeW}
-            pathLength={100}
-            strokeDasharray={100}
-            strokeDashoffset={hovered ? 0 : 100}
-            strokeLinecap="round"
-            style={{
-              transition:
-                "stroke-dashoffset 0.9s cubic-bezier(0.2, 0.8, 0.2, 1)",
-            }}
-          />
-        </svg>
-      )}
-
-      <span className="relative z-10 tabular-nums">
-        <ScrambleText
-          text={label}
-          active={hovered}
-          colors={["#E6352A", "#C8DB45", "#C4A9D0", "#F4F1E9"]}
-          duration={500}
-        />
-      </span>
-      <span className="relative z-10 transition-transform duration-300 group-hover:translate-x-1">
-        →
-      </span>
+    <a href={href} data-cursor="hover" className={`${base} ${skin}`}>
+      <span className="relative z-10 tabular-nums">{label}</span>
+      <span className="relative z-10">→</span>
     </a>
   );
 }

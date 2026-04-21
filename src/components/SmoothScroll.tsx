@@ -5,6 +5,14 @@ import Lenis from "lenis";
 
 export default function SmoothScroll() {
   useEffect(() => {
+    // Mobile/tablet: keep native scroll physics. Lenis + syncTouch can feel
+    // over-processed on touch and can destabilize sticky sections.
+    const useNativeScroll = window.matchMedia("(pointer: coarse), (max-width: 1024px)").matches;
+    if (useNativeScroll) {
+      (window as unknown as { __lenis?: Lenis }).__lenis = undefined;
+      return;
+    }
+
     // Unified smooth scroll across every breakpoint + input type.
     // `syncTouch` makes touch gestures feel continuous with the scroll,
     // avoiding the jolt between native momentum and scroll-driven animations.

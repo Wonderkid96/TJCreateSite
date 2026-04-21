@@ -169,3 +169,58 @@ a {
     cursor: none;
   }
 }
+
+/* Desktop/fine-pointer only: subtle button lift on hover. */
+@media (hover: hover) and (pointer: fine) {
+  .hero-btn-lift:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Global reveal system: apply data-reveal + optional delay via
+   style={{ "--reveal-delay": "120ms" }} to slide elements in from left. */
+[data-reveal] {
+  --reveal-x: -24px;
+  --reveal-dur: 860ms;
+  --reveal-delay: 0ms;
+  opacity: 0;
+  transform: translate3d(var(--reveal-x), 0, 0);
+  transition-property: opacity, transform;
+  transition-duration: var(--reveal-dur);
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: var(--reveal-delay);
+  will-change: opacity, transform;
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+[data-reveal="heading"] {
+  --reveal-x: -34px;
+  --reveal-dur: 980ms;
+}
+
+[data-reveal="body"] {
+  --reveal-x: -24px;
+  --reveal-dur: 860ms;
+}
+
+[data-reveal="media"] {
+  --reveal-x: -20px;
+  --reveal-dur: 900ms;
+}
+
+[data-reveal="item"] {
+  --reveal-x: -16px;
+  --reveal-dur: 760ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

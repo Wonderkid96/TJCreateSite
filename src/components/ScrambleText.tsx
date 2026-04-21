@@ -72,7 +72,7 @@ function Scrambler({
   colors,
   duration,
   className,
-}: Required<Omit<Props, "active">>) {
+}: Required<Omit<Props, "active" | "lockWidth">>) {
   const [display, setDisplay] = useState<string[]>(() => text.split(""));
   const [tints, setTints] = useState<(string | null)[]>(() =>
     text.split("").map(() => null),

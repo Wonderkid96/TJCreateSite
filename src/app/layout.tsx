@@ -137,6 +137,7 @@ export default function RootLayout({
     <html
       lang="en-GB"
       className={`${display.variable} ${sans.variable} ${mono.variable}`}
+      suppressHydrationWarning
     >
       <head>
         {/* Apply saved theme before paint to avoid a flash of the wrong colours. */}

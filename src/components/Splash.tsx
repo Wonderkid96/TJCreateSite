@@ -12,6 +12,11 @@ const SESSION_KEY = "tjcreate.splashSeen";
 // Minimum time the splash stays visible even if everything's already cached
 // — a cold flash would feel janky. Also gives fonts a beat to settle.
 const MIN_SHOW_MS = 650;
+// Hard ceiling: if frames never finish preloading (network blip, R2 outage,
+// whatever), dismiss the splash anyway so the site stays usable. The falling
+// animation will catch up as frames arrive — it already draws whatever's
+// been decoded so far and skips frames that haven't.
+const MAX_SHOW_MS = 3500;
 
 /**
  * First-visit loading gate. Shows a gradient progress bar tied to the
@@ -50,25 +55,36 @@ export default function Splash() {
 
     const mountedAt = performance.now();
     const minEndsAt = mountedAt + MIN_SHOW_MS;
+    const hardDeadline = mountedAt + MAX_SHOW_MS;
     let raf = 0;
     let finished = false;
+
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      cancelAnimationFrame(raf);
+      setProgress(1);
+      window.setTimeout(() => {
+        setVisible(false);
+        try {
+          sessionStorage.setItem(SESSION_KEY, "1");
+        } catch {}
+      }, 280);
+    };
 
     const tick = () => {
       raf = requestAnimationFrame(tick);
       setProgress(fallingFramesProgress());
       const now = performance.now();
-      if (fallingFramesReady() && now >= minEndsAt && !finished) {
-        finished = true;
-        cancelAnimationFrame(raf);
-        setProgress(1);
-        // Brief delay for the bar to visibly complete, then hide.
-        window.setTimeout(() => {
-          setVisible(false);
-          try {
-            sessionStorage.setItem(SESSION_KEY, "1");
-          } catch {}
-        }, 280);
+      // Normal path: frames ready + min display time satisfied.
+      if (fallingFramesReady() && now >= minEndsAt) {
+        finish();
+        return;
       }
+      // Failsafe: if we've been sitting here too long, dismiss anyway.
+      // Blocking the whole page indefinitely on a network hiccup would
+      // be worse than letting the animation catch up silently later.
+      if (now >= hardDeadline) finish();
     };
 
     // Start preload + progress tracking.
@@ -90,12 +106,20 @@ export default function Splash() {
     }
   }, [visible]);
 
+  // Manual skip — stops the rAF loop, restores scroll immediately, and
+  // sets the sessionStorage flag so it won't show again this session.
+  const dismiss = () => {
+    setVisible(false);
+    try {
+      sessionStorage.setItem(SESSION_KEY, "1");
+    } catch {}
+  };
+
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
           key="splash"
-          aria-hidden
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
@@ -103,6 +127,23 @@ export default function Splash() {
           // (z-85), but below the theme's no-flash script.
           className="fixed inset-0 z-[120] flex items-center justify-center bg-paper"
         >
+          {/* Skip / close button — belt-and-braces escape hatch so the
+              splash can never trap the user even if the preload hangs. */}
+          <button
+            type="button"
+            onClick={dismiss}
+            aria-label="Skip intro"
+            className="group absolute top-5 right-5 md:top-7 md:right-7 inline-flex items-center gap-2 px-3 py-2 rounded-full border border-ink/15 bg-paper hover:border-ink/40 transition-colors"
+          >
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted group-hover:text-ink transition-colors">
+              Skip
+            </span>
+            <span aria-hidden className="relative w-3.5 h-3.5">
+              <span className="absolute inset-0 m-auto w-full h-px bg-current rotate-45" />
+              <span className="absolute inset-0 m-auto w-full h-px bg-current -rotate-45" />
+            </span>
+          </button>
+
           <div className="flex flex-col items-center gap-6 px-6 w-full max-w-[320px]">
             <div className="font-sans font-bold text-ink text-2xl leading-none tracking-[-0.01em] inline-flex items-baseline">
               TJCREATE<span className="text-accent ml-[0.05em]">.</span>

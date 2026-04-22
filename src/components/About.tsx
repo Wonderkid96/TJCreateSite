@@ -46,18 +46,46 @@ export default function About() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 md:items-stretch">
-        {/* Portrait: ~35% on desktop so it doesn't dominate the text. */}
+        {/* Portrait grid: 2×2 of alternating photos so the area doesn't
+            feel lonely. Stays at ~35% of the row on desktop so the text
+            side gets most of the attention. */}
         <div className="md:col-span-4">
-          <div
-            className="relative w-full md:max-w-none aspect-[4/5] md:aspect-auto md:h-full md:min-h-[460px] overflow-hidden rounded-[2px] border border-line/60 bg-ink/5"
-          >
-            <Image
-              src="/work/imported/portraits/toby-about.jpg"
-              alt="Portrait of Toby Johnson"
-              fill
-              className="object-cover object-[52%_84%] scale-[1.02]"
-              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 24vw, 300px"
-            />
+          <div className="grid grid-cols-2 gap-2 md:gap-3 md:h-full md:min-h-[460px]">
+            {[
+              {
+                src: "/work/imported/portraits/toby-about.jpg",
+                alt: "Portrait of Toby Johnson",
+                position: "object-[52%_84%]",
+              },
+              {
+                src: "/work/imported/portraits/toby-about-02.avif",
+                alt: "Toby Johnson — candid",
+                position: "object-center",
+              },
+              {
+                src: "/work/imported/portraits/toby-about-03.avif",
+                alt: "Toby Johnson — off-duty",
+                position: "object-center",
+              },
+              {
+                src: "/work/imported/portraits/toby-about-04.avif",
+                alt: "Toby Johnson — on stage",
+                position: "object-center",
+              },
+            ].map((photo) => (
+              <div
+                key={photo.src}
+                className="relative w-full aspect-square overflow-hidden rounded-[2px] border border-line/60 bg-ink/5"
+              >
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  fill
+                  className={`object-cover ${photo.position}`}
+                  sizes="(max-width: 768px) 50vw, (max-width: 1280px) 18vw, 220px"
+                />
+              </div>
+            ))}
           </div>
         </div>
 
@@ -97,20 +125,41 @@ export default function About() {
 
       <div className="mt-16 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-line pt-8">
         {[
-          { k: "Discipline", v: "Graphic · Motion · 3D", dot: false },
-          { k: "Mode", v: "Remote / Hybrid", dot: false },
-          { k: "Currently", v: "Accepting projects", dot: true },
+          // `parts` = array of words; an accent full-stop is rendered between
+          // each pair. Replaces the old `·` separator.
+          { k: "Discipline", parts: ["Graphic", "Motion", "3D"], dot: false },
+          { k: "Mode", parts: ["Remote", "Hybrid"], dot: false },
+          { k: "Currently", parts: ["Accepting", "projects"], dot: true },
         ].map((item, index) => (
           <div
             key={item.k}
             data-reveal="item"
             style={{ "--reveal-delay": `${90 + index * 80}ms` } as React.CSSProperties}
+            // group enables hover styling on the inner value row.
+            className="group text-left"
           >
             <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted mb-2">
               {item.k}
             </div>
-            <div className="font-display text-2xl md:text-3xl leading-tight inline-flex items-center gap-3 flex-wrap">
-              {item.v}
+            {/* Value row — on hover, letter + word spacing gently expand
+                (the "stretch" effect), and stays left-aligned. Accent
+                full-stops replace the old middle-dot separator. */}
+            <div className="font-display text-2xl md:text-3xl leading-tight inline-flex items-center gap-3 flex-wrap transition-[letter-spacing,word-spacing] duration-500 ease-[cubic-bezier(.2,.8,.2,1)] tracking-normal group-hover:tracking-[0.06em] [word-spacing:0em] group-hover:[word-spacing:0.35em] whitespace-nowrap">
+              <span className="inline-flex items-baseline flex-wrap">
+                {item.parts.map((word, i) => (
+                  <span key={i} className="inline-flex items-baseline">
+                    {i > 0 && (
+                      <span
+                        aria-hidden
+                        className="inline-block text-accent mx-[0.2em]"
+                      >
+                        .
+                      </span>
+                    )}
+                    <span>{word}</span>
+                  </span>
+                ))}
+              </span>
               {item.dot && (
                 <span
                   aria-hidden

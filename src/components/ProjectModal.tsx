@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Project } from "@/lib/content";
 import {
   FALLING_FRAME_COUNT,
@@ -18,6 +19,12 @@ type Props = {
 };
 
 export default function ProjectModal({ project, onClose }: Props) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     if (!project) return;
     const onKey = (e: KeyboardEvent) => {
@@ -31,7 +38,13 @@ export default function ProjectModal({ project, onClose }: Props) {
     };
   }, [project, onClose]);
 
-  return (
+  // Ancestor transforms (framer-motion, parallax, ThemeProvider, etc.)
+  // create new containing blocks that break `position: fixed`, making the
+  // overlay inherit the full-page height of its parent instead of the
+  // viewport. Rendering into document.body via portal dodges that entirely.
+  if (!mounted) return null;
+
+  const tree = (
     <AnimatePresence>
       {project && (
         <motion.div
@@ -124,6 +137,8 @@ export default function ProjectModal({ project, onClose }: Props) {
       )}
     </AnimatePresence>
   );
+
+  return createPortal(tree, document.body);
 }
 
 function Meta({ k, v }: { k: string; v: string }) {
@@ -162,7 +177,7 @@ function ModalMedia({ project }: { project: Project }) {
         alt={project.title}
         fill
         sizes="(max-width: 768px) 100vw, 66vw"
-        className="object-contain p-2 md:p-4"
+        className="object-cover"
       />
     );
   }
@@ -175,7 +190,7 @@ function ModalMedia({ project }: { project: Project }) {
           alt={`${project.title} (day)`}
           fill
           sizes="66vw"
-          className="object-contain p-2 md:p-4 transition-opacity duration-[1200ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-100 group-hover:opacity-0"
+          className="object-cover transition-opacity duration-[1200ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-100 group-hover:opacity-0"
           style={{ opacity: isTouchDevice ? (dayNightIsNight ? 0 : 1) : undefined }}
         />
         <Image
@@ -183,7 +198,7 @@ function ModalMedia({ project }: { project: Project }) {
           alt={`${project.title} (night)`}
           fill
           sizes="66vw"
-          className="object-contain p-2 md:p-4 transition-opacity duration-[1200ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-0 group-hover:opacity-100"
+          className="object-cover transition-opacity duration-[1200ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-0 group-hover:opacity-100"
           style={{ opacity: isTouchDevice ? (dayNightIsNight ? 1 : 0) : undefined }}
         />
         <div className="absolute bottom-3 right-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90 bg-ink/70 px-2 py-1 rounded-sm pointer-events-none">
@@ -202,7 +217,7 @@ function ModalMedia({ project }: { project: Project }) {
         loop
         playsInline
         controls
-        className="absolute inset-0 h-full w-full object-contain"
+        className="absolute inset-0 h-full w-full object-cover"
       />
     );
   }

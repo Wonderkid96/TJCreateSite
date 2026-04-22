@@ -130,6 +130,46 @@ test("home page — smoke + visual", async ({ page }, testInfo) => {
   ).toHaveLength(0);
 });
 
+test("mobile: real tap on a work tile opens the modal (no overlay blocking)", async ({
+  page,
+}, testInfo) => {
+  // Only makes sense on touch-enabled mobile viewports
+  const viewportWidth = page.viewportSize()?.width ?? 0;
+  if (viewportWidth >= 768) {
+    testInfo.skip();
+    return;
+  }
+
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  // Wait long enough that any first-visit splash has dismissed
+  // (MIN_SHOW_MS 650 + MAX_SHOW_MS 3500 hard ceiling).
+  await page.waitForTimeout(4200);
+
+  const firstTile = page.locator(".bento-cell button").first();
+  await firstTile.scrollIntoViewIfNeeded();
+
+  // Important: verify NOTHING is covering the tile at click time.
+  const coveredBy = await firstTile.evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+    if (!top) return "nothing at point";
+    if (el === top || el.contains(top)) return "tile";
+    return `blocked by ${top.tagName}.${(top as HTMLElement).className || "(no class)"}`.slice(0, 120);
+  });
+  expect(coveredBy, `[${testInfo.project.name}] tile not receiving hits`).toBe("tile");
+
+  // Simulate a real tap (touch event), not a synthetic mouse click.
+  await firstTile.tap();
+
+  const modal = page.locator(".fixed.z-\\[90\\]");
+  await expect(modal).toBeVisible({ timeout: 3000 });
+
+  await page.screenshot({
+    path: join(SHOT_DIR, `${testInfo.project.name}-98-tap-opens-modal.png`),
+    fullPage: false,
+  });
+});
+
 test("nav menu opens + closes", async ({ page }, testInfo) => {
   // Site's md: breakpoint (768px) gates the hamburger, so only run on
   // viewports narrower than that. Playwright's `isMobile` flag includes the

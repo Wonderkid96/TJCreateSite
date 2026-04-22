@@ -72,24 +72,31 @@ export function preloadFallingFrames(onReady?: () => void) {
     // which would make a CORS-requested image fail to load. Without the
     // attribute, the browser loads it as a same-origin-ish resource (the
     // canvas ends up tainted, which we don't care about).
-    const onDone = () => {
-      images[i] = img;
+
+    // Guard against double-settle. `onload` may fire asynchronously OR
+    // synchronously-complete for cached images may mean it never fires
+    // at all; the complete-check below covers that.
+    let settled = false;
+    const settle = (ok: boolean) => {
+      if (settled) return;
+      settled = true;
+      if (ok) images[i] = img;
       img.onload = null;
       img.onerror = null;
       markOne();
     };
-    const onFail = () => {
-      // Still count as resolved — don't hang the ready flag on a 404.
-      img.onload = null;
-      img.onerror = null;
-      markOne();
-    };
-    img.onload = onDone;
-    img.onerror = onFail;
+
+    img.onload = () => settle(true);
+    img.onerror = () => settle(false);
     img.src = FALLING_FRAMES[i];
-    // img.decode() would also force decode but isn't universally supported
-    // on Safari older than 16 without a small gotcha. onload + drawImage
-    // is solid everywhere.
+
+    // Cached hit: when the image is already in the browser's image cache,
+    // some engines fire `onload` synchronously during `src` assignment (or
+    // not at all, depending on timing). `img.complete && naturalWidth > 0`
+    // is the canonical "already loaded" signal — settle immediately.
+    if (img.complete && img.naturalWidth > 0) {
+      settle(true);
+    }
   }
 }
 

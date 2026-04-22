@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
+import { motion, useScroll, useTransform, useMotionValue, useSpring, type MotionValue } from "motion/react";
 import { useRef } from "react";
 import { SocialLinks } from "./SocialIcons";
 
@@ -54,20 +54,12 @@ export default function About() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 md:items-stretch">
         {/* Portrait grid: 2×2 */}
         <div className="md:col-span-6">
-          <div className="relative w-full aspect-[3/4] md:h-full md:min-h-[460px] md:aspect-auto overflow-hidden rounded-[2px] border border-line/60 bg-ink/5">
-            <Image
-              src="/work/imported/portraits/toby-about.jpg"
-              alt="Portrait of Toby Johnson"
-              fill
-              className="object-cover object-[52%_84%]"
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-          </div>
+          <PortraitTilt />
         </div>
 
         <div className="md:col-span-6 w-full">
           <div
-            className="h-full w-full border border-line/60 bg-paper/40 rounded-[2px] p-6 md:p-10 flex flex-col justify-between"
+            className="h-full w-full p-0 md:p-0 flex flex-col justify-between"
           >
             {/* Paragraph fills the panel on smaller viewports; capped at
                 ~28ch on large desktops for comfortable reading measure. */}
@@ -178,6 +170,72 @@ export default function About() {
         ))}
       </div>
     </section>
+  );
+}
+
+function PortraitTilt() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+  const isHovered = useMotionValue(0);
+
+  const springConfig = { stiffness: 120, damping: 18 };
+  const rotateY = useSpring(useTransform(rawX, [-0.5, 0.5], [-9, 9]), springConfig);
+  const rotateX = useSpring(useTransform(rawY, [-0.5, 0.5], [7, -7]), springConfig);
+  const overlayOpacity = useSpring(useTransform(isHovered, [0, 1], [0, 1]), { stiffness: 80, damping: 20 });
+  const scale = useSpring(useTransform(isHovered, [0, 1], [1, 1.03]), springConfig);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    rawX.set((e.clientX - rect.left) / rect.width - 0.5);
+    rawY.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+
+  return (
+    <motion.div
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => isHovered.set(1)}
+      onMouseLeave={() => {
+        isHovered.set(0);
+        rawX.set(0);
+        rawY.set(0);
+      }}
+      style={{ perspective: 800 }}
+      className="relative w-full aspect-[3/4] md:h-full md:min-h-[460px] md:aspect-auto cursor-crosshair"
+    >
+      <motion.div
+        style={{ rotateX, rotateY, scale, transformStyle: "preserve-3d" }}
+        className="relative w-full h-full overflow-hidden rounded-[2px] border border-line/60"
+      >
+        <Image
+          src="/work/imported/portraits/toby-about.jpg"
+          alt="Portrait of Toby Johnson"
+          fill
+          className="object-cover object-[52%_84%]"
+          sizes="(max-width: 768px) 100vw, 50vw"
+        />
+        {/* Colour sweep overlay — gradient wipes in on hover */}
+        <motion.div
+          aria-hidden
+          className="absolute inset-0 mix-blend-color-dodge pointer-events-none"
+          style={{
+            opacity: overlayOpacity,
+            background:
+              "linear-gradient(135deg, rgba(230,53,42,0.35) 0%, rgba(200,219,69,0.2) 50%, rgba(196,169,208,0.35) 100%)",
+          }}
+        />
+        {/* Corner label that drifts in */}
+        <motion.div
+          aria-hidden
+          className="absolute bottom-4 right-4 font-mono text-[9px] uppercase tracking-[0.2em] text-white/70"
+          style={{ opacity: overlayOpacity }}
+        >
+          Toby Johnson
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 }
 

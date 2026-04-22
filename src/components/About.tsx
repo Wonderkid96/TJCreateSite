@@ -13,11 +13,11 @@ export default function About() {
   const ruleRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start end", "center center"],
+    offset: ["start 40%", "center center"],
   });
   const { scrollYProgress: ruleProgress } = useScroll({
     target: ruleRef,
-    offset: ["start 92%", "start 52%"],
+    offset: ["start 65%", "start 25%"],
   });
   const ruleScaleX = useTransform(ruleProgress, [0, 1], [0, 1]);
 

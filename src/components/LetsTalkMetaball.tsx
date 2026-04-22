@@ -21,6 +21,7 @@ export default function LetsTalkMetaball() {
   const blurRef = useRef<SVGFEGaussianBlurElement>(null);
   const matrixRef = useRef<SVGFEColorMatrixElement>(null);
   const glassMapImageRef = useRef<SVGFEImageElement>(null);
+  const glassNoiseRef = useRef<SVGFETurbulenceElement>(null);
   const glassDispRef = useRef<SVGFEDisplacementMapElement>(null);
 
   useEffect(() => {
@@ -39,6 +40,7 @@ export default function LetsTalkMetaball() {
     const blurNode = blurRef.current;
     const matrixNode = matrixRef.current;
     const glassMapImage = glassMapImageRef.current;
+    const glassNoise = glassNoiseRef.current;
     const glassDisp = glassDispRef.current;
     if (
       !block ||
@@ -53,6 +55,7 @@ export default function LetsTalkMetaball() {
       !blurNode ||
       !matrixNode ||
       !glassMapImage ||
+      !glassNoise ||
       !glassDisp
     ) {
       return;
@@ -60,6 +63,8 @@ export default function LetsTalkMetaball() {
 
     const section = block.closest("section");
     if (!section) return;
+
+    const xlinkNs = "http://www.w3.org/1999/xlink";
 
     let blockRect = block.getBoundingClientRect();
     let sectionRect = section.getBoundingClientRect();
@@ -326,19 +331,33 @@ export default function LetsTalkMetaball() {
         const residueInfluence =
           residueScale * Math.max(0, Math.min(1, 1 - residueDist / (MAX_STRETCH * 0.96)));
 
-        // Strong, clearly visible refraction amplitude.
+        // Turbulence: always animated even at rest so the glass feels live.
+        // Idle: slow organic sine drift; cursor speed + proximity add on top.
+        const t = performance.now() / 1000;
+        const speed = Math.hypot(fvx, fvy);
+        const speedN = Math.max(0, Math.min(1, speed / 10));
+        const idleFreq =
+          0.0085 +
+          Math.sin(t * 0.27) * 0.0022 +
+          Math.cos(t * 0.19) * 0.0014;
+        const freq = idleFreq + speedN * 0.032 + followerInfluence * 0.014;
+        glassNoise.setAttribute("baseFrequency", `${freq.toFixed(4)} ${(freq * 1.18).toFixed(4)}`);
+        glassNoise.setAttribute("numOctaves", speedN > 0.55 ? "2" : "1");
+
+        // Displacement: ambient base is clipped to the lens interior by the
+        // feComposite filter, so text outside the glass stays crisp. Inside
+        // the glass: ambient 14-21px drift + heavy interactive ramp.
+        const ambientScale = 14 + Math.sin(t * 0.38) * 7;
         const glassScale =
-          16 +
-          glass * 28 +
-          followerInfluence * 20 +
-          residueInfluence * 6;
+          ambientScale +
+          glass * 55 +
+          followerInfluence * 38 +
+          residueInfluence * 16;
         glassDisp.setAttribute("scale", glassScale.toFixed(2));
 
         const safeW = Math.max(2, blockRect.width);
         const safeH = Math.max(2, blockRect.height);
-        const parts: string[] = [
-          `<rect width='100%' height='100%' fill='black'/>`,
-        ];
+        const parts: string[] = [];
         if (anchorScale > 0.02) {
           parts.push(
             `<rect x='${(cx - aw / 2).toFixed(2)}' y='${(cy - ah / 2).toFixed(2)}' width='${aw.toFixed(2)}' height='${ah.toFixed(2)}' rx='${(ah / 2).toFixed(2)}' fill='white'/>`
@@ -363,11 +382,13 @@ export default function LetsTalkMetaball() {
           `<svg xmlns='http://www.w3.org/2000/svg' width='${safeW.toFixed(0)}' height='${safeH.toFixed(0)}' viewBox='0 0 ${safeW.toFixed(2)} ${safeH.toFixed(2)}'>` +
           parts.join("") +
           `</svg>`;
-        glassMapImage.setAttribute(
-          "href",
-          `data:image/svg+xml;utf8,${encodeURIComponent(mapSvg)}`
-        );
-        textLayer.style.filter = glass > 0.02 ? `url(#${glassFilterId})` : "none";
+        const mapData = `data:image/svg+xml;base64,${window.btoa(mapSvg)}`;
+        // Some engines only honor xlink:href on feImage. Set both.
+        glassMapImage.setAttribute("href", mapData);
+        glassMapImage.setAttributeNS(xlinkNs, "xlink:href", mapData);
+        // Always active — outside-lens uses clean SourceGraphic so text is
+        // crisp until the cursor enters the glass zone.
+        textLayer.style.filter = `url(#${glassFilterId})`;
       } else {
         textLayer.style.filter = "none";
       }
@@ -394,8 +415,16 @@ export default function LetsTalkMetaball() {
       aria-label="Email hello@tjcreate.co.uk"
       className="relative block w-full mx-auto overflow-visible h-[48vh] sm:h-[52vh] md:h-[58vh] lg:h-[62vh] min-h-[300px] max-h-[78vh] select-none"
       style={{
-        background:
-          "radial-gradient(ellipse 55% 45% at 50% 50%, rgba(244,241,233,0.06) 0%, rgba(10,10,10,0.25) 32%, rgba(10,10,10,0.88) 100%)",
+        backgroundImage: [
+          // Accent colour hints — give the glass a faint iridescent tint to refract
+          "radial-gradient(ellipse 48% 36% at 26% 64%, rgba(230,53,42,0.055) 0%, transparent 70%)",
+          "radial-gradient(ellipse 48% 36% at 74% 36%, rgba(200,219,69,0.055) 0%, transparent 70%)",
+          // Main depth gradient
+          "radial-gradient(ellipse 58% 48% at 50% 50%, rgba(244,241,233,0.09) 0%, rgba(10,10,10,0.22) 36%, rgba(10,10,10,0.94) 100%)",
+          // Subtle dot grid — makes refraction immediately legible when cursor enters
+          "radial-gradient(circle, rgba(244,241,233,0.06) 1px, transparent 1px)",
+        ].join(", "),
+        backgroundSize: "cover, cover, cover, 30px 30px",
       }}
     >
       {/* Webflow-style metaball stack:
@@ -408,14 +437,15 @@ export default function LetsTalkMetaball() {
               rather than solid cream fill. */}
           <filter
             id={gooFilterId}
-            x="-35%"
-            y="-35%"
-            width="170%"
-            height="170%"
+            x="-40%"
+            y="-40%"
+            width="180%"
+            height="180%"
             filterUnits="objectBoundingBox"
             primitiveUnits="userSpaceOnUse"
             colorInterpolationFilters="sRGB"
           >
+            {/* Step 1: blur + alpha-threshold → merged binary shape */}
             <feGaussianBlur ref={blurRef} in="SourceGraphic" stdDeviation="9" result="blur" />
             <feColorMatrix
               ref={matrixRef}
@@ -424,15 +454,42 @@ export default function LetsTalkMetaball() {
               values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 36 -16"
               result="goo"
             />
-            {/* Faint glass body: the merged shape at low alpha. */}
+
+            {/* Step 2: near-invisible body — 7% alpha so background breathes
+                through. Real glass transmits most light. */}
             <feColorMatrix
               in="goo"
               type="matrix"
-              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.18 0"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.07 0"
               result="body"
             />
-            {/* Rim: merged shape minus an eroded copy = a thin ring edge. */}
-            <feMorphology in="goo" operator="erode" radius="1.2" result="eroded" />
+
+            {/* Step 3: specular highlight — directional light from upper-right
+                strikes the curved surface, creating the glinting hot-spot that
+                immediately reads as glass/water. The blurred input acts as a
+                height-map so the highlight peaks at the blob's thickest point. */}
+            <feSpecularLighting
+              in="blur"
+              surfaceScale="4"
+              specularConstant="1.0"
+              specularExponent="40"
+              lightingColor="#f4f1e9"
+              result="spec"
+            >
+              <feDistantLight azimuth="45" elevation="55" />
+            </feSpecularLighting>
+            {/* Clip specular to inside the glass shape only */}
+            <feComposite in="spec" in2="goo" operator="in" result="specMasked" />
+            <feColorMatrix
+              in="specMasked"
+              type="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.55 0"
+              result="specular"
+            />
+
+            {/* Step 4: crisp bright rim — above-1 alpha gets clamped = full
+                white edge, the characteristic glinting outline of a glass lens. */}
+            <feMorphology in="goo" operator="erode" radius="1.5" result="eroded" />
             <feComposite
               in="goo"
               in2="eroded"
@@ -441,25 +498,50 @@ export default function LetsTalkMetaball() {
               k2="1"
               k3="-1"
               k4="0"
-              result="rim"
+              result="rimRaw"
             />
             <feColorMatrix
-              in="rim"
+              in="rimRaw"
               type="matrix"
-              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.85 0"
-              result="rimBright"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1.6 0"
+              result="rimCrisp"
             />
+
+            {/* Step 5: soft outer glow halo — dilate beyond the shape, then
+                subtract the original = outer ring, blurred to a gentle aura. */}
+            <feMorphology in="goo" operator="dilate" radius="2" result="dilated" />
+            <feComposite
+              in="dilated"
+              in2="goo"
+              operator="arithmetic"
+              k1="0"
+              k2="1"
+              k3="-1"
+              k4="0"
+              result="outerRaw"
+            />
+            <feGaussianBlur in="outerRaw" stdDeviation="3" result="outerBlur" />
+            <feColorMatrix
+              in="outerBlur"
+              type="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.28 0"
+              result="outerGlow"
+            />
+
+            {/* Composite: body → outer glow → specular highlight → crisp rim */}
             <feMerge>
               <feMergeNode in="body" />
-              <feMergeNode in="rimBright" />
+              <feMergeNode in="outerGlow" />
+              <feMergeNode in="specular" />
+              <feMergeNode in="rimCrisp" />
             </feMerge>
           </filter>
 
-          {/* Liquid-glass lens. feImage receives the live blob geometry as
-              a pure white-on-black mask. That mask is blurred (soft falloff)
-              and fed directly into feDisplacementMap as both the X and Y
-              channel source — so text below refracts smoothly along the
-              blob's edge gradient, exactly like a droplet of liquid glass. */}
+          {/* Liquid-glass refraction.
+              Outside the lens: SourceGraphic verbatim — text stays perfectly
+              crisp and fully opaque wherever the glass isn't.
+              Inside the lens: heavily displaced by turbulence noise — text
+              bends and wavers, reading as refracted light through glass. */}
           <filter
             id={glassFilterId}
             x="-25%"
@@ -468,6 +550,25 @@ export default function LetsTalkMetaball() {
             height="150%"
             colorInterpolationFilters="sRGB"
           >
+            <feTurbulence
+              ref={glassNoiseRef}
+              type="fractalNoise"
+              baseFrequency="0.009 0.011"
+              numOctaves="1"
+              seed="13"
+              result="noise"
+            />
+            <feDisplacementMap
+              ref={glassDispRef}
+              in="SourceGraphic"
+              in2="noise"
+              xChannelSelector="R"
+              yChannelSelector="G"
+              scale="0"
+              result="displaced"
+            />
+
+            {/* Lens mask: blob shape, soft-edged, defines the glass boundary */}
             <feImage
               ref={glassMapImageRef}
               href=""
@@ -478,20 +579,13 @@ export default function LetsTalkMetaball() {
               preserveAspectRatio="none"
               result="lensMaskSrc"
             />
-            <feGaussianBlur in="lensMaskSrc" stdDeviation="10" result="lensMask" />
-            <feDisplacementMap
-              ref={glassDispRef}
-              in="SourceGraphic"
-              in2="lensMask"
-              xChannelSelector="R"
-              yChannelSelector="G"
-              scale="0"
-              result="displaced"
-            />
-            {/* Keep displaced pixels only where the lens is. Elsewhere the
-                original text shows through undistorted. */}
+            <feGaussianBlur in="lensMaskSrc" stdDeviation="12" result="lensMask" />
+
+            {/* Inside lens: fully displaced (heavy refraction) */}
             <feComposite in="displaced" in2="lensMask" operator="in" result="insideLens" />
+            {/* Outside lens: pixel-perfect SourceGraphic — no opacity penalty */}
             <feComposite in="SourceGraphic" in2="lensMask" operator="out" result="outsideLens" />
+
             <feMerge>
               <feMergeNode in="outsideLens" />
               <feMergeNode in="insideLens" />

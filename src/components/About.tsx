@@ -179,7 +179,7 @@ export default function About() {
                         aria-hidden
                         className="inline-block text-accent mr-[0.45em]"
                       >
-                        /
+                        .
                       </span>
                     )}
                     <span>{word}</span>

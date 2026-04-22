@@ -124,33 +124,51 @@ export default function About() {
 
       <div className="mt-16 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-line pt-8">
         {[
-          // `parts` = array of words; an accent full-stop is rendered between
-          // each pair. Replaces the old `·` separator.
-          { k: "Discipline", parts: ["Graphic", "Motion", "3D"], dot: false },
-          { k: "Mode", parts: ["Remote", "Hybrid"], dot: false },
-          { k: "Currently", parts: ["Accepting", "projects"], dot: true },
+          // `separator: true` inserts the accent full-stop between parts.
+          // `dot: true` appends the animated green "accepting" indicator.
+          // Only Discipline uses separators — the others read as plain
+          // space-separated caps.
+          {
+            k: "Discipline",
+            parts: ["Graphic", "Motion", "3D"],
+            separator: true,
+            dot: false,
+          },
+          {
+            k: "Mode",
+            parts: ["Remote", "Hybrid"],
+            separator: false,
+            dot: false,
+          },
+          {
+            k: "Currently",
+            parts: ["Accepting", "projects"],
+            separator: false,
+            dot: true,
+          },
         ].map((item, index) => (
           <div
             key={item.k}
             data-reveal="item"
             style={{ "--reveal-delay": `${90 + index * 80}ms` } as React.CSSProperties}
-            // group enables hover styling on the inner value row.
             className="group text-left"
           >
             <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted mb-2">
               {item.k}
             </div>
-            {/* Value row — on hover, letter + word spacing gently expand
-                (the "stretch" effect), and stays left-aligned. Accent
-                full-stops replace the old middle-dot separator. */}
-            <div className="font-display text-2xl md:text-3xl leading-tight inline-flex items-center gap-3 flex-wrap transition-[letter-spacing,word-spacing] duration-500 ease-[cubic-bezier(.2,.8,.2,1)] tracking-normal group-hover:tracking-[0.06em] [word-spacing:0em] group-hover:[word-spacing:0.35em] whitespace-nowrap">
-              <span className="inline-flex items-baseline flex-wrap">
+            {/* Value row — Space Grotesk bold in full caps for a solid,
+                functional feel that contrasts the serif above. Only the
+                Discipline row gets the orange full-stop punctuation
+                between words; the others read as plain caps. Subtle
+                letter-spacing expand on hover keeps the stretch flourish. */}
+            <div className="font-sans text-base md:text-lg leading-tight inline-flex items-center gap-3 flex-wrap tracking-normal group-hover:tracking-[0.03em] transition-[letter-spacing] duration-500 ease-[cubic-bezier(.2,.8,.2,1)] whitespace-nowrap">
+              <span className="inline-flex items-baseline flex-wrap gap-x-[0.45em]">
                 {item.parts.map((word, i) => (
                   <span key={i} className="inline-flex items-baseline">
-                    {i > 0 && (
+                    {i > 0 && item.separator && (
                       <span
                         aria-hidden
-                        className="inline-block text-accent mx-[0.2em]"
+                        className="inline-block text-accent mr-[0.45em]"
                       >
                         .
                       </span>

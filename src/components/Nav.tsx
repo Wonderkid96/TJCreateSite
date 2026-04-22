@@ -60,10 +60,21 @@ export default function Nav() {
         {/* Desktop status chip + theme toggle */}
         <div className="hidden md:flex items-center gap-4 font-mono text-[11px] uppercase tracking-[0.2em]">
           <div className="flex items-center gap-2">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-            <span>Studio time</span>
-            <span className="text-muted">·</span>
-            <span>{time}</span>
+            <span>Available</span>
+            <span
+              aria-hidden
+              className="relative inline-flex h-1.5 w-1.5 shrink-0"
+            >
+              <span
+                className="absolute inset-0 rounded-full opacity-70 animate-ping"
+                style={{ backgroundColor: "#80EF80" }}
+              />
+              <span
+                className="relative inline-block rounded-full h-1.5 w-1.5"
+                style={{ backgroundColor: "#80EF80" }}
+              />
+            </span>
+            <span className="tabular-nums">{time}</span>
           </div>
           <ThemeToggle />
         </div>
@@ -122,10 +133,21 @@ export default function Nav() {
               ))}
             </nav>
             <div className="flex items-center gap-2 px-6 py-4 font-mono text-[10px] uppercase tracking-[0.2em] text-muted border-t border-line">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-              <span>Studio time</span>
-              <span>·</span>
-              <span>{time}</span>
+              <span>Available</span>
+              <span
+                aria-hidden
+                className="relative inline-flex h-1.5 w-1.5 shrink-0"
+              >
+                <span
+                  className="absolute inset-0 rounded-full opacity-70 animate-ping"
+                  style={{ backgroundColor: "#80EF80" }}
+                />
+                <span
+                  className="relative inline-block rounded-full h-1.5 w-1.5"
+                  style={{ backgroundColor: "#80EF80" }}
+                />
+              </span>
+              <span className="tabular-nums">{time}</span>
             </div>
           </motion.div>
         )}

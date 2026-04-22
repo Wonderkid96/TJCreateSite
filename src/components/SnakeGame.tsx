@@ -19,11 +19,11 @@ import {
 
 const COLS = 24;
 const ROWS = 16;
-const START_TICK_MS = 140;
-const MIN_TICK_MS = 60;
-// Ramp per food pickup — small enough that each bite is barely perceptible,
-// big enough that a long run gets noticeably harder.
-const SPEEDUP_MS = 5;
+const START_TICK_MS = 150;
+const MIN_TICK_MS = 55;
+// Ramp per food pickup — ~8% faster each bite. Each pickup is clearly
+// noticeable; after ~8 pickups the snake is moving at its peak pace.
+const SPEEDUP_MS = 12;
 
 type Cell = { x: number; y: number };
 type Dir = "up" | "down" | "left" | "right";

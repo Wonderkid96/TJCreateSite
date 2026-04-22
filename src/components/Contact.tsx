@@ -99,7 +99,7 @@ export default function Contact() {
         </motion.div>
       </a>
 
-      <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-10 border-t border-paper/20 pt-10">
+      <div className="mt-24 grid grid-cols-1 md:grid-cols-2 gap-10 border-t border-paper/20 pt-10">
         <div>
           <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50 mb-2">
             Email
@@ -114,37 +114,30 @@ export default function Contact() {
         </div>
         <div>
           <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50 mb-2">
-            Instagram
+            Socials
           </div>
-          <a
-            href="https://instagram.com/tj.create"
-            data-cursor="hover"
-            className="text-lg hover:text-accent transition-colors"
-            target="_blank"
-            rel="noreferrer"
-          >
-            @tj.create
-          </a>
-        </div>
-        <div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50 mb-2">
-            LinkedIn
+          <div className="flex items-center gap-5">
+            <a
+              href="https://instagram.com/tj.create"
+              data-cursor="hover"
+              aria-label="Toby Johnson on Instagram"
+              className="text-paper/85 hover:text-accent transition-colors group inline-flex"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <InstagramIcon size={22} />
+            </a>
+            <a
+              href="https://linkedin.com/in/tobyjohnsoncreate"
+              data-cursor="hover"
+              aria-label="Toby Johnson on LinkedIn"
+              className="text-paper/85 hover:text-accent transition-colors group inline-flex"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <LinkedInIcon size={22} />
+            </a>
           </div>
-          <a
-            href="https://linkedin.com/in/tobyjohnsoncreate"
-            data-cursor="hover"
-            className="text-lg hover:text-accent transition-colors"
-            target="_blank"
-            rel="noreferrer"
-          >
-            /tobyjohnsoncreate
-          </a>
-        </div>
-        <div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50 mb-2">
-            Location
-          </div>
-          <div className="text-lg">Remote / Worldwide</div>
         </div>
       </div>
 
@@ -344,5 +337,47 @@ function TypeLine() {
         </motion.span>
       </span>
     </div>
+  );
+}
+
+/* --------------------------------------------------------------------- */
+/* Brand icons — inline SVG so they inherit currentColor for hover states
+   and carry no extra network cost. Stroke-based to sit alongside the
+   rest of the site's line-icon treatment (theme toggle, back-to-top). */
+/* --------------------------------------------------------------------- */
+
+function InstagramIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className="shrink-0 transition-transform duration-300 group-hover:-translate-y-[1px]"
+    >
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function LinkedInIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+      className="shrink-0 transition-transform duration-300 group-hover:-translate-y-[1px]"
+    >
+      <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.44-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zm1.78 13.02H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z" />
+    </svg>
   );
 }

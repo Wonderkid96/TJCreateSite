@@ -20,9 +20,13 @@ export default function LetsTalkMetaball() {
   const followerRef = useRef<HTMLDivElement>(null);
   const blurRef = useRef<SVGFEGaussianBlurElement>(null);
   const matrixRef = useRef<SVGFEColorMatrixElement>(null);
-  const glassMapImageRef = useRef<SVGFEImageElement>(null);
   const glassNoiseRef = useRef<SVGFETurbulenceElement>(null);
   const glassDispRef = useRef<SVGFEDisplacementMapElement>(null);
+  // Backdrop-filter panels — authentic frosted glass over the dot grid.
+  // These live OUTSIDE the goo-filter stacking context so backdrop-filter
+  // sees the real page background rather than the filter's internal canvas.
+  const glassBackdropRef = useRef<HTMLDivElement>(null);
+  const glassFollowerBdRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -39,9 +43,10 @@ export default function LetsTalkMetaball() {
     const textLayer = textLayerRef.current;
     const blurNode = blurRef.current;
     const matrixNode = matrixRef.current;
-    const glassMapImage = glassMapImageRef.current;
     const glassNoise = glassNoiseRef.current;
     const glassDisp = glassDispRef.current;
+    const glassBackdrop = glassBackdropRef.current;
+    const glassFollowerBd = glassFollowerBdRef.current;
     if (
       !block ||
       !textEl ||
@@ -54,7 +59,6 @@ export default function LetsTalkMetaball() {
       !textLayer ||
       !blurNode ||
       !matrixNode ||
-      !glassMapImage ||
       !glassNoise ||
       !glassDisp
     ) {
@@ -63,8 +67,6 @@ export default function LetsTalkMetaball() {
 
     const section = block.closest("section");
     if (!section) return;
-
-    const xlinkNs = "http://www.w3.org/1999/xlink";
 
     let blockRect = block.getBoundingClientRect();
     let sectionRect = section.getBoundingClientRect();
@@ -317,10 +319,7 @@ export default function LetsTalkMetaball() {
       follower.style.transform = `translate3d(${(fx - fr).toFixed(2)}px, ${(fy - fr).toFixed(2)}px, 0)`;
       follower.style.opacity = followScale > 0.02 ? "1" : "0";
 
-      // ---- Liquid-glass displacement ------------------------------------
-      // Feed the SAME blob geometry we render visibly into feImage. The
-      // filter internally blurs that mask, which becomes the displacement
-      // field — so text under the glass refracts along the blob's edges.
+      // ---- Liquid-glass displacement + backdrop panels --------------------
       if (ENABLE_LIQUID_GLASS) {
         const glass = Math.max(0, Math.min(1, gooScale));
         const followerInfluence =
@@ -331,64 +330,53 @@ export default function LetsTalkMetaball() {
         const residueInfluence =
           residueScale * Math.max(0, Math.min(1, 1 - residueDist / (MAX_STRETCH * 0.96)));
 
-        // Turbulence: always animated even at rest so the glass feels live.
-        // Idle: slow organic sine drift; cursor speed + proximity add on top.
+        // Turbulence: always drifting so the glass noise field is already
+        // alive when the cursor arrives. Frequency varies with speed + proximity.
         const t = performance.now() / 1000;
         const speed = Math.hypot(fvx, fvy);
         const speedN = Math.max(0, Math.min(1, speed / 10));
         const idleFreq =
-          0.0085 +
-          Math.sin(t * 0.27) * 0.0022 +
-          Math.cos(t * 0.19) * 0.0014;
-        const freq = idleFreq + speedN * 0.032 + followerInfluence * 0.014;
-        glassNoise.setAttribute("baseFrequency", `${freq.toFixed(4)} ${(freq * 1.18).toFixed(4)}`);
-        glassNoise.setAttribute("numOctaves", speedN > 0.55 ? "2" : "1");
+          0.0082 +
+          Math.sin(t * 0.26) * 0.0024 +
+          Math.cos(t * 0.18) * 0.0013;
+        const freq = idleFreq + speedN * 0.03 + followerInfluence * 0.014;
+        glassNoise.setAttribute("baseFrequency", `${freq.toFixed(4)} ${(freq * 1.2).toFixed(4)}`);
+        glassNoise.setAttribute("numOctaves", speedN > 0.5 ? "2" : "1");
 
-        // Displacement: ambient base is clipped to the lens interior by the
-        // feComposite filter, so text outside the glass stays crisp. Inside
-        // the glass: ambient 14-21px drift + heavy interactive ramp.
-        const ambientScale = 14 + Math.sin(t * 0.38) * 7;
+        // Displacement applied to the FULL text layer — no lens mask. This
+        // means the text visibly refracts as soon as the glass activates, with
+        // no invisible inner-only region. Scale 0 at rest → 100+ at full pull.
         const glassScale =
-          ambientScale +
-          glass * 55 +
-          followerInfluence * 38 +
-          residueInfluence * 16;
+          glass * 62 +
+          followerInfluence * 46 +
+          residueInfluence * 22;
         glassDisp.setAttribute("scale", glassScale.toFixed(2));
+        textLayer.style.filter = glassScale > 0.4 ? `url(#${glassFilterId})` : "none";
 
-        const safeW = Math.max(2, blockRect.width);
-        const safeH = Math.max(2, blockRect.height);
-        const parts: string[] = [];
-        if (anchorScale > 0.02) {
-          parts.push(
-            `<rect x='${(cx - aw / 2).toFixed(2)}' y='${(cy - ah / 2).toFixed(2)}' width='${aw.toFixed(2)}' height='${ah.toFixed(2)}' rx='${(ah / 2).toFixed(2)}' fill='white'/>`
-          );
+        // Backdrop-filter panels: authentic frosted-glass blur of the dot
+        // grid behind the element. These are the main "glass body" visual —
+        // the goo blobs provide the crisp outline/specular on top.
+        if (glassBackdrop) {
+          if (anchorScale > 0.01) {
+            glassBackdrop.style.width = `${aw.toFixed(2)}px`;
+            glassBackdrop.style.height = `${ah.toFixed(2)}px`;
+            glassBackdrop.style.borderRadius = `${(ah / 2).toFixed(2)}px`;
+            glassBackdrop.style.transform = `translate3d(${(cx - aw / 2).toFixed(2)}px, ${(cy - ah / 2).toFixed(2)}px, 0)`;
+            glassBackdrop.style.opacity = (anchorScale * 0.88).toFixed(3);
+          } else {
+            glassBackdrop.style.opacity = "0";
+          }
         }
-        if (followScale > 0.02) {
-          parts.push(
-            `<circle cx='${fx.toFixed(2)}' cy='${fy.toFixed(2)}' r='${fr.toFixed(2)}' fill='white'/>`
-          );
+        if (glassFollowerBd) {
+          if (followScale > 0.01) {
+            glassFollowerBd.style.width = `${(fr * 2).toFixed(2)}px`;
+            glassFollowerBd.style.height = `${(fr * 2).toFixed(2)}px`;
+            glassFollowerBd.style.transform = `translate3d(${(fx - fr).toFixed(2)}px, ${(fy - fr).toFixed(2)}px, 0)`;
+            glassFollowerBd.style.opacity = (followScale * 0.75).toFixed(3);
+          } else {
+            glassFollowerBd.style.opacity = "0";
+          }
         }
-        if (bridgeScale > 0.03) {
-          parts.push(
-            `<circle cx='${midX.toFixed(2)}' cy='${midY.toFixed(2)}' r='${bridgeR.toFixed(2)}' fill='white'/>`
-          );
-        }
-        if (residueScale > 0.02) {
-          parts.push(
-            `<circle cx='${rx.toFixed(2)}' cy='${ry.toFixed(2)}' r='${residueR.toFixed(2)}' fill='white'/>`
-          );
-        }
-        const mapSvg =
-          `<svg xmlns='http://www.w3.org/2000/svg' width='${safeW.toFixed(0)}' height='${safeH.toFixed(0)}' viewBox='0 0 ${safeW.toFixed(2)} ${safeH.toFixed(2)}'>` +
-          parts.join("") +
-          `</svg>`;
-        const mapData = `data:image/svg+xml;base64,${window.btoa(mapSvg)}`;
-        // Some engines only honor xlink:href on feImage. Set both.
-        glassMapImage.setAttribute("href", mapData);
-        glassMapImage.setAttributeNS(xlinkNs, "xlink:href", mapData);
-        // Always active — outside-lens uses clean SourceGraphic so text is
-        // crisp until the cursor enters the glass zone.
-        textLayer.style.filter = `url(#${glassFilterId})`;
       } else {
         textLayer.style.filter = "none";
       }
@@ -404,6 +392,8 @@ export default function LetsTalkMetaball() {
       cancelAnimationFrame(raf);
       textLayer.style.filter = "none";
       textLayer.style.transform = "none";
+      if (glassBackdrop) glassBackdrop.style.opacity = "0";
+      if (glassFollowerBd) glassFollowerBd.style.opacity = "0";
       document.documentElement.style.setProperty("--cursor-opacity", "1");
     };
   }, [glassFilterId]);
@@ -537,23 +527,23 @@ export default function LetsTalkMetaball() {
             </feMerge>
           </filter>
 
-          {/* Liquid-glass refraction.
-              Outside the lens: SourceGraphic verbatim — text stays perfectly
-              crisp and fully opaque wherever the glass isn't.
-              Inside the lens: heavily displaced by turbulence noise — text
-              bends and wavers, reading as refracted light through glass. */}
+          {/* Liquid-glass refraction — simple turbulence displacement on the
+              full text layer. Applied only when glass > 0 (controlled by JS),
+              so text is crisp at rest and visibly refracts when the glass is
+              active. No lens-mask split needed: the backdrop panels define the
+              glass boundary visually. */}
           <filter
             id={glassFilterId}
-            x="-25%"
-            y="-25%"
-            width="150%"
-            height="150%"
+            x="-20%"
+            y="-20%"
+            width="140%"
+            height="140%"
             colorInterpolationFilters="sRGB"
           >
             <feTurbulence
               ref={glassNoiseRef}
               type="fractalNoise"
-              baseFrequency="0.009 0.011"
+              baseFrequency="0.0082 0.0098"
               numOctaves="1"
               seed="13"
               result="noise"
@@ -565,34 +555,36 @@ export default function LetsTalkMetaball() {
               xChannelSelector="R"
               yChannelSelector="G"
               scale="0"
-              result="displaced"
             />
-
-            {/* Lens mask: blob shape, soft-edged, defines the glass boundary */}
-            <feImage
-              ref={glassMapImageRef}
-              href=""
-              x="0"
-              y="0"
-              width="100%"
-              height="100%"
-              preserveAspectRatio="none"
-              result="lensMaskSrc"
-            />
-            <feGaussianBlur in="lensMaskSrc" stdDeviation="12" result="lensMask" />
-
-            {/* Inside lens: fully displaced (heavy refraction) */}
-            <feComposite in="displaced" in2="lensMask" operator="in" result="insideLens" />
-            {/* Outside lens: pixel-perfect SourceGraphic — no opacity penalty */}
-            <feComposite in="SourceGraphic" in2="lensMask" operator="out" result="outsideLens" />
-
-            <feMerge>
-              <feMergeNode in="outsideLens" />
-              <feMergeNode in="insideLens" />
-            </feMerge>
           </filter>
         </defs>
       </svg>
+
+      {/* Backdrop-filter panels — authentic frosted glass that blurs the
+          dot grid behind the element. Sit outside the goo-filter stacking
+          context so backdrop-filter reads the real page background. */}
+      <div
+        ref={glassBackdropRef}
+        aria-hidden
+        className="absolute pointer-events-none opacity-0 will-change-transform"
+        style={{
+          backdropFilter: "blur(14px) brightness(1.3) saturate(1.12)",
+          WebkitBackdropFilter: "blur(14px) brightness(1.3) saturate(1.12)",
+          background: "rgba(244,241,233,0.07)",
+          boxShadow: "inset 0 0 0 0.5px rgba(244,241,233,0.18)",
+        }}
+      />
+      <div
+        ref={glassFollowerBdRef}
+        aria-hidden
+        className="absolute pointer-events-none opacity-0 will-change-transform rounded-full"
+        style={{
+          backdropFilter: "blur(10px) brightness(1.22) saturate(1.1)",
+          WebkitBackdropFilter: "blur(10px) brightness(1.22) saturate(1.1)",
+          background: "rgba(244,241,233,0.05)",
+          boxShadow: "inset 0 0 0 0.5px rgba(244,241,233,0.14)",
+        }}
+      />
 
       <div ref={fxWrapRef} aria-hidden className="absolute inset-0 pointer-events-none opacity-0">
         <div

@@ -57,6 +57,18 @@ function randomFood(snake: Cell[]): Cell {
   }
 }
 
+/**
+ * Silly readout: translate the current tick cadence into a pretend
+ * "MPH" value that ramps up as the snake speeds up. Starts at ~10 MPH
+ * on the opening cadence and tops out at 88 (because obviously) at max
+ * speed. Purely cosmetic — does nothing to the game.
+ */
+function speedToMph(tickMs: number): number {
+  const base = START_TICK_MS - tickMs;
+  const mph = Math.round(base * 0.82 + 10);
+  return Math.max(10, Math.min(88, mph));
+}
+
 export default function SnakeGame({ active }: { active: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -311,28 +323,34 @@ export default function SnakeGame({ active }: { active: boolean }) {
     <div className="mt-4 border-t border-paper/15 pt-4 flex flex-col gap-3">
       {/* Stats bar spans the full panel width — sits above the board, never
           overlaps it. Mono so the numbers stay fixed-width as they tick. */}
-      <div className="flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/70">
-        <span className="inline-flex items-baseline gap-1.5">
-          Score
-          <span className="text-accent tabular-nums">
-            {String(score).padStart(3, "0")}
+        <div className="flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/70">
+          <span className="inline-flex items-baseline gap-1.5">
+            Score
+            <span className="text-accent tabular-nums">
+              {String(score).padStart(3, "0")}
+            </span>
           </span>
-        </span>
-        <span className="inline-flex items-baseline gap-1.5">
-          Length
-          <span className="text-accent tabular-nums">
-            {String(length).padStart(2, "0")}
+          <span className="inline-flex items-baseline gap-1.5">
+            Length
+            <span className="text-accent tabular-nums">
+              {String(length).padStart(2, "0")}
+            </span>
           </span>
-        </span>
-        <button
-          type="button"
-          onClick={restart}
-          data-cursor="hover"
-          className="hover:text-accent transition-colors"
-        >
-          [{gameOver ? "Play again" : "Restart"}]
-        </button>
-      </div>
+          <span className="inline-flex items-baseline gap-1.5">
+            MPH
+            <span className="text-accent tabular-nums">
+              {String(speedToMph(tickMs)).padStart(2, "0")}
+            </span>
+          </span>
+          <button
+            type="button"
+            onClick={restart}
+            data-cursor="hover"
+            className="hover:text-accent transition-colors"
+          >
+            [{gameOver ? "Play again" : "Restart"}]
+          </button>
+        </div>
 
       {/* Board fills the whole disclosure panel width. Height is driven by
           the grid's natural aspect so it looks right on every screen;

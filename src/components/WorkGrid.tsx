@@ -13,7 +13,11 @@ export default function WorkGrid() {
   const [active, setActive] = useState<Project | null>(null);
 
   return (
-    <section id="work" className="relative px-6 md:px-10 py-24 md:py-40">
+    <section
+      id="work"
+      aria-label="Selected work"
+      className="relative px-6 md:px-10 py-24 md:py-40"
+    >
       <div className="mb-16 md:mb-24 flex items-end justify-between">
         <div>
           <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted mb-4">

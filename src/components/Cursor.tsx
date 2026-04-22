@@ -118,7 +118,14 @@ export default function Cursor() {
       ref={wrapRef}
       aria-hidden
       className="pointer-events-none fixed left-0 top-0 z-[100] mix-blend-difference will-change-transform"
-      style={{ transform: "translate3d(-100px, -100px, 0)" }}
+      style={{
+        transform: "translate3d(-100px, -100px, 0)",
+        // Expose a CSS variable so other effects (e.g. the Contact
+        // tunnel metaball) can fade the global cursor out and let
+        // their own visuals take over. Defaults to 1 (fully visible).
+        opacity: "var(--cursor-opacity, 1)",
+        transition: "opacity 280ms ease",
+      }}
     >
       <div
         ref={dotRef}

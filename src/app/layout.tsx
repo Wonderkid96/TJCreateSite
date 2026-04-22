@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Instrument_Serif, Space_Grotesk, JetBrains_Mono } from "next/font/google";
-import Script from "next/script";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -72,21 +71,15 @@ export const metadata: Metadata = {
     title: "Toby Johnson · Graphic & Motion Designer",
     description: SITE_DESC,
     locale: "en_GB",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Toby Johnson · Graphic & Motion Designer",
-      },
-    ],
+    // Images are auto-attached from src/app/opengraph-image.tsx —
+    // Next generates /opengraph-image and wires the og:image tag for
+    // us, so no static /og-image.jpg dependency to maintain.
   },
   twitter: {
     card: "summary_large_image",
     title: "Toby Johnson · Graphic & Motion Designer",
     description: SITE_DESC,
-    images: ["/og-image.jpg"],
-    creator: "@tj.create",
+    // Twitter image is auto-attached from src/app/twitter-image.tsx.
   },
   robots: {
     index: true,
@@ -107,25 +100,88 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-// JSON-LD structured data so Google can index the person + business properly.
-const personLd = {
+// JSON-LD structured data — three interlinked schemas in a single @graph
+// block so Google can read person, business, and site identity together.
+//   Person          → the human, his social identity + job title
+//   ProfessionalService → the business offering (discipline + area served)
+//   WebSite         → the site itself + publisher relationship
+// All three link via @id references so the knowledge graph stays connected.
+const structuredData = {
   "@context": "https://schema.org",
-  "@type": "Person",
-  name: "Toby Johnson",
-  alternateName: "TJCreate",
-  url: SITE_URL,
-  jobTitle: "Graphic & Motion Designer",
-  worksFor: { "@type": "Organization", name: "TJCreate" },
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: "Lincoln",
-    addressCountry: "GB",
-  },
-  sameAs: [
-    "https://www.linkedin.com/in/tobyjohnsoncreate/",
-    "https://www.instagram.com/tj.create",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": `${SITE_URL}/#toby`,
+      name: "Toby Johnson",
+      alternateName: "TJCreate",
+      url: SITE_URL,
+      image: `${SITE_URL}/opengraph-image`,
+      jobTitle: "Graphic & Motion Designer",
+      description: SITE_DESC,
+      email: "mailto:hello@tjcreate.co.uk",
+      worksFor: { "@id": `${SITE_URL}/#tjcreate` },
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Lincoln",
+        addressRegion: "Lincolnshire",
+        addressCountry: "GB",
+      },
+      knowsAbout: [
+        "Graphic design",
+        "Motion design",
+        "3D design",
+        "Brand identity",
+        "Album artwork",
+        "Lyric videos",
+        "Music visuals",
+        "Typography",
+      ],
+      sameAs: [
+        "https://www.linkedin.com/in/tobyjohnsoncreate/",
+        "https://www.instagram.com/tj.create",
+      ],
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": `${SITE_URL}/#tjcreate`,
+      name: "TJCreate",
+      alternateName: "Toby Johnson Create",
+      url: SITE_URL,
+      founder: { "@id": `${SITE_URL}/#toby` },
+      description:
+        "Design studio run by Toby Johnson — graphic and motion design for record labels, artists, agencies and brands.",
+      image: `${SITE_URL}/opengraph-image`,
+      logo: `${SITE_URL}/icon.svg`,
+      email: "hello@tjcreate.co.uk",
+      telephone: null,
+      priceRange: "££",
+      areaServed: [
+        { "@type": "Country", name: "United Kingdom" },
+        { "@type": "Place", name: "Worldwide (remote)" },
+      ],
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Lincoln",
+        addressRegion: "Lincolnshire",
+        addressCountry: "GB",
+      },
+      serviceType: ["Graphic Design", "Motion Design", "3D Design"],
+      sameAs: [
+        "https://www.linkedin.com/in/tobyjohnsoncreate/",
+        "https://www.instagram.com/tj.create",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#site`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      description: SITE_DESC,
+      inLanguage: "en-GB",
+      publisher: { "@id": `${SITE_URL}/#tjcreate` },
+      author: { "@id": `${SITE_URL}/#toby` },
+    },
   ],
-  email: "hello@tjcreate.co.uk",
 };
 
 export default function RootLayout({
@@ -142,6 +198,15 @@ export default function RootLayout({
       <head>
         {/* Apply saved theme before paint to avoid a flash of the wrong colours. */}
         <script dangerouslySetInnerHTML={{ __html: NO_FLASH_SNIPPET }} />
+        {/* Structured data — lives in <head> per schema.org best
+            practice so crawlers pick it up on the first pass without
+            waiting on hydration. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
       </head>
       <body className="bg-paper text-ink">
         <ThemeProvider>
@@ -155,12 +220,6 @@ export default function RootLayout({
           <BackToTop />
           <SpeedInsights />
         </ThemeProvider>
-        <Script
-          id="ld-person"
-          type="application/ld+json"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }}
-        />
       </body>
     </html>
   );

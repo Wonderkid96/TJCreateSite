@@ -192,6 +192,7 @@ export default function Hero() {
   return (
     <section
       id="top"
+      aria-label="Toby Johnson — intro"
       ref={ref}
       // Keep hero typography/controls in a fixed ink-on-paper palette in both
       // light and dark modes; clouds stay bright so dark text reads best.

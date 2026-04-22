@@ -246,14 +246,25 @@ function FallingModalMedia() {
     let raf = 0;
     let last = performance.now();
     let t = 0;
+    let dir = 1;
     let lastIdx = -1;
     const totalT = FALLING_FRAME_COUNT / FPS;
 
+    // Ping-pong playback — advance forward to the last frame, then reverse
+    // back to the first, repeating forever. Matches the tile preview so
+    // the motion feels continuous between preview and expanded modal.
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
       const delta = Math.min(0.1, (now - last) / 1000);
       last = now;
-      t = (t + delta) % totalT;
+      t += dir * delta;
+      if (t >= totalT) {
+        t = totalT;
+        dir = -1;
+      } else if (t <= 0) {
+        t = 0;
+        dir = 1;
+      }
       const idx = Math.min(
         FALLING_FRAME_COUNT - 1,
         Math.max(0, Math.floor(t * FPS)),

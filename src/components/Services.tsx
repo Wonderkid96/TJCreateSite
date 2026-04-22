@@ -7,6 +7,7 @@ export default function Services() {
   return (
     <section
       id="services"
+      aria-label="Services — what I do"
       className="relative px-6 md:px-10 py-24 md:py-40 bg-ink text-paper"
       // Pin the CSS variables locally so Services stays dark-with-cream even
       // when the site is in dark mode (where --paper is normally dark).

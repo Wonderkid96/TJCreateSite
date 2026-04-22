@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
 import { useRef } from "react";
+import { SocialLinks } from "./SocialIcons";
 
 const PARAGRAPH =
   "I'm Toby Johnson, a creative partner for ambitious brands, agencies and creators. With nearly 10 years in graphic and motion design, I integrate quickly into teams and deliver work that's clear and effective.";
@@ -23,7 +24,12 @@ export default function About() {
   const words = PARAGRAPH.split(" ");
 
   return (
-    <section id="about" ref={ref} className="relative px-6 md:px-10 py-24 md:py-40">
+    <section
+      id="about"
+      aria-label="About Toby Johnson"
+      ref={ref}
+      className="relative px-6 md:px-10 py-24 md:py-40"
+    >
       <div className="flex items-end justify-between mb-16 md:mb-24">
         <div>
           <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted mb-4">
@@ -48,8 +54,8 @@ export default function About() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 md:items-stretch">
         {/* Portrait grid: 2×2 of photos so the area holds its own against
             the text side. Half the row on desktop for a balanced split. */}
-        <div className="md:col-span-6">
-          <div className="grid grid-cols-2 gap-2 md:gap-3 md:h-full md:min-h-[460px]">
+        <div className="md:col-span-7">
+          <div className="grid grid-cols-3 gap-2 md:gap-3 md:h-full md:min-h-[460px]">
             {[
               {
                 src: "/work/imported/portraits/toby-about.jpg",
@@ -71,6 +77,16 @@ export default function About() {
                 alt: "Toby Johnson — on stage",
                 position: "object-center",
               },
+              {
+                src: "/work/imported/portraits/toby-about-05.avif",
+                alt: "Toby Johnson — portrait",
+                position: "object-center object-top",
+              },
+              {
+                src: "/work/imported/portraits/toby-about-06.avif",
+                alt: "Toby Johnson — candid",
+                position: "object-center",
+              },
             ].map((photo) => (
               <div
                 key={photo.src}
@@ -81,18 +97,20 @@ export default function About() {
                   alt={photo.alt}
                   fill
                   className={`object-cover ${photo.position}`}
-                  sizes="(max-width: 768px) 50vw, (max-width: 1280px) 24vw, 300px"
+                  sizes="(max-width: 768px) 33vw, (max-width: 1280px) 19vw, 240px"
                 />
               </div>
             ))}
           </div>
         </div>
 
-        <div className="md:col-span-6">
+        <div className="md:col-span-5 w-full">
           <div
-            className="h-full border border-line/60 bg-paper/40 rounded-[2px] p-6 md:p-10 flex flex-col justify-between"
+            className="h-full w-full border border-line/60 bg-paper/40 rounded-[2px] p-6 md:p-10 flex flex-col justify-between"
           >
-            <p className="max-w-[24ch] font-display text-[clamp(1.45rem,3vw,2.8rem)] lg:text-[clamp(1.8rem,4.2vw,3.8rem)] leading-[1.15] tracking-tight">
+            {/* Paragraph fills the panel on smaller viewports; capped at
+                ~28ch on large desktops for comfortable reading measure. */}
+            <p className="w-full lg:max-w-[28ch] font-display text-[clamp(1.45rem,3vw,2.8rem)] lg:text-[clamp(1.8rem,4.2vw,3.8rem)] leading-[1.15] tracking-tight">
               {words.map((w, i) => {
                 const start = i / words.length;
                 const end = start + 1 / words.length;
@@ -114,20 +132,16 @@ export default function About() {
                     "linear-gradient(90deg, #E6352A 0%, #F4F1E9 38%, #C8DB45 68%, #C4A9D0 100%)",
                 }}
               />
-              <p className="mt-5 text-sm md:text-base text-muted max-w-[58ch] leading-relaxed">
-                Lincoln, UK
-              </p>
+              <SocialLinks size={22} tone="ink" className="mt-5" />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-16 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-line pt-8">
+      <div className="mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-line pt-8">
         {[
-          // `separator: true` inserts the accent full-stop between parts.
+          // `separator: true` inserts an orange / between parts.
           // `dot: true` appends the animated green "accepting" indicator.
-          // Only Discipline uses separators — the others read as plain
-          // space-separated caps.
           {
             k: "Discipline",
             parts: ["Graphic", "Motion", "3D"],
@@ -135,14 +149,20 @@ export default function About() {
             dot: false,
           },
           {
-            k: "Mode",
-            parts: ["Remote", "Hybrid"],
+            k: "Location",
+            parts: ["Lincoln, UK"],
             separator: false,
             dot: false,
           },
           {
+            k: "Mode",
+            parts: ["Remote", "Hybrid"],
+            separator: true,
+            dot: false,
+          },
+          {
             k: "Currently",
-            parts: ["Accepting", "projects"],
+            parts: ["Accepting projects"],
             separator: false,
             dot: true,
           },
@@ -161,7 +181,7 @@ export default function About() {
                 Discipline row gets the orange full-stop punctuation
                 between words; the others read as plain caps. Subtle
                 letter-spacing expand on hover keeps the stretch flourish. */}
-            <div className="font-sans text-base md:text-lg leading-tight inline-flex items-center gap-3 flex-wrap tracking-normal group-hover:tracking-[0.03em] transition-[letter-spacing] duration-500 ease-[cubic-bezier(.2,.8,.2,1)] whitespace-nowrap">
+            <div className="font-sans font-bold text-base md:text-lg leading-tight inline-flex items-center gap-3 flex-wrap tracking-normal group-hover:tracking-[0.03em] transition-[letter-spacing] duration-500 ease-[cubic-bezier(.2,.8,.2,1)] whitespace-nowrap">
               <span className="inline-flex items-baseline flex-wrap gap-x-[0.45em]">
                 {item.parts.map((word, i) => (
                   <span key={i} className="inline-flex items-baseline">
@@ -170,7 +190,7 @@ export default function About() {
                         aria-hidden
                         className="inline-block text-accent mr-[0.45em]"
                       >
-                        .
+                        /
                       </span>
                     )}
                     <span>{word}</span>

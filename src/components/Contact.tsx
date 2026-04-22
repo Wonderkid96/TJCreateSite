@@ -1,19 +1,20 @@
 "use client";
 
-import {
-  motion,
-} from "motion/react";
-import { useEffect, useState } from "react";
+import { motion } from "motion/react";
+import { useState } from "react";
+import LetsTalkMetaball from "./LetsTalkMetaball";
 import SnakeGame from "./SnakeGame";
+import { SocialLinks } from "./SocialIcons";
 
 export default function Contact() {
   const [snakeOpen, setSnakeOpen] = useState(false);
   return (
     <section
       id="contact"
+      aria-label="Contact — say hello"
       // Pin --paper and --ink locally so the section is always dark
-      // regardless of theme — the tunnel + its labels + the contact
-      // grid are designed against a permanent dark background.
+      // regardless of theme — the contact labels + grid are designed
+      // against a permanent dark background.
       style={
         {
           "--paper": "#f4f1e9",
@@ -48,7 +49,7 @@ export default function Contact() {
         </div>
       </div>
 
-      <TunnelBlock />
+      <LetsTalkMetaball />
 
       <a
         href="mailto:hello@tjcreate.co.uk"
@@ -116,28 +117,7 @@ export default function Contact() {
           <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50 mb-2">
             Socials
           </div>
-          <div className="flex items-center gap-5">
-            <a
-              href="https://instagram.com/tj.create"
-              data-cursor="hover"
-              aria-label="Toby Johnson on Instagram"
-              className="text-paper/85 hover:text-accent transition-colors group inline-flex"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <InstagramIcon size={22} />
-            </a>
-            <a
-              href="https://linkedin.com/in/tobyjohnsoncreate"
-              data-cursor="hover"
-              aria-label="Toby Johnson on LinkedIn"
-              className="text-paper/85 hover:text-accent transition-colors group inline-flex"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <LinkedInIcon size={22} />
-            </a>
-          </div>
+          <SocialLinks size={22} tone="paper" />
         </div>
       </div>
 
@@ -243,141 +223,13 @@ export default function Contact() {
         </div>
       </div>
 
-      <div className="mt-24 flex items-end justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50">
+      <footer
+        aria-label="Site footer"
+        className="mt-24 flex items-end justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50"
+      >
         <div>© Toby Johnson, 2026</div>
         <div>Made in Lincoln</div>
-      </div>
+      </footer>
     </section>
-  );
-}
-
-/**
- * Tunnel block placeholder — tunnel visuals are temporarily disabled.
- * Keep the click target and center lockup clear/stable while iterating.
- */
-function TunnelBlock() {
-  return (
-    <a
-      href="mailto:hello@tjcreate.co.uk"
-      data-cursor="view"
-      data-cursor-label="LET'S TALK"
-      aria-label="Email hello@tjcreate.co.uk"
-      className="relative block w-full mx-auto overflow-hidden h-[48vh] sm:h-[52vh] md:h-[58vh] lg:h-[62vh] min-h-[300px] max-h-[78vh] select-none"
-      style={{
-        background:
-          "radial-gradient(ellipse 55% 45% at 50% 50%, rgba(244,241,233,0.06) 0%, rgba(10,10,10,0.25) 32%, rgba(10,10,10,0.88) 100%)",
-      }}
-    >
-      <div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        aria-hidden
-      >
-        <TypeLine />
-      </div>
-    </a>
-  );
-}
-
-function TypeLine() {
-  const full = "Let's talk";
-  const [count, setCount] = useState(0);
-  const [hovered, setHovered] = useState(false);
-
-  useEffect(() => {
-    setCount(0);
-    const timer = window.setInterval(() => {
-      setCount((prev) => {
-        if (prev >= full.length) {
-          window.clearInterval(timer);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 66);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  const typed = full.slice(0, count);
-
-  return (
-    <div
-      className="pointer-events-auto font-display leading-[0.9] tracking-tight whitespace-nowrap text-white relative inline-block transition-transform duration-300 ease-[cubic-bezier(.2,.8,.2,1)]"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onTouchStart={() => setHovered(false)}
-      style={{
-        fontSize: "clamp(2.4rem, 8vw, 7.6rem)",
-        textShadow: "0 1px 0 rgba(10,10,10,0.14), 0 8px 20px rgba(10,10,10,0.1)",
-        transform: hovered ? "scale(0.96)" : "scale(1)",
-      }}
-    >
-      {typed}
-      <span className="text-accent">.</span>
-      {/* Animated tail — the extra dots + cursor live in an absolute
-          container that flows OUT from the period's right edge. The base
-          "Let's talk." stays centred in its parent; only this cluster
-          grows on hover, so the cursor appears to "type" the new dots
-          without shifting the main text. */}
-      <span
-        aria-hidden
-        className="absolute left-full top-0 inline-flex items-end whitespace-nowrap text-accent"
-      >
-        <span
-          className="inline-block overflow-hidden align-bottom transition-[width] duration-[240ms] ease-[steps(2,end)]"
-          style={{ width: hovered ? "2ch" : "0" }}
-        >
-          ..
-        </span>
-        <motion.span
-          className="inline-block align-baseline"
-          animate={{ opacity: [1, 0, 1] }}
-          transition={{ duration: 0.85, repeat: Infinity, ease: "linear" }}
-        >
-          |
-        </motion.span>
-      </span>
-    </div>
-  );
-}
-
-/* --------------------------------------------------------------------- */
-/* Brand icons — inline SVG so they inherit currentColor for hover states
-   and carry no extra network cost. Stroke-based to sit alongside the
-   rest of the site's line-icon treatment (theme toggle, back-to-top). */
-/* --------------------------------------------------------------------- */
-
-function InstagramIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.6}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-      className="shrink-0 transition-transform duration-300 group-hover:-translate-y-[1px]"
-    >
-      <rect x="3" y="3" width="18" height="18" rx="5" />
-      <circle cx="12" cy="12" r="4" />
-      <circle cx="17.5" cy="6.5" r="0.9" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-function LinkedInIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-      className="shrink-0 transition-transform duration-300 group-hover:-translate-y-[1px]"
-    >
-      <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.44-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zm1.78 13.02H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z" />
-    </svg>
   );
 }

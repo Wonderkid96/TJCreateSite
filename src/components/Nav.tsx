@@ -47,7 +47,10 @@ export default function Nav() {
         <LogoMark onClick={() => setOpen(false)} />
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-8 font-mono text-[11px] uppercase tracking-[0.2em]">
+        <nav
+          aria-label="Primary"
+          className="hidden md:flex items-center gap-8 font-mono text-[11px] uppercase tracking-[0.2em]"
+        >
           {LINKS.map((l) => (
             <a key={l.href} href={l.href} data-cursor="hover" className="relative group">
               <span className="group-hover:text-accent transition-colors">
@@ -60,7 +63,14 @@ export default function Nav() {
         {/* Desktop status chip + theme toggle */}
         <div className="hidden md:flex items-center gap-4 font-mono text-[11px] uppercase tracking-[0.2em]">
           <div className="flex items-center gap-2">
-            <span>Available</span>
+            <a
+              href="mailto:hello@tjcreate.co.uk?subject=Hello%20TJCreate"
+              data-cursor="hover"
+              aria-label="Available for work — email hello@tjcreate.co.uk"
+              className="hover:text-accent transition-colors"
+            >
+              Available
+            </a>
             <span
               aria-hidden
               className="relative inline-flex h-1.5 w-1.5 shrink-0"
@@ -118,7 +128,10 @@ export default function Nav() {
             transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
             className="md:hidden overflow-hidden border-t border-line bg-paper"
           >
-            <nav className="flex flex-col divide-y divide-line">
+            <nav
+              aria-label="Mobile primary"
+              className="flex flex-col divide-y divide-line"
+            >
               {LINKS.map((l) => (
                 <a
                   key={l.href}
@@ -133,7 +146,14 @@ export default function Nav() {
               ))}
             </nav>
             <div className="flex items-center gap-2 px-6 py-4 font-mono text-[10px] uppercase tracking-[0.2em] text-muted border-t border-line">
-              <span>Available</span>
+              <a
+                href="mailto:hello@tjcreate.co.uk?subject=Hello%20TJCreate"
+                onClick={() => setOpen(false)}
+                aria-label="Available for work — email hello@tjcreate.co.uk"
+                className="hover:text-accent transition-colors"
+              >
+                Available
+              </a>
               <span
                 aria-hidden
                 className="relative inline-flex h-1.5 w-1.5 shrink-0"

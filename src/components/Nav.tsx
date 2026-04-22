@@ -48,9 +48,8 @@ export default function Nav() {
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-8 font-mono text-[11px] uppercase tracking-[0.2em]">
-          {LINKS.map((l, i) => (
+          {LINKS.map((l) => (
             <a key={l.href} href={l.href} data-cursor="hover" className="relative group">
-              <span className="text-muted mr-2">0{i + 1}</span>
               <span className="group-hover:text-accent transition-colors">
                 {l.label}
               </span>
@@ -109,18 +108,15 @@ export default function Nav() {
             className="md:hidden overflow-hidden border-t border-line bg-paper"
           >
             <nav className="flex flex-col divide-y divide-line">
-              {LINKS.map((l, i) => (
+              {LINKS.map((l) => (
                 <a
                   key={l.href}
                   href={l.href}
                   onClick={() => setOpen(false)}
-                  className="flex items-baseline justify-between px-6 py-5 group"
+                  className="flex items-baseline px-6 py-5 group"
                 >
                   <span className="font-display text-3xl leading-none tracking-tight group-hover:italic transition-[font-style]">
                     {l.label}
-                  </span>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
-                    0{i + 1}
                   </span>
                 </a>
               ))}

@@ -308,96 +308,68 @@ export default function SnakeGame({ active }: { active: boolean }) {
   };
 
   return (
-    <div className="mt-4 border-t border-paper/15 pt-4 space-y-2.5">
-      {/* Compact stack: stats -> board -> dpad. Everything constrained to a
-          max-width so the whole panel stays well within the viewport at any
-          breakpoint; the `max-h-[...svh]` guard caps vertical take-up on
-          short screens. */}
-      <div className="mx-auto w-full max-w-[360px] flex flex-col gap-2.5">
-        <div className="flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/70">
-          <span className="inline-flex items-baseline gap-1.5">
-            Score
-            <span className="text-accent tabular-nums">
-              {String(score).padStart(3, "0")}
-            </span>
+    <div className="mt-4 border-t border-paper/15 pt-4 flex flex-col gap-3">
+      {/* Stats bar spans the full panel width — sits above the board, never
+          overlaps it. Mono so the numbers stay fixed-width as they tick. */}
+      <div className="flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/70">
+        <span className="inline-flex items-baseline gap-1.5">
+          Score
+          <span className="text-accent tabular-nums">
+            {String(score).padStart(3, "0")}
           </span>
-          <span className="inline-flex items-baseline gap-1.5">
-            Length
-            <span className="text-accent tabular-nums">
-              {String(length).padStart(2, "0")}
-            </span>
+        </span>
+        <span className="inline-flex items-baseline gap-1.5">
+          Length
+          <span className="text-accent tabular-nums">
+            {String(length).padStart(2, "0")}
           </span>
-          <button
-            type="button"
-            onClick={restart}
-            data-cursor="hover"
-            className="hover:text-accent transition-colors"
-          >
-            [{gameOver ? "Play again" : "Restart"}]
-          </button>
-        </div>
-
-        <div
-          ref={containerRef}
-          className="relative w-full aspect-[3/2] max-h-[34svh] overflow-hidden rounded-[2px] border border-paper/15 bg-[#0a0a0a] touch-none"
+        </span>
+        <button
+          type="button"
+          onClick={restart}
+          data-cursor="hover"
+          className="hover:text-accent transition-colors"
         >
-          <canvas
-            ref={canvasRef}
-            className="absolute inset-0 h-full w-full"
-            aria-label="Snake game board"
-            role="img"
-          />
+          [{gameOver ? "Play again" : "Restart"}]
+        </button>
+      </div>
 
-          {gameOver && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-[rgba(10,10,10,0.72)] backdrop-blur-[2px]">
-              <div className="font-display text-xl md:text-2xl tracking-tight text-paper">
-                Game <span className="italic">over</span>
-                <span className="text-accent">.</span>
-              </div>
-              <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-paper/75">
-                Score {score} · Length {length}
-              </div>
-              <button
-                type="button"
-                onClick={restart}
-                data-cursor="hover"
-                className="mt-1.5 px-3 py-1 rounded-full border border-paper/25 font-mono text-[9px] uppercase tracking-[0.2em] text-paper/85 hover:border-accent hover:text-accent transition-colors"
-              >
-                Restart
-              </button>
+      {/* Board fills the whole disclosure panel width. Height is driven by
+          the grid's natural aspect so it looks right on every screen;
+          max-h clamps vertical footprint on tall narrow viewports so the
+          expanded panel never pushes past a single viewport height. */}
+      <div
+        ref={containerRef}
+        className="relative w-full overflow-hidden rounded-[2px] border border-paper/15 bg-[#0a0a0a] touch-none"
+        style={{ aspectRatio: `${COLS} / ${ROWS}`, maxHeight: "58svh" }}
+      >
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 h-full w-full"
+          aria-label="Snake game board"
+          role="img"
+        />
+
+        {gameOver && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[rgba(10,10,10,0.72)] backdrop-blur-[2px]">
+            <div className="font-display text-xl md:text-2xl tracking-tight text-paper">
+              Game <span className="italic">over</span>
+              <span className="text-accent">.</span>
             </div>
-          )}
-        </div>
-
-        <div className="grid grid-cols-3 gap-1 max-w-[116px] mx-auto select-none">
-          <div />
-          <DpadButton label="↑" onPress={() => turn("up")} />
-          <div />
-          <DpadButton label="←" onPress={() => turn("left")} />
-          <DpadButton label="↓" onPress={() => turn("down")} />
-          <DpadButton label="→" onPress={() => turn("right")} />
-        </div>
+            <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-paper/75">
+              Score {score} · Length {length}
+            </div>
+            <button
+              type="button"
+              onClick={restart}
+              data-cursor="hover"
+              className="mt-1.5 px-3 py-1 rounded-full border border-paper/25 font-mono text-[9px] uppercase tracking-[0.2em] text-paper/85 hover:border-accent hover:text-accent transition-colors"
+            >
+              Restart
+            </button>
+          </div>
+        )}
       </div>
     </div>
-  );
-}
-
-function DpadButton({
-  label,
-  onPress,
-}: {
-  label: string;
-  onPress: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onPress}
-      data-cursor="hover"
-      aria-label={`Turn ${label}`}
-      className="aspect-square rounded-sm border border-paper/20 bg-paper/5 font-mono text-sm leading-none text-paper/80 hover:border-accent hover:text-accent active:border-accent active:text-accent transition-colors"
-    >
-      {label}
-    </button>
   );
 }

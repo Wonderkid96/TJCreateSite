@@ -51,16 +51,21 @@ export default function Services() {
 
       {/* Journey */}
       <div className="relative">
-        {/* Track — faint full-height background line */}
+        {/* Track — faint guide line, full height */}
         <div
           aria-hidden
-          className="absolute left-0 top-0 bottom-0 w-px bg-paper/10"
+          className="absolute left-0 top-0 bottom-0 w-[2px] bg-paper/8"
         />
-        {/* Animated accent fill — draws downward with scroll */}
+        {/* Gradient fill — draws downward with scroll */}
         <motion.div
           aria-hidden
-          className="absolute left-0 top-0 w-px bg-accent origin-top"
-          style={{ scaleY, height: "100%" }}
+          className="absolute left-0 top-0 w-[2px] origin-top"
+          style={{
+            scaleY,
+            height: "100%",
+            background:
+              "linear-gradient(to bottom, #E6352A 0%, #F4F1E9 38%, #C8DB45 68%, #C4A9D0 100%)",
+          }}
         />
 
         {SERVICES.map((s, i) => (
@@ -76,26 +81,25 @@ export default function Services() {
             }}
             className="relative pl-10 md:pl-20 group"
           >
-            {/* Stop dot — pops in when card enters view */}
+            {/* Horizontal branch — sweeps right from the vertical line */}
             <motion.div
               aria-hidden
-              className="absolute left-0 top-10 md:top-14 -translate-x-1/2 w-3 h-3 rounded-full bg-ink border-2 border-accent"
-              initial={{ scale: 0 }}
-              whileInView={{ scale: 1 }}
-              viewport={{ once: true }}
+              className="absolute left-0 top-0 h-[2px] w-full origin-left"
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true, margin: "-60px" }}
               transition={{
-                delay: 0.25,
-                type: "spring",
-                stiffness: 380,
-                damping: 18,
+                duration: 0.7,
+                delay: 0.15,
+                ease: [0.2, 0.8, 0.2, 1],
+              }}
+              style={{
+                background:
+                  "linear-gradient(to right, #E6352A 0%, #F4F1E9 38%, #C8DB45 68%, #C4A9D0 100%)",
               }}
             />
 
-            <div
-              className={`py-12 md:py-16 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 ${
-                i < SERVICES.length - 1 ? "border-b border-paper/10" : ""
-              }`}
-            >
+            <div className="py-12 md:py-16 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16">
               {/* Left — number + large title */}
               <div className="md:col-span-5">
                 <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/35 mb-5">
@@ -127,16 +131,6 @@ export default function Services() {
                 </ul>
               </div>
             </div>
-
-            {/* Gradient rule — sweeps left→right on hover */}
-            <div
-              aria-hidden
-              className="absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)]"
-              style={{
-                background:
-                  "linear-gradient(90deg, #E6352A 0%, #F4F1E9 38%, #C8DB45 68%, #C4A9D0 100%)",
-              }}
-            />
           </motion.div>
         ))}
       </div>

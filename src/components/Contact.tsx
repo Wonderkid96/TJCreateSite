@@ -20,7 +20,7 @@ export default function Contact() {
           "--ink": "#0a0a0a",
         } as React.CSSProperties
       }
-      className="relative px-6 md:px-10 pt-16 md:pt-20 pb-24 md:pb-32 bg-ink text-paper overflow-hidden"
+      className="relative px-6 md:px-10 pt-24 md:pt-32 pb-24 md:pb-32 bg-ink text-paper overflow-hidden"
     >
       {/* Section header — matches Work / Services / About framing:
           small mono slug + big serif heading on the left, aligned right
@@ -35,7 +35,7 @@ export default function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
-            className="font-display text-[clamp(2.2rem,6.5vw,4.6rem)] lg:text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
+            className="font-display text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
           >
             Say <span className="italic">hello</span>
           </motion.h2>
@@ -127,7 +127,7 @@ export default function Contact() {
         </div>
       </div>
 
-      <div className="mt-14 md:mt-16 border-t border-paper/20 pt-10 md:pt-12">
+      <div className="mt-20 md:mt-24 border-t border-paper/20 pt-10 md:pt-12">
         <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 mb-5">
           Legal
         </div>

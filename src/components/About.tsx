@@ -127,7 +127,7 @@ export default function About() {
         </div>
       </div>
 
-      <div className="mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-line pt-8">
+      <div className="mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-line pt-10 md:pt-12">
         {[
           // `sep` is the character inserted between parts in accent orange.
           // `dot: true` appends the animated green "accepting" indicator.

@@ -7,6 +7,8 @@ export type Project = {
   tags: string[];
   blurb: string;
   image?: string;
+  /** Descriptive alt text for the project image. Falls back to title if omitted. */
+  alt?: string;
   imageHover?: string; // used for "day-night" hover swap
   video?: string;
   videoPoster?: string;
@@ -29,6 +31,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Screen-printed campaign for the Brighton Dome record-label showcase. Balimaya Project, Corto.Alto, Rebecca Vasmant Ensemble.",
     image: "/work/imported/posters/together-we-stand-mockup.avif",
+    alt: "Screen-printed concert poster for Brighton Dome record-label showcase — print design by Toby Johnson",
     kind: "image",
     bg: "#1c1a16",
   },
@@ -42,6 +45,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Campaign artwork and identity for Grumble's The Pylons. Band on location, title treatment, typographic system.",
     image: "/work/imported/banners/grumble-pylons.jpg",
+    alt: "Campaign artwork and visual identity for Grumble's The Pylons — music industry graphic design by Toby Johnson",
     kind: "image",
     bg: "#0f0f0f",
   },
@@ -55,6 +59,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Poster campaign for Jgrrey's tour. 'Playing gigs just so I can see you'. Printed in blueprint indigo.",
     image: "/work/imported/posters/jgrrey-mu.avif",
+    alt: "Jgrrey tour poster printed in blueprint indigo — music industry graphic design by Toby Johnson",
     kind: "image",
     bg: "#1a1a1a",
   },
@@ -80,6 +85,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Poster artwork for Filtered. Teal ink, heavy type, Toby Johnson on the bill.",
     image: "/work/imported/posters/filtered-gig-mockup2.avif",
+    alt: "Gig poster for Filtered in teal ink with heavy type — music poster design by Toby Johnson",
     kind: "image",
     bg: "#0a3b45",
   },
@@ -93,6 +99,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Packaging system for the Offcut product line. Black-on-black, zero wasted surface.",
     image: "/work/imported/projects/box-grid.avif",
+    alt: "Black-on-black product packaging system for Offcut — packaging design by Toby Johnson",
     kind: "image",
     bg: "#0a0a0a",
   },
@@ -162,6 +169,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Day/night scene study. Same 3D environment, two different lighting passes. Hover to flip.",
     image: "/work/imported/day-night/phone-booth-day.avif",
+    alt: "Phone booth 3D scene rendered in day and night lighting — 3D design by Toby Johnson",
     imageHover: "/work/imported/day-night/phone-booth-night.avif",
     kind: "day-night",
     bg: "#101418",
@@ -191,6 +199,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Wonderkid. Limited product packaging rendered in-bag. Typography meets product photography.",
     image: "/work/imported/posters/wonderkid-in-bag.avif",
+    alt: "Wonderkid limited edition packaging rendered in-bag — product graphic design by Toby Johnson",
     kind: "image",
     bg: "#0f0f0f",
   },

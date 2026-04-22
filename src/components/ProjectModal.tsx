@@ -174,7 +174,7 @@ function ModalMedia({ project }: { project: Project }) {
     return (
       <Image
         src={project.image}
-        alt={project.title}
+        alt={project.alt ?? project.title}
         fill
         sizes="(max-width: 768px) 100vw, 66vw"
         className="object-cover"
@@ -187,7 +187,7 @@ function ModalMedia({ project }: { project: Project }) {
       <div className="group absolute inset-0">
         <Image
           src={project.image}
-          alt={`${project.title} (day)`}
+          alt={project.alt ? `${project.alt} (day)` : `${project.title} (day)`}
           fill
           sizes="66vw"
           className="object-cover transition-opacity duration-[1200ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-100 group-hover:opacity-0"
@@ -195,7 +195,7 @@ function ModalMedia({ project }: { project: Project }) {
         />
         <Image
           src={project.imageHover}
-          alt={`${project.title} (night)`}
+          alt={project.alt ? `${project.alt} (night)` : `${project.title} (night)`}
           fill
           sizes="66vw"
           className="object-cover transition-opacity duration-[1200ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-0 group-hover:opacity-100"

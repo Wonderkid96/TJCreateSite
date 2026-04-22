@@ -19,7 +19,11 @@ import {
 
 const COLS = 24;
 const ROWS = 16;
-const TICK_MS = 130;
+const START_TICK_MS = 140;
+const MIN_TICK_MS = 60;
+// Ramp per food pickup — small enough that each bite is barely perceptible,
+// big enough that a long run gets noticeably harder.
+const SPEEDUP_MS = 5;
 
 type Cell = { x: number; y: number };
 type Dir = "up" | "down" | "left" | "right";
@@ -67,6 +71,10 @@ export default function SnakeGame({ active }: { active: boolean }) {
   const [length, setLength] = useState(INITIAL_SNAKE.length);
   const [gameOver, setGameOver] = useState(false);
   const [running, setRunning] = useState(false);
+  // Tick interval lives in state so a speedup rebuilds the setInterval with
+  // the new cadence. Starts slow, drops by SPEEDUP_MS on each pickup down
+  // to MIN_TICK_MS — floors out before it becomes unplayable.
+  const [tickMs, setTickMs] = useState(START_TICK_MS);
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -134,6 +142,7 @@ export default function SnakeGame({ active }: { active: boolean }) {
     setScore(0);
     setLength(INITIAL_SNAKE.length);
     setGameOver(false);
+    setTickMs(START_TICK_MS);
   }, []);
 
   const turn = useCallback((dir: Dir) => {
@@ -185,12 +194,13 @@ export default function SnakeGame({ active }: { active: boolean }) {
         foodRef.current = randomFood(newSnake);
         setScore((s) => s + 1);
         setLength(newSnake.length);
+        setTickMs((ms) => Math.max(MIN_TICK_MS, ms - SPEEDUP_MS));
       }
 
       draw();
-    }, TICK_MS);
+    }, tickMs);
     return () => window.clearInterval(id);
-  }, [running, gameOver, draw]);
+  }, [running, gameOver, draw, tickMs]);
 
   // Canvas sizing — ResizeObserver keeps it pixel-perfect for any breakpoint
   // and for devicePixelRatio changes (zoom, external monitor, etc.).
@@ -298,79 +308,75 @@ export default function SnakeGame({ active }: { active: boolean }) {
   };
 
   return (
-    <div className="mt-4 border-t border-paper/15 pt-4 space-y-3">
-      <p className="text-sm md:text-[15px] leading-relaxed text-paper/80">
-        Clause one: collect the orange full stops. Clause two: don&apos;t hit
-        yourself, don&apos;t hit the walls. Arrow keys or WASD on desktop,
-        swipe or tap the dpad on mobile.
-      </p>
+    <div className="mt-4 border-t border-paper/15 pt-4 space-y-2.5">
+      {/* Compact stack: stats -> board -> dpad. Everything constrained to a
+          max-width so the whole panel stays well within the viewport at any
+          breakpoint; the `max-h-[...svh]` guard caps vertical take-up on
+          short screens. */}
+      <div className="mx-auto w-full max-w-[360px] flex flex-col gap-2.5">
+        <div className="flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/70">
+          <span className="inline-flex items-baseline gap-1.5">
+            Score
+            <span className="text-accent tabular-nums">
+              {String(score).padStart(3, "0")}
+            </span>
+          </span>
+          <span className="inline-flex items-baseline gap-1.5">
+            Length
+            <span className="text-accent tabular-nums">
+              {String(length).padStart(2, "0")}
+            </span>
+          </span>
+          <button
+            type="button"
+            onClick={restart}
+            data-cursor="hover"
+            className="hover:text-accent transition-colors"
+          >
+            [{gameOver ? "Play again" : "Restart"}]
+          </button>
+        </div>
 
-      {/* Stats bar — sits above the board, never overlaps it. Mono so the
-          numbers stay fixed-width while they tick up. */}
-      <div className="flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/70">
-        <span className="inline-flex items-baseline gap-1.5">
-          Score
-          <span className="text-accent tabular-nums">
-            {String(score).padStart(3, "0")}
-          </span>
-        </span>
-        <span className="inline-flex items-baseline gap-1.5">
-          Length
-          <span className="text-accent tabular-nums">
-            {String(length).padStart(2, "0")}
-          </span>
-        </span>
-        <button
-          type="button"
-          onClick={restart}
-          data-cursor="hover"
-          className="hover:text-accent transition-colors"
+        <div
+          ref={containerRef}
+          className="relative w-full aspect-[3/2] max-h-[34svh] overflow-hidden rounded-[2px] border border-paper/15 bg-[#0a0a0a] touch-none"
         >
-          [{gameOver ? "Play again" : "Restart"}]
-        </button>
-      </div>
+          <canvas
+            ref={canvasRef}
+            className="absolute inset-0 h-full w-full"
+            aria-label="Snake game board"
+            role="img"
+          />
 
-      <div
-        ref={containerRef}
-        className="relative aspect-[3/2] w-full overflow-hidden rounded-[2px] border border-paper/15 bg-[#0a0a0a] touch-none"
-      >
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 h-full w-full"
-          aria-label="Snake game board"
-          role="img"
-        />
-
-        {gameOver && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[rgba(10,10,10,0.72)] backdrop-blur-[2px]">
-            <div className="font-display text-2xl md:text-3xl tracking-tight text-paper">
-              Game <span className="italic">over</span>
-              <span className="text-accent">.</span>
+          {gameOver && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-[rgba(10,10,10,0.72)] backdrop-blur-[2px]">
+              <div className="font-display text-xl md:text-2xl tracking-tight text-paper">
+                Game <span className="italic">over</span>
+                <span className="text-accent">.</span>
+              </div>
+              <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-paper/75">
+                Score {score} · Length {length}
+              </div>
+              <button
+                type="button"
+                onClick={restart}
+                data-cursor="hover"
+                className="mt-1.5 px-3 py-1 rounded-full border border-paper/25 font-mono text-[9px] uppercase tracking-[0.2em] text-paper/85 hover:border-accent hover:text-accent transition-colors"
+              >
+                Restart
+              </button>
             </div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/75">
-              Score {score} · Length {length}
-            </div>
-            <button
-              type="button"
-              onClick={restart}
-              data-cursor="hover"
-              className="mt-2 px-3 py-1.5 rounded-full border border-paper/25 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/85 hover:border-accent hover:text-accent transition-colors"
-            >
-              Restart
-            </button>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      {/* Dpad — always visible so there's a fallback control surface at any
-          breakpoint (keyboardless laptops, tablets, phones). */}
-      <div className="mx-auto grid grid-cols-3 gap-1.5 max-w-[176px] select-none">
-        <div />
-        <DpadButton label="↑" onPress={() => turn("up")} />
-        <div />
-        <DpadButton label="←" onPress={() => turn("left")} />
-        <DpadButton label="↓" onPress={() => turn("down")} />
-        <DpadButton label="→" onPress={() => turn("right")} />
+        <div className="grid grid-cols-3 gap-1 max-w-[116px] mx-auto select-none">
+          <div />
+          <DpadButton label="↑" onPress={() => turn("up")} />
+          <div />
+          <DpadButton label="←" onPress={() => turn("left")} />
+          <DpadButton label="↓" onPress={() => turn("down")} />
+          <DpadButton label="→" onPress={() => turn("right")} />
+        </div>
       </div>
     </div>
   );
@@ -389,7 +395,7 @@ function DpadButton({
       onClick={onPress}
       data-cursor="hover"
       aria-label={`Turn ${label}`}
-      className="aspect-square rounded-sm border border-paper/20 bg-paper/5 font-mono text-base text-paper/80 hover:border-accent hover:text-accent active:border-accent active:text-accent transition-colors"
+      className="aspect-square rounded-sm border border-paper/20 bg-paper/5 font-mono text-sm leading-none text-paper/80 hover:border-accent hover:text-accent active:border-accent active:text-accent transition-colors"
     >
       {label}
     </button>

@@ -52,10 +52,9 @@ export default function About() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 md:items-stretch">
-        {/* Portrait grid: 2×2 of photos so the area holds its own against
-            the text side. Half the row on desktop for a balanced split. */}
-        <div className="md:col-span-7">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3 md:h-full md:min-h-[460px]">
+        {/* Portrait grid: 2×2 */}
+        <div className="md:col-span-6">
+          <div className="grid grid-cols-2 gap-2 md:gap-3 md:h-full md:min-h-[460px]">
             {[
               {
                 src: "/work/imported/portraits/toby-about.jpg",
@@ -63,38 +62,18 @@ export default function About() {
                 position: "object-[52%_84%]",
               },
               {
-                src: "/work/imported/portraits/toby-about-02.avif",
-                alt: "Toby Johnson — candid",
-                position: "object-center",
-              },
-              {
-                src: "/work/imported/portraits/toby-about-03.avif",
-                alt: "Toby Johnson — off-duty",
-                position: "object-center",
-              },
-              {
                 src: "/work/imported/portraits/toby-about-07.avif",
                 alt: "Toby Johnson — portrait",
                 position: "object-center object-top",
               },
               {
-                src: "/work/imported/portraits/toby-about-04.avif",
-                alt: "Toby Johnson — on stage",
-                position: "object-center",
-              },
-              {
-                src: "/work/imported/portraits/toby-about-05.avif",
-                alt: "Toby Johnson — portrait",
-                position: "object-center object-top",
-              },
-              {
-                src: "/work/imported/portraits/toby-about-06.avif",
+                src: "/work/imported/portraits/toby-about-08.avif",
                 alt: "Toby Johnson — candid",
                 position: "object-center",
               },
               {
-                src: "/work/imported/portraits/toby-about-08.avif",
-                alt: "Toby Johnson — photo",
+                src: "/work/imported/portraits/toby-about-04.avif",
+                alt: "Toby Johnson — on stage",
                 position: "object-center",
               },
             ].map((photo) => (
@@ -107,14 +86,14 @@ export default function About() {
                   alt={photo.alt}
                   fill
                   className={`object-cover ${photo.position}`}
-                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 25vw, (max-width: 1280px) 15vw, 180px"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1280px) 25vw, 300px"
                 />
               </div>
             ))}
           </div>
         </div>
 
-        <div className="md:col-span-5 w-full">
+        <div className="md:col-span-6 w-full">
           <div
             className="h-full w-full border border-line/60 bg-paper/40 rounded-[2px] p-6 md:p-10 flex flex-col justify-between"
           >

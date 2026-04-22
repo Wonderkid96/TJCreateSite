@@ -62,18 +62,18 @@ export default function About() {
                 position: "object-[52%_84%]",
               },
               {
-                src: "/work/imported/portraits/toby-about-07.avif",
+                src: "/work/imported/portraits/toby-about-02.avif",
                 alt: "Toby Johnson — portrait",
                 position: "object-center object-top",
               },
               {
-                src: "/work/imported/portraits/toby-about-08.avif",
-                alt: "Toby Johnson — candid",
-                position: "object-center",
+                src: "/work/imported/portraits/toby-about-03.avif",
+                alt: "Toby Johnson — on stage",
+                position: "object-center object-top",
               },
               {
                 src: "/work/imported/portraits/toby-about-04.avif",
-                alt: "Toby Johnson — on stage",
+                alt: "Toby Johnson — candid",
                 position: "object-center",
               },
             ].map((photo) => (

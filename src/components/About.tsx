@@ -59,7 +59,7 @@ export default function About() {
 
         <div className="md:col-span-6 w-full">
           <div
-            className="h-full w-full p-0 md:p-0 flex flex-col justify-between"
+            className="w-full flex flex-col gap-10"
           >
             {/* Paragraph fills the panel on smaller viewports; capped at
                 ~28ch on large desktops for comfortable reading measure. */}
@@ -178,11 +178,11 @@ function PortraitTilt() {
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
   const isHovered = useMotionValue(0);
+  // overlayOpacity removed — colour sweep effect disabled per user preference
 
   const springConfig = { stiffness: 120, damping: 18 };
   const rotateY = useSpring(useTransform(rawX, [-0.5, 0.5], [-9, 9]), springConfig);
   const rotateX = useSpring(useTransform(rawY, [-0.5, 0.5], [7, -7]), springConfig);
-  const overlayOpacity = useSpring(useTransform(isHovered, [0, 1], [0, 1]), { stiffness: 80, damping: 20 });
   const scale = useSpring(useTransform(isHovered, [0, 1], [1, 1.03]), springConfig);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -216,24 +216,6 @@ function PortraitTilt() {
           className="object-cover object-[52%_84%]"
           sizes="(max-width: 768px) 100vw, 50vw"
         />
-        {/* Colour sweep overlay — gradient wipes in on hover */}
-        <motion.div
-          aria-hidden
-          className="absolute inset-0 mix-blend-color-dodge pointer-events-none"
-          style={{
-            opacity: overlayOpacity,
-            background:
-              "linear-gradient(135deg, rgba(230,53,42,0.35) 0%, rgba(200,219,69,0.2) 50%, rgba(196,169,208,0.35) 100%)",
-          }}
-        />
-        {/* Corner label that drifts in */}
-        <motion.div
-          aria-hidden
-          className="absolute bottom-4 right-4 font-mono text-[9px] uppercase tracking-[0.2em] text-white/70"
-          style={{ opacity: overlayOpacity }}
-        >
-          Toby Johnson
-        </motion.div>
       </motion.div>
     </motion.div>
   );

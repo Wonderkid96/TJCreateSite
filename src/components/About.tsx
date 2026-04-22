@@ -6,7 +6,7 @@ import { useRef } from "react";
 import { SocialLinks } from "./SocialIcons";
 
 const PARAGRAPH =
-  "I'm Toby Johnson — a graphic and motion designer based in Lincoln, UK, working with record labels, artists, agencies and brands on campaign artwork, visual identity and motion graphics. Nearly 10 years in, I integrate quickly into teams and deliver work that's clear and effective.";
+  "I'm Toby Johnson, a graphic and motion designer based in Lincoln, UK, working with record labels, artists, agencies and brands on campaign artwork, visual identity and motion graphics. Nearly 10 years in, I integrate quickly into teams and deliver work that's clear and effective.";
 
 export default function About() {
   const ref = useRef<HTMLElement>(null);

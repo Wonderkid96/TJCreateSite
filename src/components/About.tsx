@@ -129,30 +129,30 @@ export default function About() {
 
       <div className="mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-line pt-8">
         {[
-          // `separator: true` inserts an orange / between parts.
+          // `sep` is the character inserted between parts in accent orange.
           // `dot: true` appends the animated green "accepting" indicator.
           {
             k: "Discipline",
             parts: ["Graphic", "Motion", "3D"],
-            separator: true,
+            sep: ".",
             dot: false,
           },
           {
             k: "Location",
             parts: ["Lincoln, UK"],
-            separator: false,
+            sep: "",
             dot: false,
           },
           {
             k: "Mode",
             parts: ["Remote", "Hybrid"],
-            separator: true,
+            sep: "/",
             dot: false,
           },
           {
             k: "Currently",
             parts: ["Accepting projects"],
-            separator: false,
+            sep: "",
             dot: true,
           },
         ].map((item, index) => (
@@ -174,12 +174,12 @@ export default function About() {
               <span className="inline-flex items-baseline flex-wrap gap-x-[0.45em]">
                 {item.parts.map((word, i) => (
                   <span key={i} className="inline-flex items-baseline">
-                    {i > 0 && item.separator && (
+                    {i > 0 && item.sep && (
                       <span
                         aria-hidden
                         className="inline-block text-accent mr-[0.45em]"
                       >
-                        .
+                        {item.sep}
                       </span>
                     )}
                     <span>{word}</span>

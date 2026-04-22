@@ -2,7 +2,6 @@
 
 import { motion } from "motion/react";
 import { useState } from "react";
-import LetsTalkMetaball from "./LetsTalkMetaball";
 import SnakeGame from "./SnakeGame";
 import { SocialLinks } from "./SocialIcons";
 
@@ -49,7 +48,22 @@ export default function Contact() {
         </div>
       </div>
 
-      <LetsTalkMetaball />
+      <a
+        href="mailto:hello@tjcreate.co.uk"
+        data-cursor="view"
+        data-cursor-label="EMAIL"
+        className="block mt-6 md:mt-8"
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.9, ease: [0.2, 0.8, 0.2, 1] }}
+          className="font-display text-[clamp(4rem,16vw,18rem)] leading-[0.85] tracking-tighter text-paper"
+        >
+          Let&apos;s talk<span className="text-accent">.</span>
+        </motion.div>
+      </a>
 
       <a
         href="mailto:hello@tjcreate.co.uk"

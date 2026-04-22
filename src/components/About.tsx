@@ -54,42 +54,14 @@ export default function About() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 md:items-stretch">
         {/* Portrait grid: 2×2 */}
         <div className="md:col-span-6">
-          <div className="grid grid-cols-2 gap-2 md:gap-3 md:h-full md:min-h-[460px]">
-            {[
-              {
-                src: "/work/imported/portraits/toby-about.jpg",
-                alt: "Portrait of Toby Johnson",
-                position: "object-[52%_84%]",
-              },
-              {
-                src: "/work/imported/portraits/toby-about-02.avif",
-                alt: "Toby Johnson — portrait",
-                position: "object-center object-top",
-              },
-              {
-                src: "/work/imported/portraits/toby-about-03.avif",
-                alt: "Toby Johnson — on stage",
-                position: "object-center object-top",
-              },
-              {
-                src: "/work/imported/portraits/toby-about-04.avif",
-                alt: "Toby Johnson — candid",
-                position: "object-center",
-              },
-            ].map((photo) => (
-              <div
-                key={photo.src}
-                className="relative w-full aspect-square overflow-hidden rounded-[2px] border border-line/60 bg-ink/5"
-              >
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  fill
-                  className={`object-cover ${photo.position}`}
-                  sizes="(max-width: 768px) 50vw, (max-width: 1280px) 25vw, 300px"
-                />
-              </div>
-            ))}
+          <div className="relative w-full aspect-[3/4] md:h-full md:min-h-[460px] md:aspect-auto overflow-hidden rounded-[2px] border border-line/60 bg-ink/5">
+            <Image
+              src="/work/imported/portraits/toby-about.jpg"
+              alt="Portrait of Toby Johnson"
+              fill
+              className="object-cover object-[52%_84%]"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
           </div>
         </div>
 

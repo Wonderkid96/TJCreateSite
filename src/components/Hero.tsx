@@ -26,16 +26,13 @@ export default function Hero() {
   const ref = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isMobile, setIsMobile] = useState(false);
-  const framesReadyRef = useRef(false);
   // Target frame index, updated on every scroll event. A rAF loop reads
   // it and draws at most once per animation frame — keeps draws smooth
   // even when scroll events fire faster than 60Hz.
   const targetProgressRef = useRef(0);
 
   useEffect(() => {
-    preloadFallingFrames(() => {
-      framesReadyRef.current = true;
-    });
+    preloadFallingFrames();
   }, []);
 
   // rAF draw loop — paints the current target frame to canvas. Runs for

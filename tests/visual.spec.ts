@@ -36,7 +36,7 @@ async function scrollToSection(page: Page, id: string) {
     const el = document.getElementById(sectionId);
     if (!el) return;
     // Lenis intercepts scroll; use its API when present for accurate landing.
-    const lenis = (window as unknown as { __lenis?: { scrollTo: (t: string | number, o?: object) => void } }).__lenis;
+    const lenis = (window as unknown as { __lenis?: { scrollTo: (t: string | number | HTMLElement, o?: object) => void } }).__lenis;
     if (lenis?.scrollTo) {
       lenis.scrollTo(el, { immediate: true });
     } else {

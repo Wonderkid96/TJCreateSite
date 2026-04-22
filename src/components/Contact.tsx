@@ -4,8 +4,10 @@ import {
   motion,
 } from "motion/react";
 import { useEffect, useState } from "react";
+import SnakeGame from "./SnakeGame";
 
 export default function Contact() {
+  const [snakeOpen, setSnakeOpen] = useState(false);
   return (
     <section
       id="contact"
@@ -223,6 +225,27 @@ export default function Contact() {
                 .
               </li>
             </ul>
+          </details>
+
+          {/* Easter egg: Snake Policy. Renders the full game inside the
+              same disclosure pattern as T&Cs / Privacy — game only runs
+              while the panel is open so idle CPU stays at zero. */}
+          <details
+            className="group rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 md:px-5 md:py-4"
+            onToggle={(e) => setSnakeOpen((e.currentTarget as HTMLDetailsElement).open)}
+          >
+            <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/85">
+                Snake Policy
+              </span>
+              <span
+                aria-hidden
+                className="text-paper/70 transition-transform duration-300 group-open:rotate-45"
+              >
+                +
+              </span>
+            </summary>
+            <SnakeGame active={snakeOpen} />
           </details>
         </div>
       </div>

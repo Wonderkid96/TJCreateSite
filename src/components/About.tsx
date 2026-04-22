@@ -55,7 +55,7 @@ export default function About() {
         {/* Portrait grid: 2×2 of photos so the area holds its own against
             the text side. Half the row on desktop for a balanced split. */}
         <div className="md:col-span-7">
-          <div className="grid grid-cols-3 gap-2 md:gap-3 md:h-full md:min-h-[460px]">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3 md:h-full md:min-h-[460px]">
             {[
               {
                 src: "/work/imported/portraits/toby-about.jpg",
@@ -73,6 +73,11 @@ export default function About() {
                 position: "object-center",
               },
               {
+                src: "/work/imported/portraits/toby-about-07.avif",
+                alt: "Toby Johnson — portrait",
+                position: "object-center object-top",
+              },
+              {
                 src: "/work/imported/portraits/toby-about-04.avif",
                 alt: "Toby Johnson — on stage",
                 position: "object-center",
@@ -87,6 +92,11 @@ export default function About() {
                 alt: "Toby Johnson — candid",
                 position: "object-center",
               },
+              {
+                src: "/work/imported/portraits/toby-about-08.avif",
+                alt: "Toby Johnson — photo",
+                position: "object-center",
+              },
             ].map((photo) => (
               <div
                 key={photo.src}
@@ -97,7 +107,7 @@ export default function About() {
                   alt={photo.alt}
                   fill
                   className={`object-cover ${photo.position}`}
-                  sizes="(max-width: 768px) 33vw, (max-width: 1280px) 19vw, 240px"
+                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 25vw, (max-width: 1280px) 15vw, 180px"
                 />
               </div>
             ))}

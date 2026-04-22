@@ -21,7 +21,6 @@ export default function LetsTalkMetaball() {
   const blurRef = useRef<SVGFEGaussianBlurElement>(null);
   const matrixRef = useRef<SVGFEColorMatrixElement>(null);
   const glassMapImageRef = useRef<SVGFEImageElement>(null);
-  const glassNoiseRef = useRef<SVGFETurbulenceElement>(null);
   const glassDispRef = useRef<SVGFEDisplacementMapElement>(null);
 
   useEffect(() => {
@@ -40,7 +39,6 @@ export default function LetsTalkMetaball() {
     const blurNode = blurRef.current;
     const matrixNode = matrixRef.current;
     const glassMapImage = glassMapImageRef.current;
-    const glassNoise = glassNoiseRef.current;
     const glassDisp = glassDispRef.current;
     if (
       !block ||
@@ -55,7 +53,6 @@ export default function LetsTalkMetaball() {
       !blurNode ||
       !matrixNode ||
       !glassMapImage ||
-      !glassNoise ||
       !glassDisp
     ) {
       return;
@@ -278,7 +275,7 @@ export default function LetsTalkMetaball() {
       );
       fxWrap.style.opacity = Math.max(anchorScale, followScale).toFixed(3);
 
-      // Anchor pill.
+      // ---- Geometry -----------------------------------------------------
       const aw = shapeW * anchorScale;
       const ah = shapeH * anchorScale;
       anchor.style.width = `${aw.toFixed(2)}px`;
@@ -286,62 +283,12 @@ export default function LetsTalkMetaball() {
       anchor.style.transform = `translate3d(${(cx - aw / 2).toFixed(2)}px, ${(cy - ah / 2).toFixed(2)}px, 0)`;
       anchor.style.opacity = anchorScale > 0.02 ? "1" : "0";
 
-      // Secondary bridge circle: appears only when shapes are close enough.
-      // This fattens the connecting neck without reintroducing SVG geometry.
       const fr = FOLLOWER_R * followScale;
       const dx = fx - cx;
       const dy = fy - cy;
       const dist = Math.hypot(dx, dy);
 
-      // Liquid-glass displacement driven by blob geometry, not time wobble.
-      // The text warp now responds to follower direction + distance so it
-      // feels like refraction under a moving liquid lens.
-      if (ENABLE_LIQUID_GLASS) {
-        const glass = Math.max(0, Math.min(1, gooScale));
-        const invDist = dist > 0.001 ? 1 / dist : 0;
-        const dirX = dx * invDist;
-        const dirY = dy * invDist;
-        const followerInfluence =
-          followScale * Math.max(0, Math.min(1, 1 - dist / (MAX_STRETCH * 1.06)));
-        const residueDx = rx - cx;
-        const residueDy = ry - cy;
-        const residueDist = Math.hypot(residueDx, residueDy);
-        const residueInfluence =
-          residueScale * Math.max(0, Math.min(1, 1 - residueDist / (MAX_STRETCH * 0.96)));
-
-        const glassScale =
-          glass *
-          (3 + followerInfluence * 12 + residueInfluence * 5 + anchorScale * 3);
-        const freqX = 0.006 + Math.abs(dirY) * 0.006 + followerInfluence * 0.003;
-        const freqY = 0.006 + Math.abs(dirX) * 0.006 + followerInfluence * 0.003;
-        glassNoise.setAttribute(
-          "baseFrequency",
-          `${Math.max(0.006, freqX).toFixed(4)} ${Math.max(0.006, freqY).toFixed(4)}`
-        );
-        glassDisp.setAttribute("scale", glassScale.toFixed(2));
-        // Build a displacement mask from the live blob geometry.
-        // White regions receive refraction; black regions stay untouched.
-        const safeW = Math.max(2, blockRect.width);
-        const safeH = Math.max(2, blockRect.height);
-        const mapSvg =
-          `<svg xmlns='http://www.w3.org/2000/svg' width='${safeW.toFixed(0)}' height='${safeH.toFixed(0)}' viewBox='0 0 ${safeW.toFixed(2)} ${safeH.toFixed(2)}'>` +
-          `<rect width='100%' height='100%' fill='black'/>` +
-          `<rect x='${(cx - aw / 2).toFixed(2)}' y='${(cy - ah / 2).toFixed(2)}' width='${aw.toFixed(2)}' height='${ah.toFixed(2)}' rx='${(ah / 2).toFixed(2)}' fill='white' fill-opacity='${(anchorScale * 0.92).toFixed(3)}'/>` +
-          `<circle cx='${fx.toFixed(2)}' cy='${fy.toFixed(2)}' r='${fr.toFixed(2)}' fill='white' fill-opacity='${(followScale * 0.95).toFixed(3)}'/>` +
-          `<circle cx='${midX.toFixed(2)}' cy='${midY.toFixed(2)}' r='${bridgeR.toFixed(2)}' fill='white' fill-opacity='${(bridgeScale * 0.9).toFixed(3)}'/>` +
-          `<circle cx='${rx.toFixed(2)}' cy='${ry.toFixed(2)}' r='${residueR.toFixed(2)}' fill='white' fill-opacity='${(residueScale * 0.72).toFixed(3)}'/>` +
-          `</svg>`;
-        glassMapImage.setAttribute(
-          "href",
-          `data:image/svg+xml;utf8,${encodeURIComponent(mapSvg)}`
-        );
-        textLayer.style.filter = glass > 0.03 ? `url(#${glassFilterId})` : "none";
-        textLayer.style.transform = "none";
-      } else {
-        textLayer.style.filter = "none";
-        textLayer.style.transform = "none";
-      }
-
+      // Bridge: thickens the neck between anchor and follower when close.
       const closeGate = Math.max(0, Math.min(1, 1 - dist / (MAX_STRETCH * 0.9)));
       const bridgeScale = anchorScale * followScale * closeGate;
       const midX = cx + dx * 0.5;
@@ -364,6 +311,66 @@ export default function LetsTalkMetaball() {
       follower.style.height = `${(fr * 2).toFixed(2)}px`;
       follower.style.transform = `translate3d(${(fx - fr).toFixed(2)}px, ${(fy - fr).toFixed(2)}px, 0)`;
       follower.style.opacity = followScale > 0.02 ? "1" : "0";
+
+      // ---- Liquid-glass displacement ------------------------------------
+      // Feed the SAME blob geometry we render visibly into feImage. The
+      // filter internally blurs that mask, which becomes the displacement
+      // field — so text under the glass refracts along the blob's edges.
+      if (ENABLE_LIQUID_GLASS) {
+        const glass = Math.max(0, Math.min(1, gooScale));
+        const followerInfluence =
+          followScale * Math.max(0, Math.min(1, 1 - dist / (MAX_STRETCH * 1.06)));
+        const residueDx = rx - cx;
+        const residueDy = ry - cy;
+        const residueDist = Math.hypot(residueDx, residueDy);
+        const residueInfluence =
+          residueScale * Math.max(0, Math.min(1, 1 - residueDist / (MAX_STRETCH * 0.96)));
+
+        // Strong, clearly visible refraction amplitude.
+        const glassScale =
+          16 +
+          glass * 28 +
+          followerInfluence * 20 +
+          residueInfluence * 6;
+        glassDisp.setAttribute("scale", glassScale.toFixed(2));
+
+        const safeW = Math.max(2, blockRect.width);
+        const safeH = Math.max(2, blockRect.height);
+        const parts: string[] = [
+          `<rect width='100%' height='100%' fill='black'/>`,
+        ];
+        if (anchorScale > 0.02) {
+          parts.push(
+            `<rect x='${(cx - aw / 2).toFixed(2)}' y='${(cy - ah / 2).toFixed(2)}' width='${aw.toFixed(2)}' height='${ah.toFixed(2)}' rx='${(ah / 2).toFixed(2)}' fill='white'/>`
+          );
+        }
+        if (followScale > 0.02) {
+          parts.push(
+            `<circle cx='${fx.toFixed(2)}' cy='${fy.toFixed(2)}' r='${fr.toFixed(2)}' fill='white'/>`
+          );
+        }
+        if (bridgeScale > 0.03) {
+          parts.push(
+            `<circle cx='${midX.toFixed(2)}' cy='${midY.toFixed(2)}' r='${bridgeR.toFixed(2)}' fill='white'/>`
+          );
+        }
+        if (residueScale > 0.02) {
+          parts.push(
+            `<circle cx='${rx.toFixed(2)}' cy='${ry.toFixed(2)}' r='${residueR.toFixed(2)}' fill='white'/>`
+          );
+        }
+        const mapSvg =
+          `<svg xmlns='http://www.w3.org/2000/svg' width='${safeW.toFixed(0)}' height='${safeH.toFixed(0)}' viewBox='0 0 ${safeW.toFixed(2)} ${safeH.toFixed(2)}'>` +
+          parts.join("") +
+          `</svg>`;
+        glassMapImage.setAttribute(
+          "href",
+          `data:image/svg+xml;utf8,${encodeURIComponent(mapSvg)}`
+        );
+        textLayer.style.filter = glass > 0.02 ? `url(#${glassFilterId})` : "none";
+      } else {
+        textLayer.style.filter = "none";
+      }
     };
     raf = requestAnimationFrame(tick);
 
@@ -395,6 +402,10 @@ export default function LetsTalkMetaball() {
           outer: contrast/brightness, inner: blur, children: simple balls. */}
       <svg aria-hidden className="absolute h-0 w-0 overflow-hidden pointer-events-none">
         <defs>
+          {/* Goo → glass shell. Solid blobs get blurred + alpha-thresholded
+              into a merged mask, then the mask is split into a faint body
+              and a crisp rim. Result reads as a translucent liquid lens
+              rather than solid cream fill. */}
           <filter
             id={gooFilterId}
             x="-35%"
@@ -413,15 +424,48 @@ export default function LetsTalkMetaball() {
               values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 36 -16"
               result="goo"
             />
-            <feComposite in="goo" in2="goo" operator="over" />
+            {/* Faint glass body: the merged shape at low alpha. */}
+            <feColorMatrix
+              in="goo"
+              type="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.18 0"
+              result="body"
+            />
+            {/* Rim: merged shape minus an eroded copy = a thin ring edge. */}
+            <feMorphology in="goo" operator="erode" radius="1.2" result="eroded" />
+            <feComposite
+              in="goo"
+              in2="eroded"
+              operator="arithmetic"
+              k1="0"
+              k2="1"
+              k3="-1"
+              k4="0"
+              result="rim"
+            />
+            <feColorMatrix
+              in="rim"
+              type="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.85 0"
+              result="rimBright"
+            />
+            <feMerge>
+              <feMergeNode in="body" />
+              <feMergeNode in="rimBright" />
+            </feMerge>
           </filter>
 
+          {/* Liquid-glass lens. feImage receives the live blob geometry as
+              a pure white-on-black mask. That mask is blurred (soft falloff)
+              and fed directly into feDisplacementMap as both the X and Y
+              channel source — so text below refracts smoothly along the
+              blob's edge gradient, exactly like a droplet of liquid glass. */}
           <filter
             id={glassFilterId}
-            x="-20%"
-            y="-20%"
-            width="140%"
-            height="140%"
+            x="-25%"
+            y="-25%"
+            width="150%"
+            height="150%"
             colorInterpolationFilters="sRGB"
           >
             <feImage
@@ -434,24 +478,18 @@ export default function LetsTalkMetaball() {
               preserveAspectRatio="none"
               result="lensMaskSrc"
             />
-            <feGaussianBlur in="lensMaskSrc" stdDeviation="7.5" result="lensMask" />
-            <feTurbulence
-              ref={glassNoiseRef}
-              type="fractalNoise"
-              baseFrequency="0.008 0.008"
-              numOctaves="1"
-              seed="7"
-              result="noise"
-            />
+            <feGaussianBlur in="lensMaskSrc" stdDeviation="10" result="lensMask" />
             <feDisplacementMap
               ref={glassDispRef}
               in="SourceGraphic"
-              in2="noise"
+              in2="lensMask"
               xChannelSelector="R"
               yChannelSelector="G"
               scale="0"
               result="displaced"
             />
+            {/* Keep displaced pixels only where the lens is. Elsewhere the
+                original text shows through undistorted. */}
             <feComposite in="displaced" in2="lensMask" operator="in" result="insideLens" />
             <feComposite in="SourceGraphic" in2="lensMask" operator="out" result="outsideLens" />
             <feMerge>
@@ -470,35 +508,19 @@ export default function LetsTalkMetaball() {
         >
           <div
             ref={anchorRef}
-            className="absolute rounded-[999px] will-change-transform"
-            style={{
-              background: "rgba(244,241,233,0.14)",
-              boxShadow: "0 0 0 1px rgba(244,241,233,0.34), inset 0 0 22px rgba(255,255,255,0.18)",
-            }}
+            className="absolute rounded-[999px] bg-paper will-change-transform"
           />
           <div
             ref={bridgeRef}
-            className="absolute rounded-full will-change-transform"
-            style={{
-              background: "rgba(244,241,233,0.12)",
-              boxShadow: "0 0 0 1px rgba(244,241,233,0.3)",
-            }}
+            className="absolute rounded-full bg-paper will-change-transform"
           />
           <div
             ref={residueRef}
-            className="absolute rounded-full will-change-transform"
-            style={{
-              background: "rgba(244,241,233,0.09)",
-              boxShadow: "0 0 0 1px rgba(244,241,233,0.24)",
-            }}
+            className="absolute rounded-full bg-paper will-change-transform"
           />
           <div
             ref={followerRef}
-            className="absolute rounded-full will-change-transform"
-            style={{
-              background: "rgba(244,241,233,0.16)",
-              boxShadow: "0 0 0 1px rgba(244,241,233,0.36), inset 0 0 14px rgba(255,255,255,0.2)",
-            }}
+            className="absolute rounded-full bg-paper will-change-transform"
           />
         </div>
       </div>

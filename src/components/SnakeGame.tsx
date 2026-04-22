@@ -17,8 +17,8 @@ import {
  * dpad below the board as a universal fallback.
  */
 
-const COLS = 24;
-const ROWS = 16;
+const COLS = 20;
+const ROWS = 20;
 const START_TICK_MS = 150;
 const MIN_TICK_MS = 55;
 // Ramp per food pickup — ~8% faster each bite. Each pickup is clearly

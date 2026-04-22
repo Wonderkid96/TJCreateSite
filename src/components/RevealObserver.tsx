@@ -36,7 +36,7 @@ export default function RevealObserver() {
     // view, and only reverse once it meaningfully leaves the screen.
     const vh = window.innerHeight;
     const topInsetPx = Math.round(Math.max(0, Math.min(20, vh * 0.015)));
-    const bottomInsetPx = Math.round(Math.max(18, Math.min(72, vh * 0.06)));
+    const bottomInsetPx = Math.round(Math.max(100, Math.min(350, vh * 0.3)));
     const threshold = window.innerWidth < 768 ? 0.07 : 0.1;
 
     const io = new IntersectionObserver(

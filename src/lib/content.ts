@@ -78,7 +78,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "filtered-gig",
     title: "Filtered",
-    client: "Gig Poster",
+    client: "Filtered",
     year: "2025",
     category: "Graphic",
     tags: ["Poster", "Music"],
@@ -92,7 +92,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "offcut",
     title: "Offcut",
-    client: "Product Packaging",
+    client: "Offcut",
     year: "2025",
     category: "Print",
     tags: ["Packaging", "3D"],

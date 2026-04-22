@@ -26,7 +26,7 @@ export default function Services() {
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "0px 0px -20% 0px" }}
             transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
             className="font-display text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
           >
@@ -41,7 +41,7 @@ export default function Services() {
             key={s.num}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
+            viewport={{ once: true, margin: "0px 0px -20% 0px" }}
             transition={{
               duration: 0.8,
               delay: i * 0.1,

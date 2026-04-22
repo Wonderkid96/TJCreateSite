@@ -343,15 +343,15 @@ export default function LetsTalkMetaball() {
         glassNoise.setAttribute("baseFrequency", `${freq.toFixed(4)} ${(freq * 1.2).toFixed(4)}`);
         glassNoise.setAttribute("numOctaves", speedN > 0.5 ? "2" : "1");
 
-        // Displacement applied to the FULL text layer — no lens mask. This
-        // means the text visibly refracts as soon as the glass activates, with
-        // no invisible inner-only region. Scale 0 at rest → 100+ at full pull.
+        // Displacement on the full text layer. Without a lens mask the scale
+        // must stay modest so the text stays readable while still clearly
+        // showing refraction — think gentle water ripple, not funhouse mirror.
         const glassScale =
-          glass * 62 +
-          followerInfluence * 46 +
-          residueInfluence * 22;
+          glass * 14 +
+          followerInfluence * 20 +
+          residueInfluence * 6;
         glassDisp.setAttribute("scale", glassScale.toFixed(2));
-        textLayer.style.filter = glassScale > 0.4 ? `url(#${glassFilterId})` : "none";
+        textLayer.style.filter = glassScale > 0.3 ? `url(#${glassFilterId})` : "none";
 
         // Backdrop-filter panels: authentic frosted-glass blur of the dot
         // grid behind the element. These are the main "glass body" visual —

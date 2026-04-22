@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SnakeGame from "./SnakeGame";
 import { SocialLinks } from "./SocialIcons";
 
@@ -52,17 +52,9 @@ export default function Contact() {
         href="mailto:hello@tjcreate.co.uk"
         data-cursor="view"
         data-cursor-label="EMAIL"
-        className="block mt-6 md:mt-8"
+        className="block mt-6 md:mt-8 text-center"
       >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.9, ease: [0.2, 0.8, 0.2, 1] }}
-          className="font-display text-[clamp(4rem,16vw,18rem)] leading-[0.85] tracking-tighter text-paper"
-        >
-          Let&apos;s talk<span className="text-accent">.</span>
-        </motion.div>
+        <TypeLine />
       </a>
 
       <a
@@ -245,5 +237,60 @@ export default function Contact() {
         <div>Made in Lincoln</div>
       </footer>
     </section>
+  );
+}
+
+function TypeLine() {
+  const full = "Let's talk";
+  const [count, setCount] = useState(0);
+  const [hovered, setHovered] = useState(false);
+
+  useEffect(() => {
+    setCount(0);
+    const timer = window.setInterval(() => {
+      setCount((prev) => {
+        if (prev >= full.length) { window.clearInterval(timer); return prev; }
+        return prev + 1;
+      });
+    }, 66);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return (
+    <div
+      className="flex items-baseline justify-center font-display text-[clamp(3.5rem,13vw,16rem)] leading-[0.85] tracking-tighter text-paper whitespace-nowrap select-none transition-transform duration-300 ease-[cubic-bezier(.2,.8,.2,1)]"
+      style={{ transform: hovered ? "scale(0.97)" : "scale(1)" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {full.slice(0, count)}
+      <span className="text-accent">.</span>
+      <DotSlot hovered={hovered} delayIn={40} delayOut={130} />
+      <DotSlot hovered={hovered} delayIn={200} delayOut={40} />
+      <motion.span
+        aria-hidden
+        className="text-accent"
+        animate={{ opacity: [1, 0, 1] }}
+        transition={{ duration: 0.85, repeat: Infinity, ease: "linear" }}
+      >
+        |
+      </motion.span>
+    </div>
+  );
+}
+
+function DotSlot({ hovered, delayIn, delayOut }: { hovered: boolean; delayIn: number; delayOut: number }) {
+  return (
+    <span
+      aria-hidden
+      className="text-accent inline-flex items-baseline overflow-hidden"
+      style={{
+        maxWidth: hovered ? "1ch" : "0",
+        transition: "max-width 120ms steps(1,end)",
+        transitionDelay: `${hovered ? delayIn : delayOut}ms`,
+      }}
+    >
+      <span className="whitespace-nowrap">.</span>
+    </span>
   );
 }

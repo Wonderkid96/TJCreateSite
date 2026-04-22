@@ -46,10 +46,9 @@ export default function About() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 md:items-stretch">
-        {/* Portrait grid: 2×2 of alternating photos so the area doesn't
-            feel lonely. Stays at ~35% of the row on desktop so the text
-            side gets most of the attention. */}
-        <div className="md:col-span-4">
+        {/* Portrait grid: 2×2 of photos so the area holds its own against
+            the text side. Half the row on desktop for a balanced split. */}
+        <div className="md:col-span-6">
           <div className="grid grid-cols-2 gap-2 md:gap-3 md:h-full md:min-h-[460px]">
             {[
               {
@@ -82,14 +81,14 @@ export default function About() {
                   alt={photo.alt}
                   fill
                   className={`object-cover ${photo.position}`}
-                  sizes="(max-width: 768px) 50vw, (max-width: 1280px) 18vw, 220px"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1280px) 24vw, 300px"
                 />
               </div>
             ))}
           </div>
         </div>
 
-        <div className="md:col-span-8">
+        <div className="md:col-span-6">
           <div
             className="h-full border border-line/60 bg-paper/40 rounded-[2px] p-6 md:p-10 flex flex-col justify-between"
           >

@@ -48,16 +48,15 @@ export function LinkedInIcon({ size = 18 }: { size?: number }) {
 
 export function BehanceIcon({ size = 18 }: { size?: number }) {
   return (
-    <svg
+    <img
+      src="/behance.webp"
       width={size}
       height={size}
-      viewBox="0 0 24 24"
-      fill="currentColor"
+      alt=""
       aria-hidden
-      className="shrink-0 transition-transform duration-300 group-hover:-translate-y-[1px]"
-    >
-      <path d="M22 7h-7v-2h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H15.97c.13 1.2.247 1.986 1.217 2.47.402.205.813.311 1.219.311 1.319 0 2.016-.681 2.313-1.752l2.007.8zM15.998 13.368h4.931c-.056-1.132-.547-2.143-2.306-2.143-1.655 0-2.532 1.019-2.625 2.143zM6.272 20.089l-2.283-3.917h-.956V20.09H0V4h6.272c2.56 0 4.534 1.345 4.534 5.999 0 2.565-.967 4.312-2.573 5.115L11 20.089H6.272zm.48-10.05c0-2.078-.968-3.039-2.626-3.039h-1.09v6.164h1.09c1.658 0 2.626-1.063 2.626-3.126z" />
-    </svg>
+      className="shrink-0 transition-transform duration-300 group-hover:-translate-y-[1px] opacity-80 group-hover:opacity-100"
+      style={{ objectFit: "contain" }}
+    />
   );
 }
 
@@ -108,7 +107,7 @@ export function SocialLinks({
         target="_blank"
         rel="me noopener noreferrer"
       >
-        <BehanceIcon size={Math.round(size * 1.3)} />
+        <BehanceIcon size={size} />
       </a>
     </div>
   );

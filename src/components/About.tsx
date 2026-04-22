@@ -210,7 +210,7 @@ function PortraitTilt() {
         className="relative w-full h-full overflow-hidden rounded-[2px] border border-line/60"
       >
         <Image
-          src="/work/imported/portraits/toby-about.jpg"
+          src="/work/imported/portraits/toby-about.avif"
           alt="Portrait of Toby Johnson"
           fill
           className="object-cover object-[52%_84%]"

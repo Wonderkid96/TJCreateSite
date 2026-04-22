@@ -212,6 +212,8 @@ function ModalMedia({ project }: { project: Project }) {
     return (
       <video
         src={project.video}
+        poster={project.videoPoster}
+        preload="none"
         autoPlay
         muted
         loop

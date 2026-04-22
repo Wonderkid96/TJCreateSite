@@ -1,0 +1,2 @@
+once everything is solved and fixed and youre happy, lets run an SEO check, playwrite, all audits across breakpoints and check the spacing of elements to ensure everything is cohesive and professional level. literally a deep check of everything then please fix any issues, commit and deploy the update build. thanks.
+

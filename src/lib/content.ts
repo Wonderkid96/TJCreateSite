@@ -44,7 +44,7 @@ export const PROJECTS: Project[] = [
     tags: ["Identity", "Photography"],
     blurb:
       "Campaign artwork and identity for Grumble's The Pylons. Band on location, title treatment, typographic system.",
-    image: "/work/imported/banners/grumble-pylons.jpg",
+    image: "/work/imported/banners/grumble-pylons.avif",
     alt: "Campaign artwork and visual identity for Grumble's The Pylons — music industry graphic design by Toby Johnson",
     kind: "image",
     bg: "#0f0f0f",
@@ -113,7 +113,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Looping visualiser for Liar Liar. Apple Motion scene, built for repeat plays without fatigue.",
     video: "/work/imported/motion/liar-liar-apple-motion.mp4",
-    videoPoster: "/work/imported/posters-video/liar-liar-apple-motion.jpg",
+    videoPoster: "/work/imported/posters-video/liar-liar-apple-motion.avif",
     kind: "video",
     bg: "#0a0a0a",
   },
@@ -127,7 +127,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Editorial motion set. Tile-driven system built in After Effects, designed to scale across formats.",
     video: "/work/imported/motion/fashion-tiles.mp4",
-    videoPoster: "/work/imported/posters-video/fashion-tiles.jpg",
+    videoPoster: "/work/imported/posters-video/fashion-tiles.avif",
     kind: "video",
     bg: "#0a0a0a",
   },
@@ -141,7 +141,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "16:9 headphone animation study focused on smooth product movement, lighting passes and a clean loop-ready finish.",
     video: "/work/imported/motion/headphone-animation.mp4",
-    videoPoster: "/work/imported/posters-video/headphone-animation.jpg",
+    videoPoster: "/work/imported/posters-video/headphone-animation.avif",
     kind: "video",
     bg: "#0a0a0a",
   },
@@ -155,7 +155,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Short brand loop. Minimal object, big personality. Plays forever without feeling repetitive.",
     video: "/work/imported/motion/heart.mp4",
-    videoPoster: "/work/imported/posters-video/heart.jpg",
+    videoPoster: "/work/imported/posters-video/heart.avif",
     kind: "video",
     bg: "#0a0a0a",
   },
@@ -184,7 +184,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Release-cycle motion loop for Joshua Baraka. Single-take animation, built to feel like one continuous breath.",
     video: "/work/imported/motion/baraka-loop.mp4",
-    videoPoster: "/work/imported/posters-video/baraka-loop.jpg",
+    videoPoster: "/work/imported/posters-video/baraka-loop.avif",
     kind: "video",
     pingPong: true,
     bg: "#0a0a0a",
@@ -213,7 +213,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Square-format motion loop designed for feeds. A single idea, clean cut, built to stop a scroll.",
     video: "/work/imported/motion/carousel-square.mp4",
-    videoPoster: "/work/imported/posters-video/carousel-square.jpg",
+    videoPoster: "/work/imported/posters-video/carousel-square.avif",
     kind: "video",
     bg: "#0a0a0a",
   },
@@ -227,7 +227,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Lyric video for Joshua Baraka's Wrong Places. This tile loops a lyric-free passage from the full cut. Click through to watch the full video on YouTube.",
     video: "/work/imported/motion/jb-wrong-places-loop.mp4",
-    videoPoster: "/work/imported/posters-video/jb-wrong-places-loop.jpg",
+    videoPoster: "/work/imported/posters-video/jb-wrong-places-loop.avif",
     kind: "video",
     bg: "#0a0a0a",
     externalUrl: "https://www.youtube.com/watch?v=jeKPLNFDoHA",

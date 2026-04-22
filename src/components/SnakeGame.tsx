@@ -358,8 +358,8 @@ export default function SnakeGame({ active }: { active: boolean }) {
           expanded panel never pushes past a single viewport height. */}
       <div
         ref={containerRef}
-        className="relative w-full overflow-hidden rounded-[2px] border border-paper/15 bg-[#0a0a0a] touch-none"
-        style={{ aspectRatio: `${COLS} / ${ROWS}`, maxHeight: "58svh" }}
+        className="relative mx-auto overflow-hidden rounded-[2px] border border-paper/15 bg-[#0a0a0a] touch-none"
+        style={{ aspectRatio: "1 / 1", width: "min(58svh, 100%)" }}
       >
         <canvas
           ref={canvasRef}

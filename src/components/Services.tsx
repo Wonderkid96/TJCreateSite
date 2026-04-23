@@ -37,21 +37,16 @@ export default function Services() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-paper/10">
         {SERVICES.map((s, i) => (
-          <motion.div
+          // Outer div stays bg-ink at all times so the gap-px grid lines
+          // render correctly. Animating opacity on the card itself would
+          // make it transparent, letting the grid's bg-paper/10 bleed
+          // through the full card area before it transitions in.
+          <div
             key={s.num}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "0px 0px -20% 0px" }}
-            transition={{
-              duration: 0.8,
-              delay: i * 0.1,
-              ease: [0.2, 0.8, 0.2, 1],
-            }}
             className="bg-ink p-8 md:p-12 flex flex-col gap-8 group relative overflow-hidden"
           >
-            <div className="absolute top-8 right-8 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50">
-              {s.num} / 03
-            </div>
+            {/* Hover accent bar — lives on the outer div so it's always
+                clipped correctly and unaffected by the inner animation. */}
             <div
               className="absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)]"
               style={{
@@ -59,22 +54,38 @@ export default function Services() {
                   "linear-gradient(90deg, #E6352A 0%, #F4F1E9 38%, #C8DB45 68%, #C4A9D0 100%)",
               }}
             />
-            <h3 className="font-display text-4xl md:text-5xl leading-none tracking-tight mt-10">
-              {s.title.split(" ")[0]}
-              <span className="italic"> {s.title.split(" ").slice(1).join(" ")}</span>
-            </h3>
-            <p className="text-paper/80 max-w-[30ch] leading-relaxed">
-              {s.blurb}
-            </p>
-            <ul className="mt-auto space-y-2 font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60">
-              {s.items.map((it) => (
-                <li key={it} className="flex items-center gap-3">
-                  <span className="inline-block h-1 w-1 rounded-full bg-accent" />
-                  {it}
-                </li>
-              ))}
-            </ul>
-          </motion.div>
+            {/* Inner content fades + slides in — outer card bg stays solid */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "0px 0px -20% 0px" }}
+              transition={{
+                duration: 0.8,
+                delay: i * 0.1,
+                ease: [0.2, 0.8, 0.2, 1],
+              }}
+              className="flex flex-col gap-8 h-full"
+            >
+              <div className="absolute top-8 right-8 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50">
+                {s.num} / 03
+              </div>
+              <h3 className="font-display text-4xl md:text-5xl leading-none tracking-tight mt-10">
+                {s.title.split(" ")[0]}
+                <span className="italic"> {s.title.split(" ").slice(1).join(" ")}</span>
+              </h3>
+              <p className="text-paper/80 max-w-[30ch] leading-relaxed">
+                {s.blurb}
+              </p>
+              <ul className="mt-auto space-y-2 font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60">
+                {s.items.map((it) => (
+                  <li key={it} className="flex items-center gap-3">
+                    <span className="inline-block h-1 w-1 rounded-full bg-accent" />
+                    {it}
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </div>
         ))}
       </div>
     </section>

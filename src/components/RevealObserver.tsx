@@ -11,7 +11,9 @@ export default function RevealObserver() {
     );
     for (const section of sections) {
       if (!section.dataset.reveal) section.dataset.reveal = "section";
-      if (!section.dataset.revealOnce) section.dataset.revealOnce = "false";
+      // Sections reveal once and stay — re-hiding a whole section as the
+      // user scrolls back causes the work grid to vanish mid-browse.
+      if (!section.dataset.revealOnce) section.dataset.revealOnce = "true";
 
       // Fast "type-in feel" for text blocks while scrolling in/out.
       const textEls = Array.from(
@@ -36,8 +38,12 @@ export default function RevealObserver() {
     // view, and only reverse once it meaningfully leaves the screen.
     const vh = window.innerHeight;
     const topInsetPx = Math.round(Math.max(0, Math.min(20, vh * 0.015)));
-    const bottomInsetPx = Math.round(Math.max(100, Math.min(350, vh * 0.3)));
-    const threshold = window.innerWidth < 768 ? 0.07 : 0.1;
+    const bottomInsetPx = Math.round(Math.max(60, Math.min(200, vh * 0.18)));
+    // Use threshold 0 — rootMargin already provides the "meaningful entry"
+    // gate. A 7%/10% threshold breaks on very tall sections (e.g. the Work
+    // grid at mobile: 15 full-width tiles ≈ 11 000px, 7% = 770px which
+    // exceeds the contracted viewport, so is-visible is never applied).
+    const threshold = 0;
 
     const io = new IntersectionObserver(
       (entries) => {

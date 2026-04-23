@@ -17,7 +17,7 @@ export default function About() {
   });
   const { scrollYProgress: ruleProgress } = useScroll({
     target: ruleRef,
-    offset: ["start 65%", "start 25%"],
+    offset: ["start 90%", "start 50%"],
   });
   const ruleScaleX = useTransform(ruleProgress, [0, 1], [0, 1]);
 

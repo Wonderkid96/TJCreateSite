@@ -35,6 +35,8 @@ function ProjectTile({
   const ref = useRef<HTMLButtonElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const hoverVideoRef = useRef<HTMLVideoElement>(null);
+  const hoverVideoEndedRef = useRef(false);
   const [hovered, setHovered] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [dayNightIsNight, setDayNightIsNight] = useState(false);
@@ -140,13 +142,29 @@ function ProjectTile({
     mx.set(0);
     my.set(0);
     setHovered(false);
+    // Hover-video: always snap back to frame 0 on leave, whether or not it ended
+    const hv = hoverVideoRef.current;
+    if (hv) {
+      hv.pause();
+      hv.currentTime = 0;
+      hoverVideoEndedRef.current = false;
+    }
   };
-  const onEnter = () => setHovered(true);
+  const onEnter = () => {
+    setHovered(true);
+    // Hover-video: play from the start on every hover
+    const hv = hoverVideoRef.current;
+    if (hv) {
+      hoverVideoEndedRef.current = false;
+      hv.currentTime = 0;
+      hv.play().catch(() => {});
+    }
+  };
 
   const kind = project.kind ?? "image";
   const cursorLabel = project.externalUrl
     ? "YOUTUBE ↗"
-    : kind === "video"
+    : kind === "video" || kind === "hover-video"
       ? "PLAY"
       : kind === "falling"
         ? "WATCH"
@@ -243,6 +261,22 @@ function ProjectTile({
                   const el = e.currentTarget;
                   el.currentTime = 0;
                   el.play().catch(() => {});
+                }}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            )}
+
+            {kind === "hover-video" && project.video && (
+              <video
+                ref={hoverVideoRef}
+                src={project.video}
+                poster={project.videoPoster}
+                muted
+                playsInline
+                preload="auto"
+                onEnded={() => {
+                  // Hold the last frame — do NOT reset. Snap-back happens onLeave.
+                  hoverVideoEndedRef.current = true;
                 }}
                 className="absolute inset-0 h-full w-full object-cover"
               />

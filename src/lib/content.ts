@@ -12,7 +12,7 @@ export type Project = {
   imageHover?: string; // used for "day-night" hover swap
   video?: string;
   videoPoster?: string;
-  kind?: "image" | "video" | "falling" | "day-night"; // "falling" = falling video composited over sky
+  kind?: "image" | "video" | "falling" | "day-night" | "hover-video"; // "falling" = falling video composited over sky; "hover-video" = plays on hover, snaps back on leave
   bg?: string;
   /** If set, clicking the tile opens this URL (new tab) instead of the modal. */
   externalUrl?: string;
@@ -30,9 +30,10 @@ export const PROJECTS: Project[] = [
     tags: ["Poster", "Event"],
     blurb:
       "Screen-printed campaign for the Brighton Dome record-label showcase. Balimaya Project, Corto.Alto, Rebecca Vasmant Ensemble.",
-    image: "/work/imported/posters/together-we-stand-mockup.avif",
+    video: "/work/imported/videos/together-we-stand-poster.mp4",
+    videoPoster: "/work/imported/posters/together-we-stand-mockup.avif",
     alt: "Screen-printed concert poster for Brighton Dome record-label showcase — print design by Toby Johnson",
-    kind: "image",
+    kind: "hover-video",
     bg: "#1c1a16",
   },
   {

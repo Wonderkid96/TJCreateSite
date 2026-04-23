@@ -47,11 +47,11 @@ export default function WorkGrid() {
           // the page bg before they transitioned in.
           <div key={p.slug} className="bento-cell aspect-square">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
+              initial={{ y: 24 }}
+              whileInView={{ y: 0 }}
+              viewport={{ once: true, margin: "0px" }}
               transition={{
-                duration: 0.85,
+                duration: 0.75,
                 delay: (i % 3) * 0.06,
                 ease: [0.2, 0.8, 0.2, 1],
               }}

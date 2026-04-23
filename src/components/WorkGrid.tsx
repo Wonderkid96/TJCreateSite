@@ -41,31 +41,36 @@ export default function WorkGrid() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8 bento-grid">
         {PROJECTS.map((p, i) => (
-          <motion.div
-            key={p.slug}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "0px 0px -20% 0px" }}
-            transition={{
-              duration: 0.9,
-              delay: (i % 3) * 0.06,
-              ease: [0.2, 0.8, 0.2, 1],
-            }}
-            className="bento-cell aspect-square"
-          >
-            <ProjectTile
-              project={p}
-              index={i}
-              parallaxStrength={PARALLAX[i % PARALLAX.length]}
-              onOpen={() => {
-                if (p.externalUrl) {
-                  window.open(p.externalUrl, "_blank", "noopener,noreferrer");
-                } else {
-                  setActive(p);
-                }
+          // Outer div holds the grid cell — never animated so the tile's
+          // dark background is always opaque (same fix as Services cards).
+          // Animating opacity on the wrapper made tiles invisible against
+          // the page bg before they transitioned in.
+          <div key={p.slug} className="bento-cell aspect-square">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{
+                duration: 0.85,
+                delay: (i % 3) * 0.06,
+                ease: [0.2, 0.8, 0.2, 1],
               }}
-            />
-          </motion.div>
+              className="h-full w-full"
+            >
+              <ProjectTile
+                project={p}
+                index={i}
+                parallaxStrength={PARALLAX[i % PARALLAX.length]}
+                onOpen={() => {
+                  if (p.externalUrl) {
+                    window.open(p.externalUrl, "_blank", "noopener,noreferrer");
+                  } else {
+                    setActive(p);
+                  }
+                }}
+              />
+            </motion.div>
+          </div>
         ))}
       </div>
 

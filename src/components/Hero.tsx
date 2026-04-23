@@ -169,6 +169,20 @@ export default function Hero() {
 
   const fallingScale = useTransform(progress, [0, 0.5, 1], [0.98, 1, 1.04]);
 
+  // Scroll indicator — drifts downward as the hero scroll progresses,
+  // acting as a live progress marker pinned to the right edge.
+  // Fades in early, fades out before the hero unpins.
+  const scrollIndicatorOpacity = useTransform(
+    progress,
+    [0, 0.06, 0.72, 0.88],
+    [0, 1, 1, 0],
+  );
+  const scrollIndicatorY = useTransform(
+    progress,
+    [0, 0.85],
+    ["0%", "52%"],
+  );
+
   // Title + sub — slide in from left, drift continuously (never static, never
   // off-screen), scroll carries them upward at the end via the natural sticky
   // unpin.
@@ -274,6 +288,23 @@ export default function Hero() {
         {/* Vignette — passive, no cursor-tracking */}
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.2)_100%)]" />
 
+        {/* Scroll indicator — floats on the right, drifts downward with
+            scroll progress so it acts as a subtle live position marker.
+            Extracted from the bottom-stack motion so it never slides away. */}
+        <motion.div
+          style={{ opacity: scrollIndicatorOpacity, y: scrollIndicatorY }}
+          className="absolute hidden md:flex right-10 top-[28%] flex-col items-center gap-2 pointer-events-none will-change-transform font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60"
+        >
+          <motion.span
+            animate={{ y: [0, 5, 0] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+            className="inline-block"
+          >
+            ↓
+          </motion.span>
+          <span>Scroll</span>
+        </motion.div>
+
         {/* Top chrome */}
         <div className="absolute top-24 md:top-28 inset-x-6 md:inset-x-10 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.2em] text-white/90">
           <span>[ Portfolio / 2026 ]</span>
@@ -306,18 +337,9 @@ export default function Hero() {
             style={{ opacity: subOpacity, x: subX }}
             className="flex flex-col gap-5 md:gap-7"
           >
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start">
-              <p className="md:col-span-8 text-[0.95rem] sm:text-base md:text-xl leading-snug max-w-xl text-ink/90">
-                {SUB}
-              </p>
-
-              <div className="hidden md:flex md:col-span-4 md:justify-end font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60 text-right">
-                <div>
-                  <div>↓</div>
-                  <div className="mt-2">Scroll</div>
-                </div>
-              </div>
-            </div>
+            <p className="text-[0.95rem] sm:text-base md:text-xl leading-snug max-w-xl text-ink/90">
+              {SUB}
+            </p>
 
             <div className="flex flex-wrap gap-2.5 md:gap-3">
               <HeroButton href="#work" label="Portfolio." />

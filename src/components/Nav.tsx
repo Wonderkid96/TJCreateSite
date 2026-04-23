@@ -43,13 +43,13 @@ export default function Nav() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-paper border-b border-line">
-      <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 md:px-10 py-4">
+      <div className="relative mx-auto flex max-w-[1600px] items-center justify-between px-6 md:px-10 py-4">
         <LogoMark onClick={() => setOpen(false)} />
 
-        {/* Desktop nav */}
+        {/* Desktop nav — absolutely centred so logo expansion never shifts it */}
         <nav
           aria-label="Primary"
-          className="hidden md:flex items-center gap-8 font-mono font-bold text-[11px] uppercase tracking-[0.2em]"
+          className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8 font-mono font-bold text-[11px] uppercase tracking-[0.2em]"
         >
           {LINKS.map((l) => (
             <a key={l.href} href={l.href} data-cursor="hover" className="relative group">

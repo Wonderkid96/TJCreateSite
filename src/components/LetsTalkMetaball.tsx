@@ -403,7 +403,7 @@ export default function LetsTalkMetaball() {
       ref={blockRef}
       href="mailto:hello@tjcreate.co.uk"
       aria-label="Email hello@tjcreate.co.uk"
-      className="relative block w-full mx-auto overflow-visible h-[48vh] sm:h-[52vh] md:h-[58vh] lg:h-[62vh] min-h-[300px] max-h-[78vh] select-none"
+      className="relative block w-full mx-auto overflow-visible h-[34vh] sm:h-[38vh] md:h-[42vh] lg:h-[46vh] min-h-[220px] max-h-[56vh] select-none"
       style={{
         backgroundImage: [
           // Accent colour hints — give the glass a faint iridescent tint to refract
@@ -613,7 +613,7 @@ export default function LetsTalkMetaball() {
 
       <div
         ref={textLayerRef}
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+        className="absolute inset-0 flex items-center justify-center pointer-events-none pb-[4%]"
         style={{ mixBlendMode: "difference" }}
         aria-hidden
       >

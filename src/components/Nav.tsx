@@ -49,7 +49,7 @@ export default function Nav() {
         {/* Desktop nav */}
         <nav
           aria-label="Primary"
-          className="hidden md:flex items-center gap-8 font-mono text-[11px] uppercase tracking-[0.2em]"
+          className="hidden md:flex items-center gap-8 font-mono font-bold text-[11px] uppercase tracking-[0.2em]"
         >
           {LINKS.map((l) => (
             <a key={l.href} href={l.href} data-cursor="hover" className="relative group">

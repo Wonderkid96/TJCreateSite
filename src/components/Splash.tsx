@@ -148,27 +148,31 @@ export default function Splash() {
             </span>
           </button>
 
-          <div className="flex flex-col items-center gap-6 px-6 w-full max-w-[320px]">
+          <div className="flex flex-col items-center gap-8 px-6 w-full max-w-[300px]">
+            {/* Falling-man ping-pong — draws as frames arrive from R2 */}
             <PingPongCanvas />
-            <div className="font-sans font-bold text-ink text-2xl leading-none tracking-[-0.01em] inline-flex items-baseline">
-              TJCREATE<span className="text-accent ml-[0.05em]">.</span>
-            </div>
-            {/* Gradient progress bar — red → lime → lilac, matches site palette. */}
-            <div className="relative h-[2px] w-full overflow-hidden bg-ink/10">
-              <div
-                className="absolute inset-y-0 left-0 will-change-transform"
-                style={{
-                  width: "100%",
-                  transform: `scaleX(${progress})`,
-                  transformOrigin: "left",
-                  transition: "transform 220ms cubic-bezier(.2,.8,.2,1)",
-                  background:
-                    "linear-gradient(90deg, #E6352A 0%, #C8DB45 50%, #C4A9D0 100%)",
-                }}
-              />
-            </div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted tabular-nums">
-              {Math.round(progress * 100)}%
+
+            <div className="w-full flex flex-col items-center gap-4">
+              <div className="font-sans font-bold text-ink text-2xl leading-none tracking-[-0.01em] inline-flex items-baseline">
+                TJCREATE<span className="text-accent ml-[0.05em]">.</span>
+              </div>
+              {/* Gradient progress bar */}
+              <div className="relative h-[2px] w-full overflow-hidden bg-ink/10">
+                <div
+                  className="absolute inset-y-0 left-0 will-change-transform"
+                  style={{
+                    width: "100%",
+                    transform: `scaleX(${progress})`,
+                    transformOrigin: "left",
+                    transition: "transform 220ms cubic-bezier(.2,.8,.2,1)",
+                    background:
+                      "linear-gradient(90deg, #E6352A 0%, #C8DB45 50%, #C4A9D0 100%)",
+                  }}
+                />
+              </div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted tabular-nums">
+                {Math.round(progress * 100)}%
+              </div>
             </div>
           </div>
         </motion.div>
@@ -177,7 +181,7 @@ export default function Splash() {
   );
 }
 
-/** Ping-pong canvas — same logic as FallingOnSky, renders on cream bg. */
+/** Ping-pong canvas — falling-man frames cycling forward/back on the splash. */
 function PingPongCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -203,9 +207,10 @@ function PingPongCanvas() {
       if (t >= totalT) { t = totalT; dir = -1; }
       else if (t <= 0) { t = 0; dir = 1; }
       const idx = Math.min(FALLING_FRAME_COUNT - 1, Math.max(0, Math.floor(t * FPS)));
-      if (idx === lastIdx) return;
       const img = getFallingFrameByIndex(idx);
       if (!img || !img.complete || img.naturalWidth === 0) return;
+      // Always draw if the frame changed OR if we've never drawn yet
+      if (idx === lastIdx) return;
       lastIdx = idx;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -219,7 +224,13 @@ function PingPongCanvas() {
       ref={canvasRef}
       width={FALLING_FRAME_WIDTH}
       height={FALLING_FRAME_HEIGHT}
-      className="w-24 h-auto object-contain opacity-60"
+      className="w-44 h-auto"
+      style={{
+        WebkitMaskImage:
+          "radial-gradient(ellipse 70% 80% at 50% 50%, black 50%, transparent 90%)",
+        maskImage:
+          "radial-gradient(ellipse 70% 80% at 50% 50%, black 50%, transparent 90%)",
+      }}
       aria-hidden
     />
   );

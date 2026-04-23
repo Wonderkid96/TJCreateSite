@@ -157,6 +157,19 @@ function ModalMedia({ project }: { project: Project }) {
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [dayNightIsNight, setDayNightIsNight] = useState(false);
 
+  // YouTube preview overrides all other media in the modal
+  if (project.previewYouTubeId) {
+    return (
+      <iframe
+        src={`https://www.youtube.com/embed/${project.previewYouTubeId}?autoplay=1&mute=1&loop=1&playlist=${project.previewYouTubeId}&controls=1&rel=0&modestbranding=1&playsinline=1`}
+        allow="autoplay; encrypted-media; picture-in-picture"
+        allowFullScreen
+        className="absolute inset-0 h-full w-full border-0"
+        title={project.title}
+      />
+    );
+  }
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);

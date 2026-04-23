@@ -13,6 +13,8 @@ export type Project = {
   video?: string;
   videoPoster?: string;
   kind?: "image" | "video" | "falling" | "day-night" | "hover-video"; // "falling" = falling video composited over sky; "hover-video" = plays on hover, snaps back on leave
+  /** If set, the modal shows this YouTube video (muted autoplay) instead of the tile media. */
+  previewYouTubeId?: string;
   bg?: string;
   /** If set, clicking the tile opens this URL (new tab) instead of the modal. */
   externalUrl?: string;
@@ -116,6 +118,7 @@ export const PROJECTS: Project[] = [
     video: "/work/imported/motion/liar-liar-apple-motion.mp4",
     videoPoster: "/work/imported/posters-video/liar-liar-apple-motion.avif",
     kind: "video",
+    previewYouTubeId: "AGPuWAEkXtk",
     bg: "#0a0a0a",
   },
   {

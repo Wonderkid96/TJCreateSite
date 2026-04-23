@@ -37,7 +37,6 @@ function ProjectTile({
   const videoRef = useRef<HTMLVideoElement>(null);
   const hoverVideoRef = useRef<HTMLVideoElement>(null);
   const hoverVideoEndedRef = useRef(false);
-  const hoverVideoReverseRaf = useRef(0);
   const [hovered, setHovered] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [dayNightIsNight, setDayNightIsNight] = useState(false);
@@ -143,40 +142,19 @@ function ProjectTile({
     mx.set(0);
     my.set(0);
     setHovered(false);
-    // Hover-video: animate backwards to frame 0 at 0.7× speed
+    // Hover-video: snap back to frame 0 on leave
     const hv = hoverVideoRef.current;
     if (hv) {
       hv.pause();
-      cancelAnimationFrame(hoverVideoReverseRaf.current);
-      // If already at the start, nothing to do
-      if (hv.currentTime <= 0.02) {
-        hv.currentTime = 0;
-        hoverVideoEndedRef.current = false;
-        return;
-      }
-      const REVERSE_SPEED = 0.7;
-      let last = performance.now();
-      const tick = (now: number) => {
-        const delta = (now - last) / 1000;
-        last = now;
-        const next = hv.currentTime - REVERSE_SPEED * delta;
-        if (next <= 0) {
-          hv.currentTime = 0;
-          hoverVideoEndedRef.current = false;
-          return; // stop — don't queue another frame
-        }
-        hv.currentTime = next;
-        hoverVideoReverseRaf.current = requestAnimationFrame(tick);
-      };
-      hoverVideoReverseRaf.current = requestAnimationFrame(tick);
+      hv.currentTime = 0;
+      hoverVideoEndedRef.current = false;
     }
   };
   const onEnter = () => {
     setHovered(true);
-    // Hover-video: cancel any ongoing reverse, play forward from the start
+    // Hover-video: play forward from the start on every hover
     const hv = hoverVideoRef.current;
     if (hv) {
-      cancelAnimationFrame(hoverVideoReverseRaf.current);
       hoverVideoEndedRef.current = false;
       hv.currentTime = 0;
       hv.play().catch(() => {});

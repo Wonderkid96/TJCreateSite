@@ -1,7 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
-import { type Ref, useEffect, useId, useRef, useState } from "react";
+import { type Ref, useEffect, useId, useRef } from "react";
 
 export default function LetsTalkMetaball() {
   const uid = useId().replace(/:/g, "");
@@ -617,81 +616,33 @@ export default function LetsTalkMetaball() {
         style={{ mixBlendMode: "difference" }}
         aria-hidden
       >
-        <TypeLine outerRef={textRef} />
+        <CentreLabel outerRef={textRef} />
       </div>
     </a>
   );
 }
 
-function TypeLine({ outerRef }: { outerRef?: Ref<HTMLDivElement> }) {
-  const full = "Let's talk";
-  const [count, setCount] = useState(0);
-  const [hovered, setHovered] = useState(false);
-
-  useEffect(() => {
-    setCount(0);
-    const timer = window.setInterval(() => {
-      setCount((prev) => {
-        if (prev >= full.length) {
-          window.clearInterval(timer);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 66);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  const typed = full.slice(0, count);
-
+function CentreLabel({ outerRef }: { outerRef?: Ref<HTMLDivElement> }) {
   return (
     <div
       ref={outerRef}
-      className="pointer-events-auto font-display leading-[0.9] tracking-tight whitespace-nowrap text-white inline-block transition-transform duration-300 ease-[cubic-bezier(.2,.8,.2,1)]"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onTouchStart={() => setHovered(false)}
-      style={{
-        fontSize: "clamp(2.4rem, 8vw, 7.6rem)",
-        transform: hovered ? "scale(0.96)" : "scale(1)",
-      }}
+      className="pointer-events-auto flex flex-col items-center gap-3 text-center select-none"
     >
-      {typed}
-      <span className="text-accent">.</span>
-      <DotSlot hovered={hovered} delayIn={40} delayOut={130} />
-      <DotSlot hovered={hovered} delayIn={200} delayOut={40} />
-      <motion.span
+      {/* Small mono label — faded, sits above the headline */}
+      <span
+        className="font-mono text-[10px] md:text-[11px] uppercase tracking-[0.28em] text-white/55"
         aria-hidden
-        className="text-accent"
-        animate={{ opacity: [1, 0, 1] }}
-        transition={{ duration: 0.85, repeat: Infinity, ease: "linear" }}
       >
-        |
-      </motion.span>
-    </div>
-  );
-}
+        hello@tjcreate.co.uk
+      </span>
 
-function DotSlot({
-  hovered,
-  delayIn,
-  delayOut,
-}: {
-  hovered: boolean;
-  delayIn: number;
-  delayOut: number;
-}) {
-  return (
-    <span
-      aria-hidden
-      className="text-accent inline-flex items-baseline align-baseline overflow-hidden"
-      style={{
-        maxWidth: hovered ? "1ch" : "0",
-        transition: "max-width 120ms steps(1,end)",
-        transitionDelay: `${hovered ? delayIn : delayOut}ms`,
-      }}
-    >
-      <span className="whitespace-nowrap">.</span>
-    </span>
+      {/* Main display phrase — italic, calmer than a full section heading */}
+      <span
+        className="font-display italic leading-[0.88] tracking-tight text-white whitespace-nowrap"
+        style={{ fontSize: "clamp(2.6rem, 7.5vw, 7rem)" }}
+      >
+        Start something<span className="not-italic text-accent">.</span>
+      </span>
+    </div>
   );
 }

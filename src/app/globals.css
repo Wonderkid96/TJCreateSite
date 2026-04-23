@@ -125,16 +125,19 @@ html.lenis body {
 }
 
 .hover-tile:hover .hover-tile-media {
-  transform: scale(1.04);
+  transform: scale(1.06);
 }
 
-.bento-grid:has(.bento-cell:hover) .bento-cell:not(:hover) {
-  opacity: 0.45;
-  filter: saturate(0.85);
-}
-
+/* Hovered tile lifts and enlarges slightly — other tiles unaffected */
 .bento-cell {
-  transition: opacity 500ms cubic-bezier(0.2, 0.8, 0.2, 1), filter 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.bento-cell:hover {
+  transform: scale(1.025);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+  z-index: 1;
 }
 
 .mask-fade-b {

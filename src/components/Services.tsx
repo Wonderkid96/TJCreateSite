@@ -35,7 +35,7 @@ export default function Services() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-paper/10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-px bg-paper/10">
         {SERVICES.map((s, i) => (
           // Outer div stays bg-ink at all times so the gap-px grid lines
           // render correctly. Animating opacity on the card itself would

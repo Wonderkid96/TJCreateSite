@@ -210,11 +210,11 @@ function PortraitTilt() {
         className="relative w-full h-full overflow-hidden rounded-[2px] border border-line/60"
       >
         <Image
-          src="/work/imported/portraits/toby-about.avif"
+          src="/work/imported/portraits/toby-about.jpg"
           alt="Portrait of Toby Johnson"
           fill
           className="object-cover object-[52%_84%]"
-          sizes="(max-width: 768px) 100vw, 50vw"
+          sizes="(max-width: 767px) 100vw, 50vw"
         />
       </motion.div>
     </motion.div>

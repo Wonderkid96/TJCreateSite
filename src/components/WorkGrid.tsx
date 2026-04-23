@@ -39,7 +39,7 @@ export default function WorkGrid() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8 bento-grid">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8 bento-grid">
         {PROJECTS.map((p, i) => (
           // Outer div holds the grid cell — never animated so the tile's
           // dark background is always opaque (same fix as Services cards).

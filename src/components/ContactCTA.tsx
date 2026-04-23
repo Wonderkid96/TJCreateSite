@@ -2,10 +2,10 @@
 
 import { type Ref, useEffect, useId, useRef } from "react";
 
-export default function LetsTalkMetaball() {
+export default function ContactCTA() {
   const uid = useId().replace(/:/g, "");
-  const gooFilterId = `lets-talk-goo-${uid}`;
-  const glassFilterId = `lets-talk-glass-${uid}`;
+  const gooFilterId = `contact-cta-goo-${uid}`;
+  const glassFilterId = `contact-cta-glass-${uid}`;
 
   const blockRef = useRef<HTMLAnchorElement>(null);
   const textRef = useRef<HTMLDivElement>(null);

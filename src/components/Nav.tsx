@@ -43,7 +43,7 @@ export default function Nav() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-paper border-b border-line">
-      <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 md:px-10 py-5">
+      <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 md:px-10 py-4">
         <LogoMark onClick={() => setOpen(false)} />
 
         {/* Desktop nav */}
@@ -233,13 +233,13 @@ function LogoMark({ onClick }: { onClick?: () => void }) {
       href="#top"
       data-cursor="hover"
       aria-label="TJCREATE · Home"
-      className="inline-flex flex-col overflow-hidden"
+      className="inline-flex flex-col"
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       <span className="inline-flex items-baseline">
-        <span className="font-sans font-bold text-ink text-xl md:text-2xl leading-none tracking-[-0.01em] whitespace-nowrap">
+        <span className="font-sans font-bold text-ink text-[1.35rem] md:text-[1.65rem] leading-none tracking-[-0.01em] whitespace-nowrap">
           <ScrambleText
             text={text}
             active={true}
@@ -249,12 +249,12 @@ function LogoMark({ onClick }: { onClick?: () => void }) {
         </span>
         <span
           aria-hidden
-          className="font-sans font-bold text-accent text-xl md:text-2xl leading-none tracking-[-0.01em] ml-[0.05em]"
+          className="font-sans font-bold text-accent text-[1.35rem] md:text-[1.65rem] leading-none tracking-[-0.01em] ml-[0.05em]"
         >
           .
         </span>
       </span>
-      <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink/50 mt-0.5">
+      <span className="font-mono text-[9px] md:text-[10px] uppercase tracking-[0.14em] text-ink/45 mt-1 leading-none">
         Portfolio / 2026
       </span>
     </a>

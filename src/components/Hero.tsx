@@ -306,8 +306,7 @@ export default function Hero() {
         </motion.div>
 
         {/* Top chrome */}
-        <div className="absolute top-24 md:top-28 inset-x-6 md:inset-x-10 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.2em]">
-          <span className="text-ink font-bold">[ Portfolio / 2026 ]</span>
+        <div className="absolute top-24 md:top-28 inset-x-6 md:inset-x-10 flex items-center justify-end font-mono text-[11px] uppercase tracking-[0.2em]">
           <span className="hidden md:inline text-white/85">
             Est. Lincoln, UK
           </span>

@@ -148,10 +148,20 @@ function ProjectTile({
     mx.set(0);
     my.set(0);
     setHovered(false);
-    // Hover-video: reverse immediately — no pause-freeze before first step
+    // Hover-video: behaviour depends on progress through the video.
+    // < 50% → reverse back to start.
+    // ≥ 50% → continue playing to the end and hold the last frame.
     const hv = hoverVideoRef.current;
     if (hv) {
       cancelAnimationFrame(hoverVideoReverseRaf.current);
+      const progress = hv.duration > 0 ? hv.currentTime / hv.duration : 0;
+
+      if (progress >= 0.5) {
+        // Past halfway — let it finish naturally; onEnded holds the last frame
+        return;
+      }
+
+      // Under halfway — reverse back to start
       hv.pause();
       hoverVideoEndedRef.current = false;
       if (hv.currentTime <= 0.02) {
@@ -159,8 +169,7 @@ function ProjectTile({
         return;
       }
       const REVERSE_SPEED = 0.7;
-      // Step back one frame synchronously so the browser paints a reversed
-      // position immediately — eliminates the "freeze then jolt" gap
+      // Step back one frame synchronously to eliminate the freeze-then-jolt gap
       hv.currentTime = Math.max(0, hv.currentTime - REVERSE_SPEED / 60);
       let last = performance.now();
       const tick = (now: number) => {

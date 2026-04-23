@@ -132,6 +132,11 @@ function ProjectTile({
     return () => window.clearInterval(id);
   }, [isTouchDevice, project.kind]);
 
+  // Cancel any in-flight reverse RAF when the tile unmounts
+  useEffect(() => {
+    return () => cancelAnimationFrame(hoverVideoReverseRaf.current);
+  }, []);
+
   const onMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     const el = ref.current;
     if (!el) return;

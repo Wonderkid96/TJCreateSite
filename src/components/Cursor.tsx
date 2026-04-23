@@ -58,29 +58,29 @@ export default function Cursor() {
     };
 
     let rafId = 0;
-    let dirty = true;
+
+    // Only run the RAF loop while the cursor is still catching up.
+    // Stops itself once settled; mousemove wakes it again.
     const tick = () => {
-      rafId = requestAnimationFrame(tick);
-      if (!dirty) return;
       // 45% per-frame lerp — tight follow (~2 frame tail).
       lx += (tx - lx) * 0.45;
       ly += (ty - ly) * 0.45;
-      // Sub-pixel idle threshold: skip DOM writes (and flag the loop as
-      // clean) once the cursor is close enough that further updates would
-      // be imperceptible. Next pointermove flips `dirty` back on.
+      wrap.style.transform = `translate3d(${lx}px, ${ly}px, 0)`;
+      // Keep running until sub-pixel threshold is met, then stop.
       if (Math.abs(tx - lx) < 0.1 && Math.abs(ty - ly) < 0.1) {
         lx = tx;
         ly = ty;
-        dirty = false;
+        rafId = 0;
+        return;
       }
-      wrap.style.transform = `translate3d(${lx}px, ${ly}px, 0)`;
+      rafId = requestAnimationFrame(tick);
     };
-    rafId = requestAnimationFrame(tick);
 
     const onMove = (e: MouseEvent) => {
       tx = e.clientX;
       ty = e.clientY;
-      dirty = true;
+      // Wake the loop only if it isn't already running.
+      if (rafId === 0) rafId = requestAnimationFrame(tick);
     };
 
     const onOver = (e: MouseEvent) => {
@@ -107,8 +107,8 @@ export default function Cursor() {
     window.addEventListener("mousemove", onMove, { passive: true });
     window.addEventListener("mouseover", onOver, { passive: true });
     return () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseover", onOver);
+      window.removeEventListener("mousemove", onMove, { passive: true } as EventListenerOptions);
+      window.removeEventListener("mouseover", onOver, { passive: true } as EventListenerOptions);
       cancelAnimationFrame(rafId);
     };
   }, []);

@@ -124,6 +124,7 @@ const structuredData = {
         "@type": "PostalAddress",
         addressLocality: "Lincoln",
         addressRegion: "Lincolnshire",
+        postalCode: "LN1",
         addressCountry: "GB",
       },
       knowsAbout: [
@@ -162,6 +163,7 @@ const structuredData = {
         "@type": "PostalAddress",
         addressLocality: "Lincoln",
         addressRegion: "Lincolnshire",
+        postalCode: "LN1",
         addressCountry: "GB",
       },
       serviceType: ["Graphic Design", "Motion Design", "3D Design"],

@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import SnakeGame from "./SnakeGame";
 import { SocialLinks } from "./SocialIcons";
 
+// Central constant so the address only needs updating in one place.
+const CONTACT_EMAIL = "hello@tjcreate.co.uk";
+
 export default function Contact() {
   const [snakeOpen, setSnakeOpen] = useState(false);
   return (
@@ -49,7 +52,7 @@ export default function Contact() {
       </div>
 
       <a
-        href="mailto:hello@tjcreate.co.uk"
+        href={`mailto:${CONTACT_EMAIL}`}
         data-cursor="view"
         data-cursor-label="EMAIL"
         className="block mt-6 md:mt-8 text-center"
@@ -58,7 +61,7 @@ export default function Contact() {
       </a>
 
       <a
-        href="mailto:hello@tjcreate.co.uk"
+        href={`mailto:${CONTACT_EMAIL}`}
         data-cursor="view"
         data-cursor-label="EMAIL"
         className="block group mt-10 md:mt-14"
@@ -112,11 +115,11 @@ export default function Contact() {
             Email
           </div>
           <a
-            href="mailto:hello@tjcreate.co.uk"
+            href={`mailto:${CONTACT_EMAIL}`}
             data-cursor="hover"
             className="text-lg hover:text-accent transition-colors"
           >
-            hello@tjcreate.co.uk
+            {CONTACT_EMAIL}
           </a>
         </div>
         <div>
@@ -160,10 +163,10 @@ export default function Contact() {
               <li>
                 For legal queries or a project-specific agreement, email{" "}
                 <a
-                  href="mailto:hello@tjcreate.co.uk"
+                  href={`mailto:${CONTACT_EMAIL}`}
                   className="underline decoration-paper/40 underline-offset-4 hover:text-accent transition-colors"
                 >
-                  hello@tjcreate.co.uk
+                  {CONTACT_EMAIL}
                 </a>
                 .
               </li>
@@ -196,10 +199,10 @@ export default function Contact() {
                 You can request access, correction or deletion of your personal information by
                 emailing{" "}
                 <a
-                  href="mailto:hello@tjcreate.co.uk"
+                  href={`mailto:${CONTACT_EMAIL}`}
                   className="underline decoration-paper/40 underline-offset-4 hover:text-accent transition-colors"
                 >
-                  hello@tjcreate.co.uk
+                  {CONTACT_EMAIL}
                 </a>
                 .
               </li>
@@ -252,7 +255,7 @@ function TypeLine() {
         if (prev >= full.length) { window.clearInterval(timer); return prev; }
         return prev + 1;
       });
-    }, 66);
+    }, 66); // ~15 chars/s — natural typewriter cadence
     return () => window.clearInterval(timer);
   }, []);
 
@@ -265,8 +268,9 @@ function TypeLine() {
     >
       {full.slice(0, count)}
       <span className="text-accent">.</span>
-      <DotSlot hovered={hovered} delayIn={40} delayOut={130} />
-      <DotSlot hovered={hovered} delayIn={200} delayOut={40} />
+      {/* Two extra dots stagger in on hover — first at 40 ms, second at 200 ms */}
+      <DotSlot hovered={hovered} delayIn={40}  delayOut={130} />
+      <DotSlot hovered={hovered} delayIn={200} delayOut={40}  />
       <motion.span
         aria-hidden
         className="text-accent"

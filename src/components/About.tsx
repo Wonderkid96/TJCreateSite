@@ -112,6 +112,7 @@ export default function About() {
           <div
             key={item.k}
             data-reveal="item"
+            // 90 ms base delay + 80 ms per item — staggers each stat card into view
             style={{ "--reveal-delay": `${90 + index * 80}ms` } as React.CSSProperties}
             className="group text-left"
           >
@@ -163,6 +164,7 @@ function PortraitTilt() {
   const rawY = useMotionValue(0);
   const isHovered = useMotionValue(0);
 
+  // Spring config for the portrait tilt — responsive but not over-bouncy.
   const springConfig = { stiffness: 120, damping: 18 };
   const rotateY = useSpring(useTransform(rawX, [-0.5, 0.5], [-9, 9]), springConfig);
   const rotateX = useSpring(useTransform(rawY, [-0.5, 0.5], [7, -7]), springConfig);

@@ -179,7 +179,7 @@ function ModalMedia({ project }: { project: Project }) {
     if (!isTouchDevice || kind !== "day-night") return;
     const id = window.setInterval(() => {
       setDayNightIsNight((prev) => !prev);
-    }, 3200);
+    }, 3200); // 3.2 s per state — slow enough to feel intentional, not a rapid flash
     return () => window.clearInterval(id);
   }, [isTouchDevice, kind]);
 

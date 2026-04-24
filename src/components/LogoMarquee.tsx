@@ -14,7 +14,10 @@ type Props = {
   speed?: "normal" | "fast";
 };
 
+// Auto-scroll speeds in px/s for each marquee mode.
 const SPEEDS = { normal: 22, fast: 50 } as const;
+// How long after the user stops dragging/scrolling before auto-scroll resumes.
+// Long enough to feel deliberate rather than snapping back immediately.
 const RESUME_DELAY_MS = 1200;
 
 // Colours pulled from Toby's palette, picked at random on hover so every pass
@@ -103,7 +106,7 @@ export default function LogoMarquee({ items, speed = "normal" }: Props) {
         ref={trackRef}
         drag="x"
         dragConstraints={{ left: -Infinity, right: Infinity }}
-        dragElastic={0.12}
+        dragElastic={0.12} // light rubber-band feel at the ends of the drag range
         dragMomentum={true}
         onDragStart={pause}
         onDrag={normalize}

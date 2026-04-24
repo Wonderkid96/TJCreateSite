@@ -19,8 +19,10 @@ const WORDS = ["Toby", "Johnson"];
 const SUB =
   "Graphic + motion designer building visual systems for record labels, artists, and ambitious brands.";
 
-const SKY_ASPECT = 1581 / 4451;
-const CLOUD_ASPECT = 3269 / 8125;
+// Source image pixel dimensions expressed as width ÷ height.
+// Used by safeTranslate to derive the rendered layer height at any viewport width.
+const SKY_ASPECT = 1581 / 4451;   // sky-long.avif:   1581 px wide × 4451 px tall
+const CLOUD_ASPECT = 3269 / 8125; // cloud-long.avif: 3269 px wide × 8125 px tall
 
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
@@ -149,10 +151,20 @@ export default function Hero() {
     targetProgressRef.current = p;
   });
 
-  // Responsive parallax — translate each layer by (layerH - viewportH) at max
+  // Responsive parallax — translate each layer by (layerH − viewportH) at max
   // scroll so the image always fully covers the viewport.
+  //
+  // Mobile layers are intentionally wider than 100vw so the extra height created
+  // by the larger width gives enough vertical travel for the parallax without
+  // revealing bare edges at the sides.
   const skyWidthVw = isMobile ? 132 : 100;
   const cloudWidthVw = isMobile ? 144 : 100;
+
+  /**
+   * Returns the Y offset (px) for a parallax layer at scroll progress `p` (0–1).
+   * Computes the maximum possible shift as (layerHeight − viewportHeight) so the
+   * image travels exactly as far as needed — never over- or under-shooting.
+   */
   const safeTranslate = (aspect: number, p: number, widthVw = 100) => {
     if (typeof window === "undefined") return 0;
     const layerW = window.innerWidth * (widthVw / 100);
@@ -169,38 +181,51 @@ export default function Hero() {
 
   const fallingScale = useTransform(progress, [0, 0.5, 1], [0.98, 1, 1.04]);
 
-  // Scroll indicator — drifts downward as the hero scroll progresses,
-  // acting as a live progress marker pinned to the right edge.
-  // Fades in early, fades out before the hero unpins.
+  // ─── Scroll-driven animation choreography ────────────────────────────────
+  //
+  // All values below are progress thresholds in the range [0, 1] where:
+  //   0   = hero scroll start (page top)
+  //   1   = hero scroll end (section fully consumed, about to unpin)
+  //
+  // Scroll indicator — floats on the right edge, drifts downward as the
+  // user scrolls. Fades in quickly at the start, holds through most of the
+  // range, then fades out just before the hero unpins (threshold 0.72–0.88).
   const scrollIndicatorOpacity = useTransform(
     progress,
-    [0, 0.06, 0.72, 0.88],
-    [0, 1, 1, 0],
+    [0, 0.06, 0.72, 0.88], // fade in → hold → fade out
+    [0,    1,    1,    0],
   );
   const scrollIndicatorY = useTransform(
     progress,
-    [0, 0.85],
-    ["0%", "52%"],
+    [0,    0.85],
+    ["0%", "52%"], // drifts ~half the container height downward
   );
 
-  // Title + sub — slide in from left, drift continuously (never static, never
-  // off-screen), scroll carries them upward at the end via the natural sticky
-  // unpin.
+  // Title — slides in from the left on entry (0 → 0.18), holds position
+  // through the middle of the scroll, then drifts fractionally rightward
+  // at the end (parallax carry-through as the section unpins).
   const titleX = useTransform(
     progress,
-    [0, 0.18, 0.6, 1],
+    [0,      0.18,  0.6,  1],
     ["-30%", "0%", "1%", "2%"],
   );
-  const titleOpacity = useTransform(progress, [0, 0.1, 0.92, 1], [0, 1, 1, 0.9]);
+  const titleOpacity = useTransform(
+    progress,
+    [0, 0.1,  0.92, 1],
+    [0,   1,    1,   0.9],
+  );
+
+  // Subtitle — same drift logic as the title but enters slightly later
+  // (0.08 → 0.25) to create a natural stagger between headline and sub-text.
   const subX = useTransform(
     progress,
-    [0, 0.22, 0.6, 1],
+    [0,      0.22,  0.6,  1],
     ["-20%", "0%", "1%", "2%"],
   );
   const subOpacity = useTransform(
     progress,
     [0.08, 0.25, 0.92, 1],
-    [0, 1, 1, 0.9],
+    [0,      1,    1,   0.9],
   );
 
   return (

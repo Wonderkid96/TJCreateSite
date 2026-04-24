@@ -243,6 +243,11 @@ export const PROJECTS: Project[] = [
 export const CLIENTS_WITH_LOGOS = [
   // Labels / agencies
   {
+    name: "Gigantic",
+    logo: "/work/imported/logos/gigantic.svg",
+    url: "https://www.gigantic.com",
+  },
+  {
     name: "Brighton Dome",
     logo: "/work/imported/logos/brighton-dome.svg",
     url: "https://brightondome.org",

@@ -1,15 +1,11 @@
 "use client";
 
 import { motion, AnimatePresence } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   fallingFramesProgress,
   fallingFramesReady,
   preloadFallingFrames,
-  FALLING_FRAME_COUNT,
-  FALLING_FRAME_HEIGHT,
-  FALLING_FRAME_WIDTH,
-  getFallingFrameByIndex,
 } from "@/lib/falling-frames";
 
 const SESSION_KEY = "tjcreate.splashSeen";
@@ -149,9 +145,6 @@ export default function Splash() {
           </button>
 
           <div className="flex flex-col items-center gap-8 px-6 w-full max-w-[300px]">
-            {/* Falling-man ping-pong — draws as frames arrive from R2 */}
-            <PingPongCanvas />
-
             <div className="w-full flex flex-col items-center gap-4">
               <div className="font-sans font-bold text-ink text-2xl leading-none tracking-[-0.01em] inline-flex items-baseline">
                 TJCREATE<span className="text-accent ml-[0.05em]">.</span>
@@ -181,57 +174,3 @@ export default function Splash() {
   );
 }
 
-/** Ping-pong canvas — falling-man frames cycling forward/back on the splash. */
-function PingPongCanvas() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const FPS = 24;
-    let raf = 0;
-    let last = performance.now();
-    let t = 0;
-    let dir = 1;
-    let lastIdx = -1;
-    const totalT = FALLING_FRAME_COUNT / FPS;
-
-    const tick = (now: number) => {
-      raf = requestAnimationFrame(tick);
-      const delta = Math.min(0.1, (now - last) / 1000);
-      last = now;
-      t += dir * delta;
-      if (t >= totalT) { t = totalT; dir = -1; }
-      else if (t <= 0) { t = 0; dir = 1; }
-      const idx = Math.min(FALLING_FRAME_COUNT - 1, Math.max(0, Math.floor(t * FPS)));
-      const img = getFallingFrameByIndex(idx);
-      if (!img || !img.complete || img.naturalWidth === 0) return;
-      // Always draw if the frame changed OR if we've never drawn yet
-      if (idx === lastIdx) return;
-      lastIdx = idx;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      width={FALLING_FRAME_WIDTH}
-      height={FALLING_FRAME_HEIGHT}
-      className="w-44 h-auto"
-      style={{
-        WebkitMaskImage:
-          "radial-gradient(ellipse 70% 80% at 50% 50%, black 50%, transparent 90%)",
-        maskImage:
-          "radial-gradient(ellipse 70% 80% at 50% 50%, black 50%, transparent 90%)",
-      }}
-      aria-hidden
-    />
-  );
-}

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 320">
+  <!--
+    Brighton Dome — decorative serif capital D with wordmark inside the counter.
+    Used as a CSS mask (alpha channel), so fill colour is irrelevant; the
+    opaque shape defines what the marquee component colours.
+  -->
+
+  <!-- D letterform: outer boundary minus inner counter via evenodd -->
+  <path
+    fill="black"
+    fill-rule="evenodd"
+    d="
+      M 0 18
+      L 96 18
+      L 68 48
+      C 145 48 265 98 265 160
+      C 265 222 145 272 68 272
+      L 96 302
+      L 0 302
+      Z
+
+      M 68 68
+      C 106 63 230 102 230 160
+      C 230 218 106 257 68 252
+      Z
+    "
+  />
+
+  <!-- 'Brighton' and 'Dome' rendered inside the counter (opaque, so visible through the mask) -->
+  <text
+    x="149"
+    y="148"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', Times, serif"
+    font-style="italic"
+    font-size="26"
+    fill="black"
+  >Brighton</text>
+
+  <text
+    x="149"
+    y="180"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', Times, serif"
+    font-style="italic"
+    font-size="26"
+    fill="black"
+  >Dome</text>
+</svg>

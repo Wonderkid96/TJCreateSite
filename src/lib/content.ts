@@ -243,6 +243,21 @@ export const PROJECTS: Project[] = [
 export const CLIENTS_WITH_LOGOS = [
   // Labels / agencies
   {
+    name: "Brighton Dome",
+    logo: "/work/imported/logos/brighton-dome.svg",
+    url: "https://brightondome.org",
+  },
+  {
+    name: "Jazz Re:freshed",
+    logo: "/work/imported/logos/jazz-refreshed.svg",
+    url: "https://jazzrefreshed.com",
+  },
+  {
+    name: "Bridge the Gap",
+    logo: "/work/imported/logos/bridge-the-gap.svg",
+    url: "https://www.bridgethegapmanagement.com",
+  },
+  {
     name: "Mahogany",
     logo: "/work/imported/logos/mahogany.svg",
     url: "https://www.youtube.com/@MahoganySessions",

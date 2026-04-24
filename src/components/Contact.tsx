@@ -28,7 +28,7 @@ export default function Contact() {
       <div className="flex items-end justify-between mb-16 md:mb-24">
         <div>
           <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 mb-4">
-            [ 05 / Contact ]
+            [ 04 / Contact ]
           </div>
           <motion.h2
             initial={{ opacity: 0, y: 30 }}

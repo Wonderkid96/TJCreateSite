@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 268 162">
+  <!--
+    Bridge the Gap Management — stacked bold wordmark.
+    'Bridge' and 'Gap' are full weight; 'the' sits smaller between them.
+    Used as a CSS mask; fill is applied by the marquee component.
+  -->
+
+  <!-- 'Bridge' — top line, large bold -->
+  <text
+    x="0"
+    y="74"
+    font-family="'Arial Black', 'Helvetica Neue', Arial, sans-serif"
+    font-weight="900"
+    font-size="76"
+    fill="black"
+  >Bridge</text>
+
+  <!-- 'the' — second line, smaller (aligns baseline with 'Gap') -->
+  <text
+    x="2"
+    y="152"
+    font-family="'Arial Black', 'Helvetica Neue', Arial, sans-serif"
+    font-weight="900"
+    font-size="44"
+    fill="black"
+  >the</text>
+
+  <!-- 'Gap' — second line, same weight and size as 'Bridge' -->
+  <text
+    x="90"
+    y="152"
+    font-family="'Arial Black', 'Helvetica Neue', Arial, sans-serif"
+    font-weight="900"
+    font-size="76"
+    fill="black"
+  >Gap</text>
+</svg>

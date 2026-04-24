@@ -6,7 +6,8 @@ import { PROJECTS, type Project } from "@/lib/content";
 import ProjectTile from "./ProjectTile";
 import ProjectModal from "./ProjectModal";
 
-// Per-tile parallax strength for inner media (px).
+// Parallax strength (px) for each tile's inner media layer.
+// Controls how far the background image shifts as the tile scrolls in/out of view.
 const PARALLAX = [30, 40, 55, 25, 45, 50, 20, 42, 60];
 
 export default function WorkGrid() {

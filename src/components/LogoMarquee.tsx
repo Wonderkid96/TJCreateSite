@@ -115,14 +115,14 @@ export default function LogoMarquee({ items, speed = "normal" }: Props) {
         className="flex items-center gap-16 md:gap-24 whitespace-nowrap cursor-grab active:cursor-grabbing will-change-transform h-full"
       >
         {row.map((item, i) => (
-          <LogoSlot key={`${item.name}-${i}`} item={item} pausedRef={paused} />
+          <LogoSlot key={`${item.name}-${i}`} item={item} isPaused={paused} />
         ))}
       </motion.div>
     </div>
   );
 }
 
-function LogoSlot({ item, pausedRef }: { item: LogoItem; pausedRef: boolean }) {
+function LogoSlot({ item, isPaused }: { item: LogoItem; isPaused: boolean }) {
   // Default is "var(--ink)" — flips automatically with the theme so logos
   // read as dark on cream (light mode) and cream on dark (dark mode).
   const [color, setColor] = useState<string>("var(--ink)");
@@ -176,7 +176,7 @@ function LogoSlot({ item, pausedRef }: { item: LogoItem; pausedRef: boolean }) {
         onMouseLeave={onLeave}
         onClick={(e) => {
           // Suppress nav while the marquee is being drag-scrubbed.
-          if (pausedRef) e.preventDefault();
+          if (isPaused) e.preventDefault();
         }}
       >
         {inner}

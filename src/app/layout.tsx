@@ -118,7 +118,7 @@ const structuredData = {
       image: `${SITE_URL}/opengraph-image`,
       jobTitle: "Graphic & Motion Designer",
       description: SITE_DESC,
-      email: "mailto:hello@tjcreate.co.uk",
+      email: "hello@tjcreate.co.uk",
       worksFor: { "@id": `${SITE_URL}/#tjcreate` },
       address: {
         "@type": "PostalAddress",
@@ -153,7 +153,6 @@ const structuredData = {
       image: `${SITE_URL}/opengraph-image`,
       logo: `${SITE_URL}/icon.svg`,
       email: "hello@tjcreate.co.uk",
-      telephone: null,
       priceRange: "££",
       areaServed: [
         { "@type": "Country", name: "United Kingdom" },

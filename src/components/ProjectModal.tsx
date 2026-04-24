@@ -237,6 +237,35 @@ function ModalMedia({ project }: { project: Project }) {
     );
   }
 
+  if (kind === "hover-video") {
+    return (
+      <>
+        {/* Poster always visible — no black flash waiting for video */}
+        {project.videoPoster && (
+          <Image
+            src={project.videoPoster}
+            alt={project.alt ?? project.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 66vw"
+            className="object-cover"
+            priority
+          />
+        )}
+        {project.video && (
+          <video
+            src={project.video}
+            muted
+            autoPlay
+            loop
+            playsInline
+            preload="auto"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        )}
+      </>
+    );
+  }
+
   if (kind === "falling") {
     return <FallingModalMedia />;
   }

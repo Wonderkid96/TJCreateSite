@@ -5,6 +5,7 @@ import WorkGrid from "@/components/WorkGrid";
 import Services from "@/components/Services";
 import About from "@/components/About";
 import ContactCTA from "@/components/ContactCTA";
+import SiteFooter from "@/components/SiteFooter";
 import { CLIENTS_WITH_LOGOS } from "@/lib/content";
 
 export default function Home() {
@@ -21,6 +22,7 @@ export default function Home() {
       <LogoMarquee items={CLIENTS_WITH_LOGOS} />
       <About />
       <ContactCTA />
+      <SiteFooter />
     </main>
   );
 }

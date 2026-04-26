@@ -171,7 +171,7 @@ function AvailabilityChip({ time, onClick }: { time: string; onClick?: () => voi
 
 /** Sun/moon theme toggle button.
  *  Normal click/tap → toggle light/dark.
- *  Long-press (~5 s) → toggle rainbow glow Easter egg.
+ *  Long-press (~5 s) → toggle HUD mode Easter egg.
  *
  *  On touch devices the native long-press context menu / text-selection
  *  would interrupt the timer, so we attach touch listeners via a ref
@@ -212,7 +212,7 @@ function ThemeToggle() {
   const handleClick = useCallback(() => {
     if (didLongPress.current) {
       didLongPress.current = false;
-      return; // swallow — long-press already toggled rainbow
+      return; // swallow — long-press already toggled HUD mode
     }
     toggle();
   }, [toggle]);

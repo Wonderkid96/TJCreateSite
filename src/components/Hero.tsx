@@ -243,7 +243,7 @@ export default function Hero() {
       }
       className="relative w-full h-[260vh] sm:h-[280vh] md:h-[300vh] lg:h-[320vh]"
     >
-      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-[#c9d8e2]">
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-[#c9d8e2] isolate">
         {/* Sky */}
         <motion.div
           style={{
@@ -275,7 +275,7 @@ export default function Hero() {
             width: `${cloudWidthVw}vw`,
             height: `calc(${cloudWidthVw}vw / ${CLOUD_ASPECT})`,
           }}
-          className={`absolute top-0 will-change-transform opacity-95${isMobile ? "" : " mix-blend-screen"}`}
+          className="absolute top-0 will-change-transform opacity-95 mix-blend-screen"
         >
           <div
             className="h-full w-full"
@@ -342,7 +342,7 @@ export default function Hero() {
           style={{ opacity: titleOpacity, x: titleX }}
           className="absolute inset-x-6 md:inset-x-10 bottom-5 sm:bottom-8 md:bottom-14 flex flex-col gap-4 sm:gap-5 md:gap-8 will-change-transform"
         >
-          <h1 className={`font-display hero-line text-[clamp(2.2rem,8.8vw,4.8rem)] md:text-[clamp(2.6rem,10vw,11rem)] tracking-[-0.035em] -ml-[0.02em] text-ink${isMobile ? "" : " mix-blend-multiply"}`}>
+          <h1 className="font-display hero-line text-[clamp(2.2rem,8.8vw,4.8rem)] md:text-[clamp(2.6rem,10vw,11rem)] tracking-[-0.035em] -ml-[0.02em] text-ink mix-blend-multiply">
             {WORDS.map((w) => (
               <span key={w} className="block">
                 {w === "Johnson" ? (

@@ -182,7 +182,7 @@ function AvailabilityChip({ time, onClick }: { time: string; onClick?: () => voi
 function ThemeToggle() {
   const { theme, toggle } = useTheme();
   const isDark = theme === "dark";
-  const [rainbow, setRainbow] = useState(false);
+  const [hud, setHud] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
   const pressTimer = useRef<number | null>(null);
   const didLongPress = useRef(false);
@@ -197,7 +197,7 @@ function ThemeToggle() {
     didLongPress.current = false;
     pressTimer.current = window.setTimeout(() => {
       didLongPress.current = true;
-      setRainbow((v) => !v);
+      setHud((v) => !v);
     }, LONG_PRESS_MS);
   }, []);
 
@@ -259,16 +259,16 @@ function ThemeToggle() {
     };
   }, [startPress, endPress, handleClick]);
 
-  // Sync rainbow class on <html>.
+  // Sync hud class on <html>.
   useEffect(() => {
     const html = document.documentElement;
-    if (rainbow) {
-      html.classList.add("rainbow-mode");
+    if (hud) {
+      html.classList.add("hud-mode");
     } else {
-      html.classList.remove("rainbow-mode");
+      html.classList.remove("hud-mode");
     }
-    return () => html.classList.remove("rainbow-mode");
-  }, [rainbow]);
+    return () => html.classList.remove("hud-mode");
+  }, [hud]);
 
   // Clean up timer on unmount.
   useEffect(() => {
@@ -322,15 +322,19 @@ function ThemeToggle() {
         </svg>
       </button>
 
-      {/* Rainbow exit button — visible only when Easter egg is active */}
-      {rainbow && (
-        <button
-          type="button"
-          onClick={() => setRainbow(false)}
-          className="rainbow-exit-btn"
-        >
-          Exit Rainbow Mode
-        </button>
+      {/* HUD mode overlays + exit button — visible only when Easter egg is active */}
+      {hud && (
+        <>
+          <div aria-hidden className="hud-scanline" />
+          <div aria-hidden className="hud-grid" />
+          <button
+            type="button"
+            onClick={() => setHud(false)}
+            className="hud-exit-btn"
+          >
+            Exit HUD Mode
+          </button>
+        </>
       )}
     </>
   );

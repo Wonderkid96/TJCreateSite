@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import {
   fallingFramesProgress,
   fallingFramesReady,
+  fallingFramesScrollReady,
   preloadFallingFrames,
 } from "@/lib/falling-frames";
 
@@ -76,8 +77,12 @@ export default function Splash() {
       raf = requestAnimationFrame(tick);
       setProgress(fallingFramesProgress());
       const now = performance.now();
-      // Normal path: frames ready + min display time satisfied.
-      if (fallingFramesReady() && now >= minEndsAt) {
+      // Normal path: enough frames for smooth scroll viewing + min display
+      // time satisfied. On fast connections fallingFramesReady() (all 82)
+      // fires first; on slower mobile connections fallingFramesScrollReady()
+      // (every 3rd frame) lets the splash dismiss sooner so the user isn't
+      // staring at a loader while remaining frames fill in behind the scenes.
+      if ((fallingFramesReady() || fallingFramesScrollReady()) && now >= minEndsAt) {
         finish();
         return;
       }

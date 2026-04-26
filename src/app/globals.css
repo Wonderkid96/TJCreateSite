@@ -270,3 +270,156 @@ html.reveal-mounted [data-reveal].is-visible {
     transition: none;
   }
 }
+
+/* ─── Rainbow glow Easter egg ────────────────────────────────────────────
+   Activated by long-pressing the theme toggle for ~5 s.
+   Smooth hue-cycling only — no rapid flashing (seizure-safe). */
+
+@keyframes rainbowHue {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+@keyframes rainbowBorder {
+  0% { border-color: #ff0000; }
+  14% { border-color: #ff8800; }
+  28% { border-color: #ffff00; }
+  42% { border-color: #00ff00; }
+  57% { border-color: #00ffff; }
+  71% { border-color: #0044ff; }
+  85% { border-color: #8800ff; }
+  100% { border-color: #ff0000; }
+}
+
+@keyframes rainbowGlow {
+  0% { text-shadow: 0 0 12px #ff0000, 0 0 40px rgba(255,0,0,0.4); }
+  14% { text-shadow: 0 0 12px #ff8800, 0 0 40px rgba(255,136,0,0.4); }
+  28% { text-shadow: 0 0 12px #ffff00, 0 0 40px rgba(255,255,0,0.4); }
+  42% { text-shadow: 0 0 12px #00ff00, 0 0 40px rgba(0,255,0,0.4); }
+  57% { text-shadow: 0 0 12px #00ffff, 0 0 40px rgba(0,255,255,0.4); }
+  71% { text-shadow: 0 0 12px #0044ff, 0 0 40px rgba(0,68,255,0.4); }
+  85% { text-shadow: 0 0 12px #8800ff, 0 0 40px rgba(136,0,255,0.4); }
+  100% { text-shadow: 0 0 12px #ff0000, 0 0 40px rgba(255,0,0,0.4); }
+}
+
+@keyframes rainbowBg {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes rainbowBoxGlow {
+  0% { box-shadow: 0 0 15px 2px rgba(255,0,0,0.35), inset 0 0 15px 2px rgba(255,0,0,0.1); }
+  14% { box-shadow: 0 0 15px 2px rgba(255,136,0,0.35), inset 0 0 15px 2px rgba(255,136,0,0.1); }
+  28% { box-shadow: 0 0 15px 2px rgba(255,255,0,0.35), inset 0 0 15px 2px rgba(255,255,0,0.1); }
+  42% { box-shadow: 0 0 15px 2px rgba(0,255,0,0.35), inset 0 0 15px 2px rgba(0,255,0,0.1); }
+  57% { box-shadow: 0 0 15px 2px rgba(0,255,255,0.35), inset 0 0 15px 2px rgba(0,255,255,0.1); }
+  71% { box-shadow: 0 0 15px 2px rgba(0,68,255,0.35), inset 0 0 15px 2px rgba(0,68,255,0.1); }
+  85% { box-shadow: 0 0 15px 2px rgba(136,0,255,0.35), inset 0 0 15px 2px rgba(136,0,255,0.1); }
+  100% { box-shadow: 0 0 15px 2px rgba(255,0,0,0.35), inset 0 0 15px 2px rgba(255,0,0,0.1); }
+}
+
+html.rainbow-mode {
+  --paper: #0a0a0a !important;
+  --ink: #f4f1e9 !important;
+}
+
+html.rainbow-mode body {
+  background: linear-gradient(
+    135deg,
+    #0a0a0a 0%,
+    #1a0520 20%,
+    #0a0a2e 40%,
+    #0a1a0a 60%,
+    #1a1a00 80%,
+    #0a0a0a 100%
+  ) !important;
+  background-size: 400% 400% !important;
+  animation: rainbowBg 12s ease infinite !important;
+}
+
+/* Neon glow on headings */
+html.rainbow-mode .font-display,
+html.rainbow-mode h1,
+html.rainbow-mode h2,
+html.rainbow-mode h3 {
+  animation: rainbowGlow 6s linear infinite !important;
+}
+
+/* Glowing borders on cards, tiles, and interactive elements */
+html.rainbow-mode .bento-cell,
+html.rainbow-mode details,
+html.rainbow-mode .hover-tile > div {
+  animation: rainbowBoxGlow 6s linear infinite !important;
+  border-radius: 4px;
+}
+
+/* Section borders get rainbow treatment */
+html.rainbow-mode .border-line,
+html.rainbow-mode .border-t,
+html.rainbow-mode .border-b,
+html.rainbow-mode .border-y {
+  animation: rainbowBorder 6s linear infinite !important;
+}
+
+/* Nav bar gets a subtle neon underline */
+html.rainbow-mode header {
+  border-bottom-width: 2px !important;
+  animation: rainbowBorder 4s linear infinite !important;
+}
+
+/* Buttons get neon glow */
+html.rainbow-mode a.hero-btn-lift,
+html.rainbow-mode button {
+  animation: rainbowBoxGlow 5s linear infinite !important;
+}
+
+/* The accent colour cycles through the rainbow */
+html.rainbow-mode .text-accent {
+  animation: rainbowGlow 4s linear infinite !important;
+}
+
+/* Grain overlay gets a hue-rotate for psychedelic texture */
+html.rainbow-mode .grain {
+  animation: rainbowHue 8s linear infinite !important;
+  opacity: 0.15 !important;
+}
+
+/* Services / Contact dark sections get an extra glow wash */
+html.rainbow-mode section[style*="--ink"] {
+  background: linear-gradient(
+    135deg,
+    #0a0020 0%,
+    #002020 33%,
+    #200a00 66%,
+    #0a0020 100%
+  ) !important;
+  background-size: 300% 300% !important;
+  animation: rainbowBg 10s ease infinite !important;
+}
+
+/* Rainbow exit button — appears when mode is active */
+.rainbow-exit-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #fff;
+  background: linear-gradient(90deg, #ff0000, #ff8800, #ffff00, #00ff00, #00ffff, #0044ff, #8800ff, #ff0000);
+  background-size: 200% 100%;
+  animation: rainbowBg 4s linear infinite;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(255,0,255,0.5), 0 0 60px rgba(0,255,255,0.25);
+  /* Comfortable mobile tap target */
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}

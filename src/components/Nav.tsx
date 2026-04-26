@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import ScrambleText from "./ScrambleText";
 import { useTheme } from "./ThemeProvider";
@@ -169,48 +169,170 @@ function AvailabilityChip({ time, onClick }: { time: string; onClick?: () => voi
   );
 }
 
-/** Sun/moon theme toggle button. */
+/** Sun/moon theme toggle button.
+ *  Normal click/tap → toggle light/dark.
+ *  Long-press (~5 s) → toggle rainbow glow Easter egg.
+ *
+ *  On touch devices the native long-press context menu / text-selection
+ *  would interrupt the timer, so we attach touch listeners via a ref
+ *  with `{ passive: false }` and call `preventDefault()`. React's
+ *  synthetic onTouchStart is always passive in React 19, so it can't
+ *  prevent the default — the ref approach sidesteps that.
+ */
 function ThemeToggle() {
   const { theme, toggle } = useTheme();
   const isDark = theme === "dark";
+  const [rainbow, setRainbow] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const pressTimer = useRef<number | null>(null);
+  const didLongPress = useRef(false);
+  // Guards against double-start: on mobile, touch fires before mouse.
+  const pressActive = useRef(false);
+
+  const LONG_PRESS_MS = 5000;
+
+  const startPress = useCallback(() => {
+    if (pressActive.current) return; // already running from touch
+    pressActive.current = true;
+    didLongPress.current = false;
+    pressTimer.current = window.setTimeout(() => {
+      didLongPress.current = true;
+      setRainbow((v) => !v);
+    }, LONG_PRESS_MS);
+  }, []);
+
+  const endPress = useCallback(() => {
+    pressActive.current = false;
+    if (pressTimer.current !== null) {
+      window.clearTimeout(pressTimer.current);
+      pressTimer.current = null;
+    }
+  }, []);
+
+  const handleClick = useCallback(() => {
+    if (didLongPress.current) {
+      didLongPress.current = false;
+      return; // swallow — long-press already toggled rainbow
+    }
+    toggle();
+  }, [toggle]);
+
+  // Attach non-passive touch listeners so we can preventDefault to
+  // suppress the native context menu / text-selection on long-press.
+  useEffect(() => {
+    const btn = btnRef.current;
+    if (!btn) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      e.preventDefault(); // block native long-press behaviour
+      startPress();
+    };
+    const onTouchEnd = (e: TouchEvent) => {
+      // If it wasn't a long-press, synthesise a click so the normal
+      // light/dark toggle still fires (preventDefault on touchstart
+      // swallows the browser's synthetic click).
+      if (!didLongPress.current) {
+        handleClick();
+      } else {
+        didLongPress.current = false;
+      }
+      endPress();
+      e.preventDefault(); // prevent delayed mousedown/click from touch
+    };
+    const onTouchCancel = () => endPress();
+
+    // Prevent default on contextmenu to stop the popup on Android
+    const onContext = (e: Event) => {
+      if (pressActive.current) e.preventDefault();
+    };
+
+    btn.addEventListener("touchstart", onTouchStart, { passive: false });
+    btn.addEventListener("touchend", onTouchEnd, { passive: false });
+    btn.addEventListener("touchcancel", onTouchCancel);
+    btn.addEventListener("contextmenu", onContext);
+
+    return () => {
+      btn.removeEventListener("touchstart", onTouchStart);
+      btn.removeEventListener("touchend", onTouchEnd);
+      btn.removeEventListener("touchcancel", onTouchCancel);
+      btn.removeEventListener("contextmenu", onContext);
+    };
+  }, [startPress, endPress, handleClick]);
+
+  // Sync rainbow class on <html>.
+  useEffect(() => {
+    const html = document.documentElement;
+    if (rainbow) {
+      html.classList.add("rainbow-mode");
+    } else {
+      html.classList.remove("rainbow-mode");
+    }
+    return () => html.classList.remove("rainbow-mode");
+  }, [rainbow]);
+
+  // Clean up timer on unmount.
+  useEffect(() => {
+    return () => {
+      if (pressTimer.current !== null) window.clearTimeout(pressTimer.current);
+    };
+  }, []);
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      data-cursor="hover"
-      className="relative w-8 h-8 flex items-center justify-center rounded-full border border-line hover:border-ink transition-colors"
-    >
-      <span className="sr-only">{isDark ? "Light mode" : "Dark mode"}</span>
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden
-        className="transition-transform duration-500"
-        style={{ transform: isDark ? "rotate(180deg)" : "rotate(0deg)" }}
+    <>
+      <button
+        ref={btnRef}
+        type="button"
+        onClick={handleClick}
+        onMouseDown={startPress}
+        onMouseUp={endPress}
+        onMouseLeave={endPress}
+        /* Touch is handled via the ref-based listeners above
+           (non-passive, so preventDefault works). */
+        aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+        data-cursor="hover"
+        className="relative w-8 h-8 flex items-center justify-center rounded-full border border-line hover:border-ink transition-colors select-none touch-none"
       >
-        {isDark ? (
-          /* Sun */
-          <>
-            <circle cx="12" cy="12" r="4" />
-            <path d="M12 2v2" /><path d="M12 20v2" />
-            <path d="M4.93 4.93l1.41 1.41" /><path d="M17.66 17.66l1.41 1.41" />
-            <path d="M2 12h2" /><path d="M20 12h2" />
-            <path d="M4.93 19.07l1.41-1.41" /><path d="M17.66 6.34l1.41-1.41" />
-          </>
-        ) : (
-          /* Moon */
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-        )}
-      </svg>
-    </button>
+        <span className="sr-only">{isDark ? "Light mode" : "Dark mode"}</span>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+          className="transition-transform duration-500"
+          style={{ transform: isDark ? "rotate(180deg)" : "rotate(0deg)" }}
+        >
+          {isDark ? (
+            /* Sun */
+            <>
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2" /><path d="M12 20v2" />
+              <path d="M4.93 4.93l1.41 1.41" /><path d="M17.66 17.66l1.41 1.41" />
+              <path d="M2 12h2" /><path d="M20 12h2" />
+              <path d="M4.93 19.07l1.41-1.41" /><path d="M17.66 6.34l1.41-1.41" />
+            </>
+          ) : (
+            /* Moon */
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          )}
+        </svg>
+      </button>
+
+      {/* Rainbow exit button — visible only when Easter egg is active */}
+      {rainbow && (
+        <button
+          type="button"
+          onClick={() => setRainbow(false)}
+          className="rainbow-exit-btn"
+        >
+          Exit Rainbow Mode
+        </button>
+      )}
+    </>
   );
 }
 

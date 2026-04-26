@@ -243,7 +243,7 @@ export default function Hero() {
       }
       className="relative w-full h-[260vh] sm:h-[280vh] md:h-[300vh] lg:h-[320vh]"
     >
-      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-[#c9d8e2] isolate">
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-[#c9d8e2]">
         {/* Sky */}
         <motion.div
           style={{
@@ -275,7 +275,7 @@ export default function Hero() {
             width: `${cloudWidthVw}vw`,
             height: `calc(${cloudWidthVw}vw / ${CLOUD_ASPECT})`,
           }}
-          className="absolute top-0 will-change-transform opacity-95 mix-blend-screen"
+          className={`absolute top-0 will-change-transform ${isMobile ? "opacity-70" : "opacity-95 mix-blend-screen"}`}
         >
           <div
             className="h-full w-full"
@@ -300,7 +300,7 @@ export default function Hero() {
             width={FALLING_FRAME_WIDTH}
             height={FALLING_FRAME_HEIGHT}
             className="h-[42%] sm:h-[46%] md:h-[50%] lg:h-[56%] w-auto object-contain"
-            style={{
+            style={isMobile ? undefined : {
               WebkitMaskImage:
                 "radial-gradient(ellipse 55% 70% at 50% 48%, black 58%, transparent 92%)",
               maskImage:
@@ -342,7 +342,7 @@ export default function Hero() {
           style={{ opacity: titleOpacity, x: titleX }}
           className="absolute inset-x-6 md:inset-x-10 bottom-5 sm:bottom-8 md:bottom-14 flex flex-col gap-4 sm:gap-5 md:gap-8 will-change-transform"
         >
-          <h1 className="font-display hero-line text-[clamp(2.2rem,8.8vw,4.8rem)] md:text-[clamp(2.6rem,10vw,11rem)] tracking-[-0.035em] -ml-[0.02em] text-ink mix-blend-multiply">
+          <h1 className="font-display hero-line text-[clamp(2.2rem,8.8vw,4.8rem)] md:text-[clamp(2.6rem,10vw,11rem)] tracking-[-0.035em] -ml-[0.02em] text-ink">
             {WORDS.map((w) => (
               <span key={w} className="block">
                 {w === "Johnson" ? (
@@ -359,7 +359,7 @@ export default function Hero() {
 
           <motion.div
             style={{ opacity: subOpacity, x: subX }}
-            className="flex flex-col gap-5 md:gap-7"
+            className="flex flex-col gap-5 md:gap-7 will-change-transform"
           >
             <p className="text-[0.95rem] sm:text-base md:text-xl leading-snug max-w-xl text-ink/90">
               {SUB}

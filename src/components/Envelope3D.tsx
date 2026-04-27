@@ -59,56 +59,55 @@ function ChromeAt({
     const mx = mouseNorm.current.x;
     const my = mouseNorm.current.y;
 
-    // Hover lerp drives both the glow AND the idle fade-out so the two
-    // always stay in sync — no separate counters needed.
-    hoverLerp.current += ((isHovered.current ? 1 : 0) - hoverLerp.current) * 0.06;
+    // Proximity glow — how close the cursor is to section centre (0,0).
+    // dist=0 at centre → full red. dist≥0.7 → no glow.
+    // Only active while cursor is inside the section.
+    const dist = Math.sqrt(mx * mx + my * my);
+    const proximityTarget = isHovered.current
+      ? Math.max(0, 1 - dist / 0.7)
+      : 0;
+    // Smooth lerp so colour bleeds in and out gracefully
+    hoverLerp.current += (proximityTarget - hoverLerp.current) * 0.05;
+
+    // idleFade — idle animation retreats proportionally as cursor nears centre
     const idleFade = 1 - hoverLerp.current;
 
-    // Lissajous idle — retreats when hovered so the mouse takes full control
+    // Lissajous idle — retreats as cursor approaches centre
     const idleX = (Math.sin(t * 0.13) * 0.05 + Math.sin(t * 0.07) * 0.03) * idleFade;
     const idleY = (Math.sin(t * 0.11) * 0.04 + Math.cos(t * 0.09) * 0.02) * idleFade;
 
-    // Rotation targets — wider range than before (≈ ±17°) for a satisfying tilt.
-    // Natural card feel: cursor right → object tilts right (positive Y rotation),
-    // cursor up → object tips back (negative X rotation).
+    // Rotation targets — natural card tilt
     const tRX = Math.tanh(-my * 0.55) * 0.30;
     const tRY = Math.tanh( mx * 0.55) * 0.34;
-    // Z breathes very gently at idle, stops when hovered
     const tRZ = Math.sin(t * 0.09) * 0.025 * idleFade;
 
-    // k=0.09 / d=0.76 — crisp follow-through, slight spring-back on release.
-    // Feels directly connected to the cursor, not lagging behind it.
-    const rx = spring(rot.current.x, tRX, rotVel.current.x, 0.09, 0.76);
-    const ry = spring(rot.current.y, tRY, rotVel.current.y, 0.09, 0.76);
-    const rz = spring(rot.current.z, tRZ, rotVel.current.z, 0.07, 0.78);
+    // Smoother springs: k=0.065 / d=0.82 — fluid follow, no jitter
+    const rx = spring(rot.current.x, tRX, rotVel.current.x, 0.065, 0.82);
+    const ry = spring(rot.current.y, tRY, rotVel.current.y, 0.065, 0.82);
+    const rz = spring(rot.current.z, tRZ, rotVel.current.z, 0.055, 0.84);
 
     rot.current.x = rx.value; rotVel.current.x = rx.vel;
     rot.current.y = ry.value; rotVel.current.y = ry.vel;
     rot.current.z = rz.value; rotVel.current.z = rz.vel;
 
-    // Position — object stays centred; only idle drift moves it slightly.
-    // Removing the cursor-follow kills the "chasing" feeling.
-    const tPX = idleX;
-    const tPY = idleY;
+    // Position — centred, only idle drift
+    const px = spring(pos.current.x, idleX, posVel.current.x, 0.055, 0.84);
+    const py = spring(pos.current.y, idleY, posVel.current.y, 0.055, 0.84);
 
-    const px = spring(pos.current.x, tPX, posVel.current.x, 0.07, 0.78);
-    const py = spring(pos.current.y, tPY, posVel.current.y, 0.07, 0.78);
-
-    // Chromatic aberration driven by rotation velocity (more meaningful than position)
+    // Chromatic aberration from rotation velocity
     speed.current += ((Math.abs(rx.vel) + Math.abs(ry.vel)) * 30 - speed.current) * 0.14;
     onChromeOffset(Math.min(0.018, speed.current * 0.00045));
 
     pos.current.x = px.value; posVel.current.x = px.vel;
     pos.current.y = py.value; posVel.current.y = py.vel;
 
-    // Hover glow: idle = black (no tint), hover = accent orange
+    // Emissive glow: black at edges, accent red at centre
     if (matRef.current) {
       COL_LERP.copy(COL_BLACK).lerp(COL_ACCENT, hoverLerp.current);
       matRef.current.emissive.copy(COL_LERP);
-      matRef.current.emissiveIntensity = hoverLerp.current * 0.85;
+      matRef.current.emissiveIntensity = hoverLerp.current * 1.1;
     }
 
-    // Subtle float — reduced amplitude on hover so it doesn't fight the tilt
     const floatY = Math.sin(t * 0.08) * (0.03 * idleFade + 0.01);
     group.current.rotation.x = rot.current.x;
     group.current.rotation.y = rot.current.y;

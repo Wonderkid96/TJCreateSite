@@ -59,50 +59,57 @@ function ChromeAt({
     const mx = mouseNorm.current.x;
     const my = mouseNorm.current.y;
 
-    // Lissajous idle — incommensurate frequencies mean it never loops
-    const idleX = Math.sin(t * 0.13) * 0.05 + Math.sin(t * 0.07) * 0.03;
-    const idleY = Math.sin(t * 0.11) * 0.04 + Math.cos(t * 0.09) * 0.02;
+    // Hover lerp drives both the glow AND the idle fade-out so the two
+    // always stay in sync — no separate counters needed.
+    hoverLerp.current += ((isHovered.current ? 1 : 0) - hoverLerp.current) * 0.06;
+    const idleFade = 1 - hoverLerp.current;
 
-    // Rotation targets — tanh hard-limits range, idle adds quiet life on Z
-    const tRX = Math.tanh(-my * 0.4) * 0.18;
-    const tRY = Math.tanh( mx * 0.4) * 0.20;
-    const tRZ = Math.sin(t * 0.09) * 0.025;
+    // Lissajous idle — retreats when hovered so the mouse takes full control
+    const idleX = (Math.sin(t * 0.13) * 0.05 + Math.sin(t * 0.07) * 0.03) * idleFade;
+    const idleY = (Math.sin(t * 0.11) * 0.04 + Math.cos(t * 0.09) * 0.02) * idleFade;
 
-    // k=0.006 / d=0.98 — extremely soft, no overshoot possible
-    const rx = spring(rot.current.x, tRX, rotVel.current.x, 0.006, 0.98);
-    const ry = spring(rot.current.y, tRY, rotVel.current.y, 0.006, 0.98);
-    const rz = spring(rot.current.z, tRZ, rotVel.current.z, 0.005, 0.98);
+    // Rotation targets — wider range than before (≈ ±17°) for a satisfying tilt.
+    // Natural card feel: cursor right → object tilts right (positive Y rotation),
+    // cursor up → object tips back (negative X rotation).
+    const tRX = Math.tanh(-my * 0.55) * 0.30;
+    const tRY = Math.tanh( mx * 0.55) * 0.34;
+    // Z breathes very gently at idle, stops when hovered
+    const tRZ = Math.sin(t * 0.09) * 0.025 * idleFade;
+
+    // k=0.09 / d=0.76 — crisp follow-through, slight spring-back on release.
+    // Feels directly connected to the cursor, not lagging behind it.
+    const rx = spring(rot.current.x, tRX, rotVel.current.x, 0.09, 0.76);
+    const ry = spring(rot.current.y, tRY, rotVel.current.y, 0.09, 0.76);
+    const rz = spring(rot.current.z, tRZ, rotVel.current.z, 0.07, 0.78);
 
     rot.current.x = rx.value; rotVel.current.x = rx.vel;
     rot.current.y = ry.value; rotVel.current.y = ry.vel;
     rot.current.z = rz.value; rotVel.current.z = rz.vel;
 
-    // Position — mouse nudge + Lissajous idle drift
-    const tPX = mx * 0.14 + idleX;
-    const tPY = my * 0.10 + idleY;
+    // Position — object stays centred; only idle drift moves it slightly.
+    // Removing the cursor-follow kills the "chasing" feeling.
+    const tPX = idleX;
+    const tPY = idleY;
 
-    const px = spring(pos.current.x, tPX, posVel.current.x, 0.006, 0.98);
-    const py = spring(pos.current.y, tPY, posVel.current.y, 0.006, 0.98);
+    const px = spring(pos.current.x, tPX, posVel.current.x, 0.07, 0.78);
+    const py = spring(pos.current.y, tPY, posVel.current.y, 0.07, 0.78);
 
-    // Speed → chromatic aberration
-    const dx = px.value - pos.current.x;
-    const dy = py.value - pos.current.y;
-    speed.current += (Math.sqrt(dx * dx + dy * dy) * 55 - speed.current) * 0.14;
+    // Chromatic aberration driven by rotation velocity (more meaningful than position)
+    speed.current += ((Math.abs(rx.vel) + Math.abs(ry.vel)) * 30 - speed.current) * 0.14;
     onChromeOffset(Math.min(0.018, speed.current * 0.00045));
 
     pos.current.x = px.value; posVel.current.x = px.vel;
     pos.current.y = py.value; posVel.current.y = py.vel;
 
     // Hover glow: idle = black (no tint), hover = accent orange
-    hoverLerp.current += ((isHovered.current ? 1 : 0) - hoverLerp.current) * 0.07;
-
     if (matRef.current) {
       COL_LERP.copy(COL_BLACK).lerp(COL_ACCENT, hoverLerp.current);
       matRef.current.emissive.copy(COL_LERP);
       matRef.current.emissiveIntensity = hoverLerp.current * 0.85;
     }
 
-    const floatY = Math.sin(t * 0.08) * 0.03;
+    // Subtle float — reduced amplitude on hover so it doesn't fight the tilt
+    const floatY = Math.sin(t * 0.08) * (0.03 * idleFade + 0.01);
     group.current.rotation.x = rot.current.x;
     group.current.rotation.y = rot.current.y;
     group.current.rotation.z = rot.current.z;
@@ -276,13 +283,21 @@ function Scene({
 }
 
 // ── Public component ──────────────────────────────────────────────────────
-export default function Envelope3D() {
+// trackRef — the element whose bounds and pointer events are used for
+// mouse tracking. Pass the contact section so hover works across the
+// whole dark area, not just the 55% canvas box.
+export default function Envelope3D({
+  trackRef,
+}: {
+  trackRef?: React.RefObject<HTMLElement | null>;
+}) {
   const wrapRef   = useRef<HTMLDivElement>(null);
   const mouseNorm = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const isHovered = useRef<boolean>(false);
 
   useEffect(() => {
-    const el = wrapRef.current;
+    // Prefer the broader trackRef (section element); fall back to the canvas wrapper.
+    const el: HTMLElement | null = trackRef?.current ?? wrapRef.current;
     if (!el) return;
     const onMove = (e: MouseEvent) => {
       const r = el.getBoundingClientRect();
@@ -302,7 +317,7 @@ export default function Envelope3D() {
       el.removeEventListener("mouseenter", onEnter);
       el.removeEventListener("mouseleave", onLeave);
     };
-  }, []);
+  }, [trackRef]);
 
   return (
     <div

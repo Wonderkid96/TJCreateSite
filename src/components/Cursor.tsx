@@ -104,11 +104,20 @@ export default function Cursor() {
       applyVariant("default", "");
     };
 
+    // Re-evaluate cursor variant on scroll so it resets correctly when
+    // scrolling out of a [data-cursor] zone without moving the mouse.
+    const onScroll = () => {
+      const el = document.elementFromPoint(lx, ly) as HTMLElement | null;
+      if (el) onOver({ target: el } as unknown as MouseEvent);
+    };
+
     window.addEventListener("mousemove", onMove, { passive: true });
     window.addEventListener("mouseover", onOver, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("mousemove", onMove, { passive: true } as EventListenerOptions);
       window.removeEventListener("mouseover", onOver, { passive: true } as EventListenerOptions);
+      window.removeEventListener("scroll", onScroll, { passive: true } as EventListenerOptions);
       cancelAnimationFrame(rafId);
     };
   }, []);

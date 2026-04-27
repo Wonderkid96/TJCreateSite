@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useState, lazy, Suspense } from "react";
+import { useState, useRef, lazy, Suspense } from "react";
 import SnakeGame from "./SnakeGame";
 import { SocialLinks } from "./SocialIcons";
 
@@ -12,8 +12,12 @@ const CONTACT_EMAIL = "hello@tjcreate.co.uk";
 
 export default function Contact() {
   const [snakeOpen, setSnakeOpen] = useState(false);
+  // Passed to Envelope3D so mouse tracking covers the full section,
+  // not just the 55% canvas box.
+  const sectionRef = useRef<HTMLElement>(null);
   return (
     <section
+      ref={sectionRef}
       id="contact"
       aria-label="Contact — say hello"
       // Pin --paper and --ink locally so the section is always dark
@@ -30,7 +34,7 @@ export default function Contact() {
       {/* 3D @ — covers top 55% of section only, fades out before content below */}
       <div className="absolute inset-x-0 top-0 h-[55%] pointer-events-none" aria-hidden>
         <Suspense fallback={null}>
-          <Envelope3D />
+          <Envelope3D trackRef={sectionRef} />
         </Suspense>
       </div>
 

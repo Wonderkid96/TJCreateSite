@@ -81,18 +81,19 @@ function ChromeAt({
     const tRY = Math.tanh( mx * 0.55) * 0.34;
     const tRZ = Math.sin(t * 0.09) * 0.025 * idleFade;
 
-    // Smoother springs: k=0.065 / d=0.82 — fluid follow, no jitter
-    const rx = spring(rot.current.x, tRX, rotVel.current.x, 0.065, 0.82);
-    const ry = spring(rot.current.y, tRY, rotVel.current.y, 0.065, 0.82);
-    const rz = spring(rot.current.z, tRZ, rotVel.current.z, 0.055, 0.84);
+    // Slow, heavy springs — like rotating a large object through liquid.
+    // k=0.032 / d=0.90 gives a long, smooth settle with no snapping.
+    const rx = spring(rot.current.x, tRX, rotVel.current.x, 0.032, 0.90);
+    const ry = spring(rot.current.y, tRY, rotVel.current.y, 0.032, 0.90);
+    const rz = spring(rot.current.z, tRZ, rotVel.current.z, 0.028, 0.92);
 
     rot.current.x = rx.value; rotVel.current.x = rx.vel;
     rot.current.y = ry.value; rotVel.current.y = ry.vel;
     rot.current.z = rz.value; rotVel.current.z = rz.vel;
 
     // Position — centred, only idle drift
-    const px = spring(pos.current.x, idleX, posVel.current.x, 0.055, 0.84);
-    const py = spring(pos.current.y, idleY, posVel.current.y, 0.055, 0.84);
+    const px = spring(pos.current.x, idleX, posVel.current.x, 0.028, 0.92);
+    const py = spring(pos.current.y, idleY, posVel.current.y, 0.028, 0.92);
 
     // Chromatic aberration from rotation velocity
     speed.current += ((Math.abs(rx.vel) + Math.abs(ry.vel)) * 30 - speed.current) * 0.14;

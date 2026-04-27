@@ -23,6 +23,9 @@ const IGNORED_CONSOLE = [
   "React DevTools",
   "Lighthouse",
   "download the",
+  // Next 16 currently logs this when reconciling head scripts in dev.
+  // It does not affect runtime behaviour or production output.
+  "Encountered a script tag while rendering React component",
 ];
 
 test.beforeAll(() => {
@@ -45,6 +48,14 @@ async function scrollToSection(page: Page, id: string) {
   }, id);
   // Framer Motion whileInView + Lenis need a beat to settle.
   await page.waitForTimeout(1200);
+}
+
+async function dismissSplashIfVisible(page: Page) {
+  const skip = page.getByRole("button", { name: /skip intro/i });
+  if (await skip.isVisible().catch(() => false)) {
+    await skip.click();
+    await expect(skip).not.toBeVisible({ timeout: 2000 });
+  }
 }
 
 test("home page — smoke + visual", async ({ page }, testInfo) => {
@@ -85,6 +96,7 @@ test("home page — smoke + visual", async ({ page }, testInfo) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   // Give Lenis a beat to initialise + fonts to paint.
   await page.waitForTimeout(2000);
+  await dismissSplashIfVisible(page);
 
   // --- Assertion 1: no horizontal overflow at any viewport ------------------
   const { scrollWidth, innerWidth } = await page.evaluate(() => ({
@@ -144,6 +156,7 @@ test("mobile: real tap on a work tile opens the modal (no overlay blocking)", as
   // Wait long enough that any first-visit splash has dismissed
   // (MIN_SHOW_MS 650 + MAX_SHOW_MS 3500 hard ceiling).
   await page.waitForTimeout(4200);
+  await dismissSplashIfVisible(page);
 
   const firstTile = page.locator(".bento-cell button").first();
   await firstTile.scrollIntoViewIfNeeded();
@@ -181,6 +194,7 @@ test("nav menu opens + closes", async ({ page }, testInfo) => {
   }
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(1000);
+  await dismissSplashIfVisible(page);
 
   // Hamburger button — matched by its sr-only label
   const hamburger = page.getByRole("button", { name: /open menu/i });
@@ -190,7 +204,7 @@ test("nav menu opens + closes", async ({ page }, testInfo) => {
   // Panel appears with nav items
   const panel = page.locator("#mobile-nav-panel");
   await expect(panel).toBeVisible();
-  await expect(panel.getByRole("link", { name: /work/i })).toBeVisible();
+  await expect(panel.getByRole("link", { name: /^work$/i })).toBeVisible();
 
   // Framer Motion's height:0 -> auto animation takes 350ms; wait for it
   // to settle before measuring/capturing so we don't screenshot mid-anim.
@@ -226,6 +240,7 @@ test("project modals — every kind renders media at non-zero size", async ({
 
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(2000);
+  await dismissSplashIfVisible(page);
 
   // Walk the DOM for every clickable project tile. Skip tiles whose click
   // opens an external URL (externalUrl in content.ts) — those use
@@ -248,10 +263,10 @@ test("project modals — every kind renders media at non-zero size", async ({
     const rect = await mediaWrap.evaluate((el) => {
       const r = el.getBoundingClientRect();
       const hasVisibleMedia = !!el.querySelector(
-        "img[src]:not([src='']), video[src]:not([src='']), canvas",
+        "img[src]:not([src='']), video[src]:not([src='']), canvas, iframe[src]:not([src=''])",
       );
       const firstMedia = el.querySelector(
-        "img, video, canvas",
+        "img, video, canvas, iframe",
       ) as HTMLElement | null;
       return {
         w: Math.round(r.width),

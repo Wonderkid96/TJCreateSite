@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Instrument_Serif, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import Script from "next/script";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
@@ -198,16 +199,19 @@ export default function RootLayout({
     >
       <head>
         {/* Apply saved theme before paint to avoid a flash of the wrong colours. */}
-        <script dangerouslySetInnerHTML={{ __html: NO_FLASH_SNIPPET }} />
+        <Script id="theme-no-flash" strategy="beforeInteractive">
+          {NO_FLASH_SNIPPET}
+        </Script>
         {/* Structured data — lives in <head> per schema.org best
             practice so crawlers pick it up on the first pass without
             waiting on hydration. */}
-        <script
+        <Script
+          id="structured-data"
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData),
-          }}
-        />
+          strategy="beforeInteractive"
+        >
+          {JSON.stringify(structuredData)}
+        </Script>
       </head>
       <body className="bg-paper text-ink">
         <ThemeProvider>

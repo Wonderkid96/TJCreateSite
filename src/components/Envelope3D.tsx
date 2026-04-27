@@ -113,7 +113,7 @@ function ChromeAt({
     group.current.rotation.y = rot.current.y;
     group.current.rotation.z = rot.current.z;
     group.current.position.x = pos.current.x;
-    group.current.position.y = pos.current.y + floatY + 0.55;
+    group.current.position.y = pos.current.y + floatY;
   });
 
   return (

@@ -76,16 +76,15 @@ function ChromeAt({
     const idleX = (Math.sin(t * 0.13) * 0.05 + Math.sin(t * 0.07) * 0.03) * idleFade;
     const idleY = (Math.sin(t * 0.11) * 0.04 + Math.cos(t * 0.09) * 0.02) * idleFade;
 
-    // Rotation targets — natural card tilt
-    const tRX = Math.tanh(-my * 0.55) * 0.30;
-    const tRY = Math.tanh( mx * 0.55) * 0.34;
-    const tRZ = Math.sin(t * 0.09) * 0.025 * idleFade;
+    // Rotation targets — very subtle tilt range (≈ ±8°)
+    const tRX = Math.tanh(-my * 0.3) * 0.14;
+    const tRY = Math.tanh( mx * 0.3) * 0.16;
+    const tRZ = Math.sin(t * 0.09) * 0.015 * idleFade;
 
-    // Slow, heavy springs — like rotating a large object through liquid.
-    // k=0.032 / d=0.90 gives a long, smooth settle with no snapping.
-    const rx = spring(rot.current.x, tRX, rotVel.current.x, 0.032, 0.90);
-    const ry = spring(rot.current.y, tRY, rotVel.current.y, 0.032, 0.90);
-    const rz = spring(rot.current.z, tRZ, rotVel.current.z, 0.028, 0.92);
+    // Ultra-soft springs — barely perceptible drift, no snap at all.
+    const rx = spring(rot.current.x, tRX, rotVel.current.x, 0.014, 0.95);
+    const ry = spring(rot.current.y, tRY, rotVel.current.y, 0.014, 0.95);
+    const rz = spring(rot.current.z, tRZ, rotVel.current.z, 0.012, 0.96);
 
     rot.current.x = rx.value; rotVel.current.x = rx.vel;
     rot.current.y = ry.value; rotVel.current.y = ry.vel;
@@ -139,7 +138,7 @@ function ChromeAt({
             clearcoat={1.0}
             clearcoatRoughness={0.03}
             reflectivity={1}
-            envMapIntensity={0.15}
+            envMapIntensity={0.04}
             emissiveIntensity={0}
           />
         </Text3D>
@@ -273,7 +272,7 @@ function Scene({
   return (
     <>
       <Environment preset="studio" />
-      <ambientLight intensity={0.01} />
+      <ambientLight intensity={0.003} />
 
       <RotatingLights />
       <SweepLight />

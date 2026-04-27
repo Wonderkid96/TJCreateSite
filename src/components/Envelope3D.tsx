@@ -89,7 +89,7 @@ function ChromeAt({
     const dy = py.value - pos.current.y;
     speed.current += (Math.sqrt(dx * dx + dy * dy) * 55 - speed.current) * 0.14;
     if (chromeOffset.current) {
-      chromeOffset.current.v = Math.min(0.008, speed.current * 0.00022);
+      chromeOffset.current.v = Math.min(0.018, speed.current * 0.00045);
     }
 
     pos.current.x = px.value; posVel.current.x = px.vel;
@@ -129,12 +129,12 @@ function ChromeAt({
           <meshPhysicalMaterial
             ref={matRef}
             color="#060606"
-            metalness={0.92}
-            roughness={0.22}
+            metalness={0.95}
+            roughness={0.12}
             clearcoat={1.0}
-            clearcoatRoughness={0.05}
+            clearcoatRoughness={0.04}
             reflectivity={1}
-            envMapIntensity={0.5}
+            envMapIntensity={1.9}
             emissiveIntensity={0}
           />
         </Text3D>

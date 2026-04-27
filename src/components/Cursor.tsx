@@ -104,20 +104,27 @@ export default function Cursor() {
       applyVariant("default", "");
     };
 
-    // Re-evaluate cursor variant on scroll so it resets correctly when
-    // scrolling out of a [data-cursor] zone without moving the mouse.
-    const onScroll = () => {
-      const el = document.elementFromPoint(lx, ly) as HTMLElement | null;
+    // Re-evaluate cursor variant when the page scrolls so the EMAIL cursor
+    // resets correctly as the user scrolls out of the contact zone.
+    // Use tx/ty (actual mouse coords) not lx/ly (lerped dot position).
+    // Also hook Lenis directly — it bypasses the native scroll event.
+    const recheck = () => {
+      const el = document.elementFromPoint(tx, ty) as HTMLElement | null;
       if (el) onOver({ target: el } as unknown as MouseEvent);
     };
 
+    type LenisLite = { on: (e: string, cb: () => void) => void; off?: (e: string, cb: () => void) => void };
+    const lenis = (window as unknown as { __lenis?: LenisLite }).__lenis;
+    if (lenis?.on) lenis.on("scroll", recheck);
+
     window.addEventListener("mousemove", onMove, { passive: true });
     window.addEventListener("mouseover", onOver, { passive: true });
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", recheck, { passive: true });
     return () => {
       window.removeEventListener("mousemove", onMove, { passive: true } as EventListenerOptions);
       window.removeEventListener("mouseover", onOver, { passive: true } as EventListenerOptions);
-      window.removeEventListener("scroll", onScroll, { passive: true } as EventListenerOptions);
+      window.removeEventListener("scroll", recheck, { passive: true } as EventListenerOptions);
+      lenis?.off?.("scroll", recheck);
       cancelAnimationFrame(rafId);
     };
   }, []);

@@ -36,11 +36,11 @@ function spring(cur: number, tgt: number, vel: number, k = 0.055, d = 0.83) {
 // ── Chrome @ mesh ─────────────────────────────────────────────────────────
 function ChromeAt({
   mouseNorm,
-  chromeOffset,
+  onChromeOffset,
   isHovered,
 }: {
   mouseNorm:    React.RefObject<{ x: number; y: number }>;
-  chromeOffset: React.RefObject<{ v: number }>;
+  onChromeOffset: (v: number) => void;
   isHovered:    React.RefObject<boolean>;
 }) {
   const group   = useRef<THREE.Group>(null);
@@ -88,9 +88,7 @@ function ChromeAt({
     const dx = px.value - pos.current.x;
     const dy = py.value - pos.current.y;
     speed.current += (Math.sqrt(dx * dx + dy * dy) * 55 - speed.current) * 0.14;
-    if (chromeOffset.current) {
-      chromeOffset.current.v = Math.min(0.018, speed.current * 0.00045);
-    }
+    onChromeOffset(Math.min(0.018, speed.current * 0.00045));
 
     pos.current.x = px.value; posVel.current.x = px.vel;
     pos.current.y = py.value; posVel.current.y = py.vel;
@@ -259,6 +257,9 @@ function Scene({
   isHovered: React.RefObject<boolean>;
 }) {
   const chromeOffset = useRef<{ v: number }>({ v: 0 });
+  const onChromeOffset = (v: number) => {
+    chromeOffset.current.v = v;
+  };
 
   return (
     <>
@@ -268,7 +269,7 @@ function Scene({
       <RotatingLights />
       <SweepLight />
 
-      <ChromeAt mouseNorm={mouseNorm} chromeOffset={chromeOffset} isHovered={isHovered} />
+      <ChromeAt mouseNorm={mouseNorm} onChromeOffset={onChromeOffset} isHovered={isHovered} />
       <Effects chromeOffset={chromeOffset} />
     </>
   );

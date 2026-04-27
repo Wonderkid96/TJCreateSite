@@ -39,13 +39,12 @@ function ProjectTile({
   const hoverVideoEndedRef = useRef(false);
   const hoverVideoReverseRaf = useRef(0);
   const [hovered, setHovered] = useState(false);
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [isTouchDevice] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(pointer: coarse)").matches
+  );
   const [dayNightIsNight, setDayNightIsNight] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);
-  }, []);
 
   // Cursor tilt
   const mx = useMotionValue(0);

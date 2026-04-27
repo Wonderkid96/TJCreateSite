@@ -19,11 +19,7 @@ type Props = {
 };
 
 export default function ProjectModal({ project, onClose }: Props) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = typeof document !== "undefined";
 
   useEffect(() => {
     if (!project) return;
@@ -156,8 +152,20 @@ function Meta({ k, v }: { k: string; v: string }) {
 // different tile is opened), not on every parent state tick.
 const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
   const kind = project.kind ?? "image";
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [isTouchDevice] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(pointer: coarse)").matches
+  );
   const [dayNightIsNight, setDayNightIsNight] = useState(false);
+
+  useEffect(() => {
+    if (!isTouchDevice || kind !== "day-night") return;
+    const id = window.setInterval(() => {
+      setDayNightIsNight((prev) => !prev);
+    }, 3200); // 3.2 s per state — slow enough to feel intentional, not a rapid flash
+    return () => window.clearInterval(id);
+  }, [isTouchDevice, kind]);
 
   // YouTube preview overrides all other media in the modal
   if (project.previewYouTubeId) {
@@ -171,19 +179,6 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
       />
     );
   }
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);
-  }, []);
-
-  useEffect(() => {
-    if (!isTouchDevice || kind !== "day-night") return;
-    const id = window.setInterval(() => {
-      setDayNightIsNight((prev) => !prev);
-    }, 3200); // 3.2 s per state — slow enough to feel intentional, not a rapid flash
-    return () => window.clearInterval(id);
-  }, [isTouchDevice, kind]);
 
   if (kind === "image" && project.image) {
     return (

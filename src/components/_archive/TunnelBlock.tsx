@@ -337,7 +337,6 @@ function TypeLine() {
   const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
-    setCount(0);
     const timer = window.setInterval(() => {
       setCount((prev) => {
         if (prev >= full.length) {

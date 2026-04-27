@@ -40,6 +40,7 @@ export default function Splash() {
     }
 
     if (alreadySeen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVisible(false);
       return;
     }

@@ -236,10 +236,16 @@ export default function SnakeGame({ active }: { active: boolean }) {
   // Start / stop with the panel.
   useEffect(() => {
     if (active) {
-      reset();
-      setRunning(true);
+      const id = window.setTimeout(() => {
+        reset();
+        setRunning(true);
+      }, 0);
+      return () => window.clearTimeout(id);
     } else {
-      setRunning(false);
+      const id = window.setTimeout(() => {
+        setRunning(false);
+      }, 0);
+      return () => window.clearTimeout(id);
     }
   }, [active, reset]);
 

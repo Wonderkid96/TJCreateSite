@@ -113,14 +113,14 @@ function ChromeAt({
     group.current.rotation.y = rot.current.y;
     group.current.rotation.z = rot.current.z;
     group.current.position.x = pos.current.x;
-    group.current.position.y = pos.current.y + floatY;
+    group.current.position.y = pos.current.y + floatY + 0.55;
   });
 
   return (
     <group ref={group}>
       <Center>
         <Text3D
-          font="/fonts/helvetiker_bold.typeface.json"
+          font="/fonts/optimer_bold.typeface.json"
           size={1.8}
           height={1.5}
           bevelEnabled

@@ -1,9 +1,11 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import SnakeGame from "./SnakeGame";
 import { SocialLinks } from "./SocialIcons";
+
+const Envelope3D = lazy(() => import("./Envelope3D"));
 
 // Central constant so the address only needs updating in one place.
 const CONTACT_EMAIL = "hello@tjcreate.co.uk";
@@ -50,6 +52,10 @@ export default function Contact() {
           something!
         </div>
       </div>
+
+      <Suspense fallback={null}>
+        <Envelope3D />
+      </Suspense>
 
       <a
         href={`mailto:${CONTACT_EMAIL}`}
@@ -136,7 +142,7 @@ export default function Contact() {
         </div>
 
         <div className="space-y-3">
-          <details className="group rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 md:px-5 md:py-4">
+          <details className="group rounded-[2px] border border-paper/20 bg-paper/5 px-4 py-3 md:px-5 md:py-4">
             <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
               <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/85">
                 Terms &amp; Conditions
@@ -173,7 +179,7 @@ export default function Contact() {
             </ul>
           </details>
 
-          <details className="group rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 md:px-5 md:py-4">
+          <details className="group rounded-[2px] border border-paper/20 bg-paper/5 px-4 py-3 md:px-5 md:py-4">
             <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
               <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/85">
                 Privacy Policy
@@ -213,7 +219,7 @@ export default function Contact() {
               same disclosure pattern as T&Cs / Privacy — game only runs
               while the panel is open so idle CPU stays at zero. */}
           <details
-            className="group rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 md:px-5 md:py-4"
+            className="group rounded-[2px] border border-paper/20 bg-paper/5 px-4 py-3 md:px-5 md:py-4"
             onToggle={(e) => setSnakeOpen((e.currentTarget as HTMLDetailsElement).open)}
           >
             <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">

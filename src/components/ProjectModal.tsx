@@ -61,7 +61,7 @@ export default function ProjectModal({ project, onClose }: Props) {
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
             transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="absolute inset-4 md:inset-10 overflow-hidden rounded-[3px] bg-paper text-ink flex flex-col"
+            className="absolute inset-4 md:inset-10 overflow-hidden rounded-[2px] bg-paper text-ink flex flex-col"
           >
             <div className="flex items-center justify-between px-6 md:px-10 py-5 border-b border-line">
               <div className="flex items-baseline gap-6">

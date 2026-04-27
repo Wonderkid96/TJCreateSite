@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useState, lazy, Suspense } from "react";
 import SnakeGame from "./SnakeGame";
 import { SocialLinks } from "./SocialIcons";
 
@@ -27,9 +27,18 @@ export default function Contact() {
       }
       className="relative px-6 md:px-10 pt-24 md:pt-32 pb-24 md:pb-32 bg-ink text-paper overflow-hidden"
     >
-      {/* Section header — matches Work / Services / About framing:
-          small mono slug + big serif heading on the left, aligned right
-          label on the far side. */}
+      {/* 3D @ — covers top 55% of section only, fades out before content below */}
+      <div className="absolute inset-x-0 top-0 h-[55%] pointer-events-none" aria-hidden>
+        <Suspense fallback={null}>
+          <Envelope3D />
+        </Suspense>
+      </div>
+
+      {/* EMAIL cursor zone — wraps all content above the footer.
+          Footer sits outside so cursor resets to default there. */}
+      <div data-cursor="view" data-cursor-label="EMAIL" className="relative z-10">
+
+      {/* Section header */}
       <div className="flex items-end justify-between mb-16 md:mb-24">
         <div>
           <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 mb-4">
@@ -42,7 +51,7 @@ export default function Contact() {
             transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
             className="font-display text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
           >
-            Say <span className="italic">hello</span>
+            Let&apos;s <span className="italic">talk</span>
           </motion.h2>
         </div>
 
@@ -53,23 +62,8 @@ export default function Contact() {
         </div>
       </div>
 
-      <Suspense fallback={null}>
-        <Envelope3D />
-      </Suspense>
-
       <a
         href={`mailto:${CONTACT_EMAIL}`}
-        data-cursor="view"
-        data-cursor-label="EMAIL"
-        className="block mt-6 md:mt-8 text-center"
-      >
-        <TypeLine />
-      </a>
-
-      <a
-        href={`mailto:${CONTACT_EMAIL}`}
-        data-cursor="view"
-        data-cursor-label="EMAIL"
         className="block group mt-10 md:mt-14"
       >
         <motion.div
@@ -238,9 +232,11 @@ export default function Contact() {
         </div>
       </div>
 
+      </div>{/* end EMAIL cursor zone */}
+
       <footer
         aria-label="Site footer"
-        className="mt-24 flex items-end justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50"
+        className="relative z-10 mt-24 flex items-end justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50"
       >
         <div>© Toby Johnson, 2026</div>
         <div>Made in Lincoln</div>
@@ -249,58 +245,3 @@ export default function Contact() {
   );
 }
 
-function TypeLine() {
-  const full = "Let's talk";
-  const [count, setCount] = useState(0);
-  const [hovered, setHovered] = useState(false);
-
-  useEffect(() => {
-    setCount(0);
-    const timer = window.setInterval(() => {
-      setCount((prev) => {
-        if (prev >= full.length) { window.clearInterval(timer); return prev; }
-        return prev + 1;
-      });
-    }, 66); // ~15 chars/s — natural typewriter cadence
-    return () => window.clearInterval(timer);
-  }, []);
-
-  return (
-    <div
-      className="flex items-baseline justify-center font-display text-[clamp(3.5rem,13vw,16rem)] leading-[0.85] tracking-tighter text-paper whitespace-nowrap select-none transition-transform duration-300 ease-[cubic-bezier(.2,.8,.2,1)]"
-      style={{ transform: hovered ? "scale(0.97)" : "scale(1)" }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {full.slice(0, count)}
-      <span className="text-accent">.</span>
-      {/* Two extra dots stagger in on hover — first at 40 ms, second at 200 ms */}
-      <DotSlot hovered={hovered} delayIn={40}  delayOut={130} />
-      <DotSlot hovered={hovered} delayIn={200} delayOut={40}  />
-      <motion.span
-        aria-hidden
-        className="text-accent"
-        animate={{ opacity: [1, 0, 1] }}
-        transition={{ duration: 0.85, repeat: Infinity, ease: "linear" }}
-      >
-        |
-      </motion.span>
-    </div>
-  );
-}
-
-function DotSlot({ hovered, delayIn, delayOut }: { hovered: boolean; delayIn: number; delayOut: number }) {
-  return (
-    <span
-      aria-hidden
-      className="text-accent inline-flex items-baseline overflow-hidden"
-      style={{
-        maxWidth: hovered ? "1ch" : "0",
-        transition: "max-width 120ms steps(1,end)",
-        transitionDelay: `${hovered ? delayIn : delayOut}ms`,
-      }}
-    >
-      <span className="whitespace-nowrap">.</span>
-    </span>
-  );
-}

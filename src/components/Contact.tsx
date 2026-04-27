@@ -38,8 +38,8 @@ export default function Contact() {
         </Suspense>
       </div>
 
-      {/* EMAIL cursor zone — wraps all content above the footer.
-          Footer sits outside so cursor resets to default there. */}
+      {/* EMAIL cursor zone — header + big email link only.
+          Cursor resets to default below this div. */}
       <div data-cursor="view" data-cursor-label="EMAIL" className="relative z-10">
 
       {/* Section header */}
@@ -112,6 +112,11 @@ export default function Contact() {
           </div>
         </motion.div>
       </a>
+
+      </div>{/* end EMAIL cursor zone */}
+
+      {/* Grid, legal and footer — default cursor from here down */}
+      <div className="relative z-10">
 
       <div className="mt-24 grid grid-cols-1 md:grid-cols-2 gap-10 border-t border-paper/20 pt-10">
         <div>
@@ -236,7 +241,7 @@ export default function Contact() {
         </div>
       </div>
 
-      </div>{/* end EMAIL cursor zone */}
+      </div>{/* end grid/legal zone */}
 
       <footer
         aria-label="Site footer"

@@ -300,6 +300,8 @@ export default function Envelope3D({
     // Prefer the broader trackRef (section element); fall back to the canvas wrapper.
     const el: HTMLElement | null = trackRef?.current ?? wrapRef.current;
     if (!el) return;
+
+    // Mouse handlers
     const onMove = (e: MouseEvent) => {
       const r = el.getBoundingClientRect();
       mouseNorm.current.x = ((e.clientX - r.left)  / r.width  - 0.5) * 2;
@@ -310,13 +312,43 @@ export default function Envelope3D({
       isHovered.current = false;
       mouseNorm.current = { x: 0, y: 0 };
     };
-    el.addEventListener("mousemove", onMove);
+
+    // Touch handlers — single-finger drag maps to the same mouseNorm ref
+    // so the existing spring system drives rotation without any extra logic.
+    const onTouchStart = (e: TouchEvent) => {
+      isHovered.current = true;
+      const touch = e.touches[0];
+      const r = el.getBoundingClientRect();
+      mouseNorm.current.x = ((touch.clientX - r.left)  / r.width  - 0.5) * 2;
+      mouseNorm.current.y = ((touch.clientY - r.top)   / r.height - 0.5) * 2;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      const r = el.getBoundingClientRect();
+      mouseNorm.current.x = ((touch.clientX - r.left)  / r.width  - 0.5) * 2;
+      mouseNorm.current.y = ((touch.clientY - r.top)   / r.height - 0.5) * 2;
+    };
+    const onTouchEnd = () => {
+      isHovered.current = false;
+      mouseNorm.current = { x: 0, y: 0 };
+    };
+
+    el.addEventListener("mousemove",  onMove);
     el.addEventListener("mouseenter", onEnter);
     el.addEventListener("mouseleave", onLeave);
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove",  onTouchMove,  { passive: true });
+    el.addEventListener("touchend",   onTouchEnd);
+    el.addEventListener("touchcancel", onTouchEnd);
+
     return () => {
-      el.removeEventListener("mousemove", onMove);
-      el.removeEventListener("mouseenter", onEnter);
-      el.removeEventListener("mouseleave", onLeave);
+      el.removeEventListener("mousemove",   onMove);
+      el.removeEventListener("mouseenter",  onEnter);
+      el.removeEventListener("mouseleave",  onLeave);
+      el.removeEventListener("touchstart",  onTouchStart);
+      el.removeEventListener("touchmove",   onTouchMove);
+      el.removeEventListener("touchend",    onTouchEnd);
+      el.removeEventListener("touchcancel", onTouchEnd);
     };
   }, [trackRef]);
 

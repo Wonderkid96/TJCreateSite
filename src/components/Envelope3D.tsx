@@ -138,7 +138,7 @@ function ChromeAt({
             clearcoat={1.0}
             clearcoatRoughness={0.03}
             reflectivity={1}
-            envMapIntensity={0.35}
+            envMapIntensity={0.15}
             emissiveIntensity={0}
           />
         </Text3D>
@@ -197,7 +197,7 @@ function RotatingLights() {
   );
 }
 
-// ── Sweep light — bright arc that fires every 5–10 s, randomised ──────────
+// ── Sweep light — bright arc, fires every 1.5–4 s, randomised ───────────
 // Technique: a single tight point light travels a curved path across the
 // front of the shape. Bell-curve easing (sin) means it fades in and out
 // naturally. Randomised interval + alternating L→R / R→L so it never
@@ -205,7 +205,7 @@ function RotatingLights() {
 function SweepLight() {
   const lightRef  = useRef<THREE.PointLight>(null);
   const progress  = useRef(-1);          // -1 = dormant
-  const nextFire  = useRef(3.5);         // first sweep at 3.5 s
+  const nextFire  = useRef(1.8);         // first sweep at 1.8 s
   const direction = useRef(1);           // 1 = L→R, -1 = R→L
 
   useFrame(({ clock }, delta) => {
@@ -215,8 +215,8 @@ function SweepLight() {
     // Trigger a new sweep
     if (progress.current < 0 && t > nextFire.current) {
       progress.current = 0;
-      direction.current *= -1;                          // alternate direction
-      nextFire.current = t + 5 + Math.random() * 5;    // next in 5–10 s
+      direction.current *= -1;                              // alternate direction
+      nextFire.current = t + 1.5 + Math.random() * 2.5;   // next in 1.5–4 s
     }
 
     if (progress.current >= 0) {
@@ -272,7 +272,7 @@ function Scene({
   return (
     <>
       <Environment preset="studio" />
-      <ambientLight intensity={0.04} />
+      <ambientLight intensity={0.01} />
 
       <RotatingLights />
       <SweepLight />

@@ -46,6 +46,12 @@ next-env.d.ts
 # local tooling
 /.claude/
 
+# editor settings (personal, shouldn't be shared)
+.vscode/
+.idea/
+*.swp
+*.swo
+
 # playwright
 /test-results/
 /playwright-report/

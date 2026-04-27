@@ -13,7 +13,7 @@
 import { useRef, useEffect, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Text3D, Center, Environment } from "@react-three/drei";
-import { EffectComposer, ChromaticAberration, Vignette, DepthOfField } from "@react-three/postprocessing";
+import { EffectComposer, ChromaticAberration, Vignette } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 import * as THREE from "three";
 
@@ -162,8 +162,6 @@ function Effects({ chromeOffset }: { chromeOffset: React.RefObject<{ v: number }
 
   return (
     <EffectComposer ref={composerRef as React.RefObject<null>}>
-      {/* Focus front face — 1.0-deep glyph blurs from front to back */}
-      <DepthOfField target={[0, 0, 0.5]} focalLength={0.022} bokehScale={5} height={700} />
       <Vignette eskil={false} offset={0.15} darkness={0.92} />
       <ChromaticAberration
         blendFunction={BlendFunction.NORMAL}

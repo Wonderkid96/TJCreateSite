@@ -93,16 +93,28 @@ function ProjectTile({
   }, [fallingKind, pingPongEnabled]);
 
   // Ping-pong playback — forward, then reverse, forever. No loop-reset jump.
+  // Gated by IntersectionObserver so the RAF only runs while the tile is
+  // actually on screen — scrubbing video.currentTime off-screen burns CPU
+  // for zero visual benefit.
   useEffect(() => {
     if (!pingPongEnabled) return;
     const v = videoRef.current;
     if (!v) return;
+
+    let isVisible = false;
+    const io = new IntersectionObserver(
+      ([entry]) => { isVisible = entry.isIntersecting; },
+      { threshold: 0 }
+    );
+    io.observe(v);
+
     let raf = 0;
     let last = performance.now();
     let dir = 1;
     v.pause();
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
+      if (!isVisible) { last = now; return; }
       if (v.readyState < 2 || !v.duration || Number.isNaN(v.duration)) {
         last = now;
         return;
@@ -121,7 +133,7 @@ function ProjectTile({
       }
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => { io.disconnect(); cancelAnimationFrame(raf); };
   }, [pingPongEnabled]);
 
   useEffect(() => {
@@ -383,13 +395,20 @@ function FallingOnSky() {
     preloadFallingFrames();
   }, []);
 
-  // Ping-pong playback — draw to canvas in a rAF loop. Runs continuously;
-  // paints whatever frames have decoded so far and fills in as more load.
+  // Ping-pong canvas draw loop — gated by IntersectionObserver so we only
+  // burn CPU decoding + painting frames while the tile is actually visible.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    let isVisible = false;
+    const io = new IntersectionObserver(
+      ([entry]) => { isVisible = entry.isIntersecting; },
+      { threshold: 0 }
+    );
+    io.observe(canvas);
 
     const FPS = 24;
     let raf = 0;
@@ -401,6 +420,7 @@ function FallingOnSky() {
 
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
+      if (!isVisible) { last = now; return; }
       const delta = Math.min(0.1, (now - last) / 1000);
       last = now;
       t += dir * delta;
@@ -423,7 +443,7 @@ function FallingOnSky() {
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => { io.disconnect(); cancelAnimationFrame(raf); };
   }, []);
 
   return (

@@ -158,9 +158,20 @@ export default function ContactCTA() {
     window.addEventListener("pointermove", onMove, { passive: true });
     document.addEventListener("mouseleave", onLeaveWindow);
 
+    // Only run the RAF loop while the section is actually on-screen.
+    // IntersectionObserver fires synchronously on observe(), so isVisible
+    // is set before the first tick — no missed frame on mount.
+    let isVisible = false;
+    const io = new IntersectionObserver(
+      ([entry]) => { isVisible = entry.isIntersecting; },
+      { threshold: 0 }
+    );
+    io.observe(section);
+
     let raf = 0;
     const tick = () => {
       raf = requestAnimationFrame(tick);
+      if (!isVisible) return;
 
       const cx = blockRect.width / 2 + cxOff;
       const cy = blockRect.height / 2 + cyOff;
@@ -388,6 +399,7 @@ export default function ContactCTA() {
       window.removeEventListener("resize", remeasure);
       window.removeEventListener("scroll", remeasure);
       ro.disconnect();
+      io.disconnect();
       cancelAnimationFrame(raf);
       textLayer.style.filter = "none";
       textLayer.style.transform = "none";

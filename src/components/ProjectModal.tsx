@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Project } from "@/lib/content";
 import {
@@ -152,7 +152,9 @@ function Meta({ k, v }: { k: string; v: string }) {
   );
 }
 
-function ModalMedia({ project }: { project: Project }) {
+// Memoised — only re-renders when the project reference changes (i.e. when a
+// different tile is opened), not on every parent state tick.
+const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
   const kind = project.kind ?? "image";
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [dayNightIsNight, setDayNightIsNight] = useState(false);
@@ -271,7 +273,7 @@ function ModalMedia({ project }: { project: Project }) {
   }
 
   return null;
-}
+});
 
 function FallingModalMedia() {
   const canvasRef = useRef<HTMLCanvasElement>(null);

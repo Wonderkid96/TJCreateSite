@@ -122,23 +122,23 @@ function ChromeAt({
         <Text3D
           font="/fonts/helvetiker_bold.typeface.json"
           size={1.8}
-          height={1.0}
+          height={1.5}
           bevelEnabled
-          bevelSize={0.045}
-          bevelThickness={0.04}
-          bevelSegments={10}
-          curveSegments={28}
+          bevelSize={0.08}
+          bevelThickness={0.07}
+          bevelSegments={16}
+          curveSegments={48}
         >
           @
           <meshPhysicalMaterial
             ref={matRef}
-            color="#060606"
-            metalness={0.95}
-            roughness={0.12}
+            color="#030303"
+            metalness={0.98}
+            roughness={0.14}
             clearcoat={1.0}
-            clearcoatRoughness={0.04}
+            clearcoatRoughness={0.03}
             reflectivity={1}
-            envMapIntensity={1.9}
+            envMapIntensity={0.35}
             emissiveIntensity={0}
           />
         </Text3D>
@@ -175,22 +175,26 @@ function Effects({ chromeOffset }: { chromeOffset: React.RefObject<{ v: number }
   );
 }
 
-// ── Slowly rotating rim rig — keeps reflections alive without moving the @ ─
+// ── Rim rig — lights placed behind the @ and biased to the left.
+// Static positions give consistent, controllable rim strokes.
+// A tiny slow rotation (one cycle every ~8 min) keeps reflections alive.
 function RotatingLights() {
   const groupRef = useRef<THREE.Group>(null);
   useFrame(({ clock }) => {
     if (groupRef.current) {
-      // One full rotation every ~2 min — barely perceptible but the chrome
-      // reflections shift constantly, making the surface feel alive.
-      groupRef.current.rotation.y = clock.elapsedTime * 0.04;
+      groupRef.current.rotation.y = clock.elapsedTime * 0.013;
     }
   });
   return (
     <group ref={groupRef}>
-      <pointLight position={[ 4,  1, -3]} intensity={8}   color={C_ACCENT} distance={14} />
-      <pointLight position={[-4, -2, -2]} intensity={4}   color={C_LIME}   distance={12} />
-      <pointLight position={[ 0,  4, -2]} intensity={3}   color={C_LILAC}  distance={12} />
-      <pointLight position={[-2,  1, -3]} intensity={3}   color="#d0e8ff"  distance={10} />
+      {/* Primary rim — strong back-left, white-hot edge */}
+      <pointLight position={[-6,  1, -5]} intensity={22}  color="#ffffff"  distance={18} />
+      {/* Secondary top-back — catches the top bevel */}
+      <pointLight position={[-2,  5, -5]} intensity={10}  color={C_LILAC}  distance={16} />
+      {/* Accent back-right — thin right-edge separation */}
+      <pointLight position={[ 5, -1, -4]} intensity={6}   color={C_ACCENT} distance={14} />
+      {/* Low fill — barely-there warm base so inner curves aren't pure black */}
+      <pointLight position={[-1, -4, -3]} intensity={3}   color={C_LIME}   distance={12} />
     </group>
   );
 }

@@ -41,7 +41,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "grumble",
     title: "Grumble / The Pylons",
-    client: "Band Campaign",
+    client: "The Pylons",
     year: "2026",
     category: "Identity",
     tags: ["Identity", "Photography"],
@@ -55,7 +55,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "jgrrey",
     title: "Jgrrey",
-    client: "Gig Poster",
+    client: "Jgrrey",
     year: "2025",
     category: "Graphic",
     tags: ["Poster", "Music"],
@@ -109,7 +109,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "liar-liar",
     title: "Liar Liar",
-    client: "Visualiser",
+    client: "Common Request",
     year: "2025",
     category: "Motion",
     tags: ["Motion", "Music Video"],
@@ -152,7 +152,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "heart-motion",
     title: "Heart",
-    client: "Brand Motion",
+    client: "Visualiser",
     year: "2025",
     category: "Motion",
     tags: ["Motion", "Loop"],
@@ -166,7 +166,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "phone-booth",
     title: "Phone Booth",
-    client: "3D Still",
+    client: "TJCreate",
     year: "2024",
     category: "3D",
     tags: ["3D", "Scene"],
@@ -181,7 +181,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "baraka-loop",
     title: "Joshua Baraka",
-    client: "Release Loop",
+    client: "Joshua Baraka",
     year: "2026",
     category: "Motion",
     tags: ["Motion", "Release"],
@@ -196,7 +196,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "wonderkid",
     title: "Wonderkid",
-    client: "Packaging Mockup",
+    client: "Wonderkid Records",
     year: "2025",
     category: "Graphic",
     tags: ["Packaging", "Mockup"],
@@ -210,7 +210,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "carousel-square",
     title: "Carousel",
-    client: "Social Motion",
+    client: "Visualiser",
     year: "2025",
     category: "Motion",
     tags: ["Motion", "Social"],

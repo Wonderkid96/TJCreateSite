@@ -98,6 +98,14 @@ html.lenis body {
   }
 }
 
+/* Keyboard focus — visible ring for a/button elements, hidden for mouse users */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 /* Rotating conic-gradient angle for animated button borders. @property lets
    the browser interpolate a custom <angle> variable smoothly. */
 @property --hero-a {

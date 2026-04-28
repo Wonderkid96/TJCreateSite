@@ -35,7 +35,7 @@ const mono = JetBrains_Mono({
 const SITE_URL = "https://www.tjcreate.co.uk";
 const SITE_NAME = "TJCreate · Toby Johnson";
 const SITE_DESC =
-  "Toby Johnson (TJCreate) is a graphic and motion designer with a strong background in music. I design campaign artwork, motion graphics and full visual rollouts for record labels, artists, agencies and brands.";
+  "Graphic and motion designer working with record labels, artists, and brands on campaign artwork, visual identity, and motion graphics. Based in Lincoln, UK.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -51,13 +51,19 @@ export const metadata: Metadata = {
   keywords: [
     "graphic designer",
     "motion designer",
+    "freelance graphic designer",
+    "freelance motion designer",
+    "graphic designer Lincoln",
+    "motion designer UK",
     "music industry designer",
+    "record label design",
     "campaign artwork",
+    "album artwork",
     "lyric videos",
     "visualisers",
-    "record label design",
-    "album artwork",
     "motion graphics",
+    "3D design",
+    "visual identity",
     "Toby Johnson",
     "TJCreate",
   ],

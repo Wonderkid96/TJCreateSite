@@ -93,7 +93,7 @@ export default async function OpengraphImage() {
                 height: 10,
                 borderRadius: "50%",
                 background: "#80EF80",
-                display: "inline-block",
+                display: "block",
               }}
             />
             Available for select projects

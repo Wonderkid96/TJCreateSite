@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useState, useRef, lazy, Suspense } from "react";
+import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import SnakeGame from "./SnakeGame";
 import { SocialLinks } from "./SocialIcons";
 
@@ -15,6 +15,34 @@ export default function Contact() {
   // Passed to Envelope3D so mouse tracking covers the full section,
   // not just the 55% canvas box.
   const sectionRef = useRef<HTMLElement>(null);
+
+  // R3F + postprocessing is heavy: a continuous useFrame loop, multiple
+  // lights, env map, chromatic aberration. Two perf gates:
+  //  1. Skip on touch / coarse pointer devices — the 3D @ relies on cursor
+  //     movement to feel alive, and it's the single biggest GPU cost on
+  //     the page on mobile.
+  //  2. On desktop, only mount once the section is close to view, so the
+  //     Canvas isn't burning frames while the user is reading further up.
+  const [showEnvelope, setShowEnvelope] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShowEnvelope(true);
+          io.disconnect();
+        }
+      },
+      // Start loading ~one viewport before the section enters view so the
+      // 3D scene is ready by the time the user actually sees it.
+      { rootMargin: "100% 0px 100% 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   return (
     <section
       ref={sectionRef}
@@ -31,11 +59,16 @@ export default function Contact() {
       }
       className="relative px-6 md:px-10 pt-24 md:pt-32 pb-24 md:pb-32 bg-ink text-paper overflow-hidden"
     >
-      {/* 3D @ — covers top 55% of section only, fades out before content below */}
+      {/* 3D @ — covers top 55% of section only, fades out before content below.
+          Only mounted once the section is near the viewport so the R3F
+          loop doesn't burn frames while the user is browsing further up
+          the page. */}
       <div className="absolute inset-x-0 top-0 h-[55%] pointer-events-none" aria-hidden>
-        <Suspense fallback={null}>
-          <Envelope3D trackRef={sectionRef} />
-        </Suspense>
+        {showEnvelope && (
+          <Suspense fallback={null}>
+            <Envelope3D trackRef={sectionRef} />
+          </Suspense>
+        )}
       </div>
 
       {/* EMAIL cursor zone — header + big email link only.

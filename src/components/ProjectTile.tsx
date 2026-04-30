@@ -54,7 +54,11 @@ function ProjectTile({
   const rX = useTransform(sy, [-0.5, 0.5], [4, -4]);
   const rY = useTransform(sx, [-0.5, 0.5], [-4, 4]);
 
-  // Scroll parallax for inner media
+  // Scroll parallax for inner media. Disabled on touch devices: with 15
+  // tiles each running their own scroll-progress tracker, mobile native
+  // scroll + JS-driven transforms get out of sync and the parallax visibly
+  // judders. Touch users get a flat (still nicely cropped) media layer.
+  const enableParallax = !isTouchDevice;
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
@@ -62,7 +66,7 @@ function ProjectTile({
   const mediaY = useTransform(
     scrollYProgress,
     [0, 1],
-    [parallaxStrength, -parallaxStrength]
+    enableParallax ? [parallaxStrength, -parallaxStrength] : [0, 0]
   );
 
   // Autoplay looping videos when in viewport.
@@ -75,20 +79,56 @@ function ProjectTile({
     if (fallingKind || pingPongEnabled) return;
     const v = videoRef.current;
     if (!v) return;
+
+    // Mobile autoplay rules: play() can silently reject if the video has
+    // preload="none" and no buffered data yet, especially on iOS Safari
+    // when the user is mid-scroll. We force a load() the first time the
+    // tile enters view, then call play() once enough data is buffered.
+    let playRequested = false;
+    const tryPlay = () => {
+      if (!playRequested) return;
+      // Some Android Chrome builds reject play() during touch scroll; the
+      // .catch swallow is enough — IO will retry on next intersection.
+      const p = v.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    };
+    const onCanPlay = () => tryPlay();
+    v.addEventListener("canplay", onCanPlay);
+    v.addEventListener("loadeddata", onCanPlay);
+
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
           if (e.isIntersecting) {
-            v.play().catch(() => {});
+            playRequested = true;
+            // Kick off the network/decode if we deferred via preload="none".
+            // load() is a no-op once data is already loading or loaded.
+            if (v.readyState < 2 && v.preload !== "none") {
+              try { v.load(); } catch {}
+            } else if (v.preload === "none") {
+              // Promote to metadata so iOS will fetch the moov atom and
+              // we get a canplay event we can hook into.
+              v.preload = "metadata";
+              try { v.load(); } catch {}
+            }
+            tryPlay();
           } else {
+            playRequested = false;
             v.pause();
           }
         }
       },
-      { threshold: 0.25 }
+      // Tiny margin on the bottom so videos start fetching before the tile
+      // is fully on screen — avoids a visible "frame freeze" while the
+      // browser scrambles to decode the first GOP.
+      { threshold: 0.1, rootMargin: "0px 0px 200px 0px" }
     );
     io.observe(v);
-    return () => io.disconnect();
+    return () => {
+      io.disconnect();
+      v.removeEventListener("canplay", onCanPlay);
+      v.removeEventListener("loadeddata", onCanPlay);
+    };
   }, [fallingKind, pingPongEnabled]);
 
   // Ping-pong playback — forward, then reverse, forever. No loop-reset jump.
@@ -242,7 +282,11 @@ function ProjectTile({
       }
     >
       <motion.div
-        style={{ rotateX: rX, rotateY: rY, transformStyle: "preserve-3d" }}
+        style={
+          enableParallax
+            ? { rotateX: rX, rotateY: rY, transformStyle: "preserve-3d" }
+            : undefined
+        }
         className="relative h-full w-full overflow-hidden rounded-[2px] md:aspect-auto aspect-[4/5]"
       >
         <div
@@ -252,13 +296,18 @@ function ProjectTile({
           <motion.div
             ref={mediaRef}
             className="absolute"
-            // Inset equal to 1.3× parallaxStrength on every side so the media
-            // always extends beyond the tile further than the max Y translation,
-            // guaranteeing the tile's own background never leaks through.
-            style={{
-              y: mediaY,
-              inset: `-${Math.ceil(parallaxStrength * 1.3)}px`,
-            }}
+            // Desktop: 1.3× parallaxStrength inset so the media always extends
+            // beyond the tile further than the max Y translation, guaranteeing
+            // the tile's own background never leaks through.
+            // Touch: parallax is disabled, so no inset is needed.
+            style={
+              enableParallax
+                ? {
+                    y: mediaY,
+                    inset: `-${Math.ceil(parallaxStrength * 1.3)}px`,
+                  }
+                : { inset: 0 }
+            }
           >
             {kind === "image" && project.image && (
               <Image
@@ -300,10 +349,11 @@ function ProjectTile({
                 muted
                 loop
                 playsInline
-                // ping-pong tiles need the browser to know duration + a
-                // seekable index, so they stay on "metadata". Regular tiles
-                // defer all fetches until the IntersectionObserver plays them.
-                preload={pingPongEnabled ? "metadata" : "none"}
+                // "metadata" everywhere: cheap (just the moov atom + first
+                // keyframe) but gives play() a chance to start without the
+                // browser refusing because no data is buffered. Critical for
+                // iOS Safari mobile autoplay during scroll.
+                preload="metadata"
                 onEnded={(e) => {
                   // Belt + braces: restart manually if the browser drops the loop.
                   const el = e.currentTarget;

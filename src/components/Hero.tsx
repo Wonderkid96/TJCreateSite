@@ -31,8 +31,23 @@ export default function Hero() {
   const scrollVelRef      = useRef(0);   // smoothed velocity in px/s
   const scrollRangeRef    = useRef(1);   // total hero scroll range in px (breakpoint-aware)
   const lastScrollEventRef = useRef(0);  // performance.now() of last scroll tick
-  const isMobileRef       = useRef(false);
-  const [isMobile, setIsMobile] = useState(false);
+  // Detect "mobile-ish" synchronously on first render so RAF-heavy effects
+  // (speed lines, velocity tracking) can short-circuit before they ever
+  // allocate. SSR returns false; the resize/MQ listener below corrects it.
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
+  });
+  const isMobileRef       = useRef(isMobile);
+  // Mirror state into a ref so non-React hot paths (canvas RAF closures
+  // captured at mount) can read the latest value without re-binding.
+  useEffect(() => {
+    isMobileRef.current = isMobile;
+  }, [isMobile]);
+  // Cached viewport dimensions — read once on mount + on resize, instead
+  // of inside useTransform on every scroll tick. Mobile scroll is sensitive
+  // to any window.innerWidth/innerHeight reads in hot paths.
+  const dimsRef           = useRef({ vw: 0, vh: 0 });
   // Target frame index, updated on every scroll event. A rAF loop reads
   // it and draws at most once per animation frame — keeps draws smooth
   // even when scroll events fire faster than 60Hz.
@@ -79,7 +94,9 @@ export default function Hero() {
   // Converts scroll progress/s → physical px/s using the live scroll range.
   // This makes thresholds consistent across all breakpoints: a 500 px/s scroll
   // always feels the same whether the hero is 260 vh (mobile) or 320 vh (lg).
+  // Skipped on mobile — speed lines are disabled there (see effect below).
   useEffect(() => {
+    if (isMobile) return;
     let smoothVel = 0;
     let lastP     = 0;
     let lastT     = performance.now();
@@ -98,13 +115,19 @@ export default function Hero() {
     });
 
     return unsubscribe;
-  }, [progress]);
+  }, [progress, isMobile]);
 
   // Speed lines RAF — streaks that move UPWARD past the falling character.
   // The character falls down, so from its frame of reference the environment
   // rushes upward. Lines animate position each frame; speed and opacity are
   // driven by scroll velocity so they only appear during fast scrolling.
+  //
+  // Disabled on mobile: a per-frame canvas RAF + 28 streak draws is enough
+  // GPU/CPU work to noticeably hurt scroll smoothness on lower-end phones,
+  // and fast-enough native scroll to actually trigger the streaks (>500 px/s)
+  // is rare on a touch device anyway.
   useEffect(() => {
+    if (isMobile) return;
     const canvas = speedLinesRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -231,7 +254,7 @@ export default function Hero() {
       cancelAnimationFrame(raf);
       ro.disconnect();
     };
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     const section = ref.current;
@@ -249,6 +272,9 @@ export default function Hero() {
       // Keep the scroll range ref in sync so velocity tracking can
       // convert progress/s → px/s regardless of which breakpoint is active.
       scrollRangeRef.current = Math.max(1, sectionH - vh);
+      // Cache viewport dims for the parallax transforms — these run on
+      // every scroll tick, so reading window.* there is wasteful.
+      dimsRef.current = { vw: window.innerWidth, vh };
     };
 
     const compute = (scrollY: number) => {
@@ -302,9 +328,12 @@ export default function Hero() {
     };
   }, [progress]);
 
+  // Detect touch/small viewports synchronously on mount so subsequent
+  // effects (speed lines, etc.) can short-circuit before allocating RAF
+  // loops they're never going to use on mobile.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const mq = window.matchMedia("(max-width: 767px)");
+    const mq = window.matchMedia("(max-width: 767px), (pointer: coarse)");
     const sync = () => { setIsMobile(mq.matches); isMobileRef.current = mq.matches; };
     sync();
     mq.addEventListener("change", sync);
@@ -330,13 +359,16 @@ export default function Hero() {
    * Returns the Y offset (px) for a parallax layer at scroll progress `p` (0–1).
    * Computes the maximum possible shift as (layerHeight − viewportHeight) so the
    * image travels exactly as far as needed — never over- or under-shooting.
+   *
+   * Reads cached viewport dims (synced in measure()/onResize) so the hot
+   * scroll path never touches window.innerWidth/innerHeight directly.
    */
   const safeTranslate = (aspect: number, p: number, widthVw = 100) => {
-    if (typeof window === "undefined") return 0;
-    const layerW = window.innerWidth * (widthVw / 100);
+    const { vw, vh } = dimsRef.current;
+    if (vw === 0) return 0;
+    const layerW = vw * (widthVw / 100);
     const layerH = layerW / aspect;
-    const max = Math.max(0, layerH - window.innerHeight);
-    return -p * max;
+    return -p * Math.max(0, layerH - vh);
   };
   const skyY = useTransform(progress, (p) =>
     safeTranslate(SKY_ASPECT, p, skyWidthVw)
@@ -441,7 +473,14 @@ export default function Hero() {
             width: `${cloudWidthVw}vw`,
             height: `calc(${cloudWidthVw}vw / ${CLOUD_ASPECT})`,
           }}
-          className="absolute top-0 will-change-transform opacity-95 mix-blend-screen"
+          // mix-blend-screen is a per-pixel composite — measurably expensive
+          // on mobile GPUs over a 144vw layer + a parallax transform on every
+          // scroll tick. Drop the blend on mobile; the cloud asset already
+          // looks reasonable at full opacity over the sky behind it.
+          className={
+            "absolute top-0 will-change-transform opacity-95" +
+            (isMobile ? "" : " mix-blend-screen")
+          }
         >
           <div
             className="h-full w-full"
@@ -459,13 +498,18 @@ export default function Hero() {
           style={{ scale: fallingScale }}
           className="absolute inset-0 flex items-center justify-center pointer-events-none will-change-transform"
         >
-          {/* Speed lines — radial manga streaks, opacity driven by scroll velocity */}
-          <canvas
-            ref={speedLinesRef}
-            className="absolute inset-0 w-full h-full"
-            style={{ mixBlendMode: "screen" }}
-            aria-hidden
-          />
+          {/* Speed lines — radial manga streaks, opacity driven by scroll velocity.
+              Desktop only: the streaks need fast scroll velocity to even
+              show up, and the canvas + mix-blend-mode adds compositing
+              cost we'd rather avoid on mobile scroll. */}
+          {!isMobile && (
+            <canvas
+              ref={speedLinesRef}
+              className="absolute inset-0 w-full h-full"
+              style={{ mixBlendMode: "screen" }}
+              aria-hidden
+            />
+          )}
 
           {/* Falling man — canvas driven by rAF draws of pre-decoded
               ImageBitmaps. See src/lib/falling-frames.ts. */}
@@ -516,7 +560,16 @@ export default function Hero() {
           style={{ opacity: titleOpacity, x: titleX }}
           className="absolute inset-x-6 md:inset-x-10 bottom-5 sm:bottom-8 md:bottom-14 flex flex-col gap-4 sm:gap-5 md:gap-8 will-change-transform"
         >
-          <h1 className="font-display hero-line text-[clamp(2.2rem,8.8vw,4.8rem)] md:text-[clamp(2.6rem,10vw,11rem)] tracking-[-0.035em] -ml-[0.02em] text-ink mix-blend-multiply">
+          <h1
+            // mix-blend-multiply on a large display heading forces a layer
+            // composite on every paint as the parallax bg slides under it.
+            // On mobile that's a lot of overdraw for marginal aesthetic
+            // benefit, so drop the blend mode there.
+            className={
+              "font-display hero-line text-[clamp(2.2rem,8.8vw,4.8rem)] md:text-[clamp(2.6rem,10vw,11rem)] tracking-[-0.035em] -ml-[0.02em] text-ink" +
+              (isMobile ? "" : " mix-blend-multiply")
+            }
+          >
             {WORDS.map((w) => (
               <span key={w} className="block">
                 {w === "Johnson" ? (

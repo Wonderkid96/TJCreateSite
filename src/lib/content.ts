@@ -302,6 +302,11 @@ export const CLIENTS_WITH_LOGOS = [
     logo: "/work/imported/logos/pace.svg",
     url: "https://www.paceartists.com",
   },
+  {
+    name: "Mojang Studios",
+    logo: "/work/imported/logos/mojang-studios.svg",
+    url: "https://www.minecraft.net/en-us/mojang-studios",
+  },
   // Artists with officially-supplied logos
   {
     name: "Jgrrey",

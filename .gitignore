@@ -55,6 +55,12 @@ next-env.d.ts
 # personal scratch notes
 ignore.txt
 
+# local design exports and import source drop-ins
+style-guide.html
+style-guide.pdf
+public/work/imported/logos/*.png
+public/work/imported/portraits/*.jpg
+
 # playwright
 /test-results/
 /playwright-report/

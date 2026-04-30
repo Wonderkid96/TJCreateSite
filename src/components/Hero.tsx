@@ -473,14 +473,7 @@ export default function Hero() {
             width: `${cloudWidthVw}vw`,
             height: `calc(${cloudWidthVw}vw / ${CLOUD_ASPECT})`,
           }}
-          // mix-blend-screen is a per-pixel composite — measurably expensive
-          // on mobile GPUs over a 144vw layer + a parallax transform on every
-          // scroll tick. Drop the blend on mobile; the cloud asset already
-          // looks reasonable at full opacity over the sky behind it.
-          className={
-            "absolute top-0 will-change-transform opacity-95" +
-            (isMobile ? "" : " mix-blend-screen")
-          }
+          className="absolute top-0 will-change-transform opacity-95 mix-blend-screen"
         >
           <div
             className="h-full w-full"

@@ -204,6 +204,8 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* Preload the 3D @ typeface so it's ready before the user reaches Contact. */}
+        <link rel="preload" href="/fonts/optimer_bold.typeface.json" as="fetch" crossOrigin="anonymous" />
         {/* Apply saved theme before paint to avoid a flash of the wrong colours. */}
         <Script id="theme-no-flash" strategy="beforeInteractive">
           {NO_FLASH_SNIPPET}

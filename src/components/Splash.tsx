@@ -39,6 +39,11 @@ export default function Splash() {
       // Private mode / disabled storage — just always show. Harmless.
     }
 
+    // Preload the Envelope3D chunk and its font while the splash is visible
+    // so the 3D @ symbol is ready by the time the user scrolls to Contact.
+    import("@/components/Envelope3D");
+    fetch("/fonts/optimer_bold.typeface.json", { priority: "low" } as RequestInit);
+
     if (alreadySeen) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setVisible(false);

@@ -31,7 +31,7 @@ export const PROJECTS: Project[] = [
     category: "Print",
     tags: ["Poster", "Event"],
     blurb:
-      "Screen-printed campaign for the Brighton Dome record-label showcase. Balimaya Project, Corto.Alto, Rebecca Vasmant Ensemble.",
+      "Poster campaign for Brighton Dome's record-label showcase, featuring Balimaya Project, Corto.Alto and Rebecca Vasmant Ensemble. Screen-printed, limited run.",
     video: "/work/imported/videos/together-we-stand-poster.mp4",
     videoPoster: "/work/imported/posters/together-we-stand-mockup.avif",
     alt: "Screen-printed concert poster for Brighton Dome record-label showcase — print design by Toby Johnson",
@@ -46,7 +46,7 @@ export const PROJECTS: Project[] = [
     category: "Identity",
     tags: ["Identity", "Photography"],
     blurb:
-      "Campaign artwork and identity for Grumble's The Pylons. Band on location, title treatment, typographic system.",
+      "Visual identity and campaign artwork for The Pylons, Grumble's debut release. Shot on location with a typographic treatment built across print and digital.",
     image: "/work/imported/banners/grumble-pylons.avif",
     alt: "Campaign artwork and visual identity for Grumble's The Pylons — music industry graphic design by Toby Johnson",
     kind: "image",
@@ -60,7 +60,7 @@ export const PROJECTS: Project[] = [
     category: "Graphic",
     tags: ["Poster", "Music"],
     blurb:
-      "Poster campaign for Jgrrey's tour. 'Playing gigs just so I can see you'. Printed in blueprint indigo.",
+      "Tour poster for Jgrrey. 'Playing gigs just so I can see you'. Blueprint indigo, heavy stock.",
     image: "/work/imported/posters/jgrrey-mu.avif",
     alt: "Jgrrey tour poster printed in blueprint indigo — music industry graphic design by Toby Johnson",
     kind: "image",
@@ -74,7 +74,7 @@ export const PROJECTS: Project[] = [
     category: "Motion",
     tags: ["Motion", "Release"],
     blurb:
-      "Release animation for Toby Johnson's single Your Cries. A figure falling through a slow-drifting sky, manipulated in After Effects and built to loop indefinitely.",
+      "Release animation for Toby Johnson's single Your Cries. A figure falling through a slow-drifting sky, animated frame by frame and used as the website hero.",
     kind: "falling",
     bg: "#0a0a0a",
   },
@@ -86,7 +86,7 @@ export const PROJECTS: Project[] = [
     category: "Graphic",
     tags: ["Poster", "Music"],
     blurb:
-      "Poster artwork for Filtered. Teal ink, heavy type, Toby Johnson on the bill.",
+      "Gig poster for Filtered, with Toby Johnson on the bill. Teal ink, heavy type, built for A3.",
     image: "/work/imported/posters/filtered-gig-mockup2.avif",
     alt: "Gig poster for Filtered in teal ink with heavy type — music poster design by Toby Johnson",
     kind: "image",
@@ -100,7 +100,7 @@ export const PROJECTS: Project[] = [
     category: "Print",
     tags: ["Packaging", "3D"],
     blurb:
-      "Packaging system for the Offcut product line. Black-on-black, zero wasted surface.",
+      "Packaging system for the Offcut product line. Black on black, every surface considered.",
     image: "/work/imported/projects/box-grid.avif",
     alt: "Black-on-black product packaging system for Offcut — packaging design by Toby Johnson",
     kind: "image",
@@ -114,7 +114,7 @@ export const PROJECTS: Project[] = [
     category: "Motion",
     tags: ["Motion", "Music Video"],
     blurb:
-      "Looping visualiser for Liar Liar. Apple Motion scene, built for repeat plays without fatigue.",
+      "Looping visualiser for Common Request's Liar Liar. Built in After Effects, designed to hold up across repeat plays on streaming platforms.",
     video: "/work/imported/motion/liar-liar-apple-motion.mp4",
     videoPoster: "/work/imported/posters-video/liar-liar-apple-motion.avif",
     kind: "video",
@@ -129,7 +129,7 @@ export const PROJECTS: Project[] = [
     category: "Motion",
     tags: ["Motion", "Editorial"],
     blurb:
-      "Editorial motion set. Tile-driven system built in After Effects, designed to scale across formats.",
+      "Editorial motion piece. A tile-driven system built in After Effects, designed to adapt across formats and aspect ratios.",
     video: "/work/imported/motion/fashion-tiles.mp4",
     videoPoster: "/work/imported/posters-video/fashion-tiles.avif",
     kind: "video",
@@ -143,7 +143,7 @@ export const PROJECTS: Project[] = [
     category: "Motion",
     tags: ["Motion", "3D", "Product"],
     blurb:
-      "16:9 headphone animation study focused on smooth product movement, lighting passes and a clean loop-ready finish.",
+      "Product animation study for a pair of over-ear headphones. Smooth movement, considered lighting and a clean cycle, built in Cinema 4D.",
     video: "/work/imported/motion/headphone-animation.mp4",
     videoPoster: "/work/imported/posters-video/headphone-animation.avif",
     kind: "video",
@@ -157,7 +157,7 @@ export const PROJECTS: Project[] = [
     category: "Motion",
     tags: ["Motion", "Loop"],
     blurb:
-      "Short brand loop. Minimal object, big personality. Plays forever without feeling repetitive.",
+      "A short motion loop made for the sake of it. One object, kept simple, no brief.",
     video: "/work/imported/motion/heart.mp4",
     videoPoster: "/work/imported/posters-video/heart.avif",
     kind: "video",
@@ -171,7 +171,7 @@ export const PROJECTS: Project[] = [
     category: "3D",
     tags: ["3D", "Scene"],
     blurb:
-      "Day/night scene study. Same 3D environment, two different lighting passes. Hover to flip.",
+      "3D scene study in two lighting states. Same phone booth, day and night. Hover to switch.",
     image: "/work/imported/day-night/phone-booth-day.avif",
     alt: "Phone booth 3D scene rendered in day and night lighting — 3D design by Toby Johnson",
     imageHover: "/work/imported/day-night/phone-booth-night.avif",
@@ -186,7 +186,7 @@ export const PROJECTS: Project[] = [
     category: "Motion",
     tags: ["Motion", "Release"],
     blurb:
-      "Release-cycle motion loop for Joshua Baraka. Single-take animation, built to feel like one continuous breath.",
+      "Motion loop for Joshua Baraka's release campaign. One continuous movement, no hard cuts.",
     video: "/work/imported/motion/baraka-loop.mp4",
     videoPoster: "/work/imported/posters-video/baraka-loop.avif",
     kind: "video",
@@ -201,7 +201,7 @@ export const PROJECTS: Project[] = [
     category: "Graphic",
     tags: ["Packaging", "Mockup"],
     blurb:
-      "Wonderkid. Limited product packaging rendered in-bag. Typography meets product photography.",
+      "Limited edition packaging for Wonderkid Records. Rendered in-bag with a typographic label system.",
     image: "/work/imported/posters/wonderkid-in-bag.avif",
     alt: "Wonderkid limited edition packaging rendered in-bag — product graphic design by Toby Johnson",
     kind: "image",
@@ -215,7 +215,7 @@ export const PROJECTS: Project[] = [
     category: "Motion",
     tags: ["Motion", "Social"],
     blurb:
-      "Square-format motion loop designed for feeds. A single idea, clean cut, built to stop a scroll.",
+      "Square-format motion loop for social. One idea, no padding.",
     video: "/work/imported/motion/carousel-square.mp4",
     videoPoster: "/work/imported/posters-video/carousel-square.avif",
     kind: "video",
@@ -229,7 +229,7 @@ export const PROJECTS: Project[] = [
     category: "Motion",
     tags: ["Lyric Video", "Motion"],
     blurb:
-      "Lyric video for Joshua Baraka's Wrong Places. This tile loops a lyric-free passage from the full cut. Click through to watch the full video on YouTube.",
+      "Lyric video for Joshua Baraka's Wrong Places. The tile previews a lyric-free passage from the full cut. Click through for the full video on YouTube.",
     video: "/work/imported/motion/jb-wrong-places-loop.mp4",
     videoPoster: "/work/imported/posters-video/jb-wrong-places-loop.avif",
     kind: "video",

@@ -68,13 +68,13 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "falling-on-sky",
-    title: "Your Cries Falling",
+    title: "Your Cries",
     client: "Toby Johnson",
     year: "2025",
     category: "Motion",
     tags: ["Motion", "Release"],
     blurb:
-      "Release visual for Your Cries Falling. Figure falling through a slow-drifting sky. Subtle, loops forever.",
+      "Release animation for Toby Johnson's single Your Cries. A figure falling through a slow-drifting sky, manipulated in After Effects and built to loop indefinitely.",
     kind: "falling",
     bg: "#0a0a0a",
   },

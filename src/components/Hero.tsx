@@ -342,8 +342,36 @@ export default function Hero() {
 
   // Scroll -> target progress. Actual draw happens in the rAF loop above
   // so we never paint more than once per frame regardless of scroll rate.
+  // Doubles as the visibility driver for the scroll prompt: any meaningful
+  // movement hides it, a 3 s idle window brings it back, crossing 70 %
+  // dismisses it for the rest of the session.
   useMotionValueEvent(progress, "change", (p) => {
     targetProgressRef.current = p;
+
+    if (scrollPromptDismissedRef.current) return;
+
+    const movement = Math.abs(p - lastPromptProgressRef.current);
+    lastPromptProgressRef.current = p;
+    // Ignore Lenis settle and sub-pixel jitter so the prompt doesn't flicker.
+    if (movement < 0.005) return;
+
+    if (p > 0.7) {
+      scrollPromptDismissedRef.current = true;
+      setShowScrollPrompt(false);
+      if (scrollPromptIdleRef.current) {
+        window.clearTimeout(scrollPromptIdleRef.current);
+        scrollPromptIdleRef.current = null;
+      }
+      return;
+    }
+
+    setShowScrollPrompt(false);
+    if (scrollPromptIdleRef.current) {
+      window.clearTimeout(scrollPromptIdleRef.current);
+    }
+    scrollPromptIdleRef.current = window.setTimeout(() => {
+      if (!scrollPromptDismissedRef.current) setShowScrollPrompt(true);
+    }, 3000);
   });
 
   // Responsive parallax — translate each layer by (layerH − viewportH) at max
@@ -385,18 +413,36 @@ export default function Hero() {
   //   0   = hero scroll start (page top)
   //   1   = hero scroll end (section fully consumed, about to unpin)
   //
-  // Scroll indicator — floats on the right edge, drifts downward as the
-  // user scrolls. Fades in quickly at the start, holds through most of the
-  // range, then fades out just before the hero unpins (threshold 0.72–0.88).
-  const scrollIndicatorOpacity = useTransform(
-    progress,
-    [0, 0.06, 0.72, 0.88], // fade in → hold → fade out
-    [0,    1,    1,    0],
-  );
-  const scrollIndicatorY = useTransform(
-    progress,
-    [0,    0.85],
-    ["0%", "52%"], // drifts ~half the container height downward
+  // Scroll prompt — visible on first paint to nudge the user. Hides
+  // while they're actively moving, returns after 3s of stillness so the
+  // hint reappears if they pause without progressing. Permanently
+  // dismissed once 70% of the hero has been consumed (they've got it).
+  const [showScrollPrompt, setShowScrollPrompt] = useState(true);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const scrollPromptIdleRef = useRef<number | null>(null);
+  const scrollPromptDismissedRef = useRef(false);
+  const lastPromptProgressRef = useRef(0);
+
+  // Detect prefers-reduced-motion so the descending arrow loop can be
+  // swapped for a static glyph. Live-listens for system pref changes.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReducedMotion(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  // Clean up the idle timer on unmount so a queued reappear can't fire
+  // after the hero has gone away.
+  useEffect(
+    () => () => {
+      if (scrollPromptIdleRef.current) {
+        window.clearTimeout(scrollPromptIdleRef.current);
+      }
+    },
+    [],
   );
 
   // Title — slides in from the left on entry (0 → 0.18), holds position
@@ -524,20 +570,45 @@ export default function Hero() {
         {/* Vignette — passive, no cursor-tracking */}
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.2)_100%)]" />
 
-        {/* Scroll indicator — floats on the right, drifts downward with
-            scroll progress so it acts as a subtle live position marker.
-            Extracted from the bottom-stack motion so it never slides away. */}
+        {/* Scroll prompt — sits on the right edge from the moment the page
+            loads, fades out the instant the user starts scrolling, and
+            returns after 3 s of stillness if they're still in the hero.
+            The arrow descends a short invisible track on a continuous
+            loop to make the "scroll" intent unmistakable. */}
         <motion.div
-          style={{ opacity: scrollIndicatorOpacity, y: scrollIndicatorY }}
-          className="absolute hidden md:flex right-10 top-[28%] flex-col items-center gap-2 pointer-events-none will-change-transform font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: showScrollPrompt ? 1 : 0 }}
+          transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+          className="absolute hidden md:flex right-10 top-[28%] flex-col items-center gap-3 pointer-events-none will-change-transform font-mono text-[11px] uppercase tracking-[0.2em] text-ink/65"
         >
-          <motion.span
-            animate={{ y: [0, 5, 0] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-            className="inline-block"
-          >
-            ↓
-          </motion.span>
+          <div className="relative h-10 w-4 overflow-hidden">
+            {reducedMotion ? (
+              <span
+                aria-hidden
+                className="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center leading-none text-[14px]"
+              >
+                ↓
+              </span>
+            ) : (
+              <motion.span
+                aria-hidden
+                className="absolute inset-x-0 text-center leading-none text-[14px]"
+                initial={{ y: -14, opacity: 0 }}
+                animate={{
+                  y: [-14, 40],
+                  opacity: [0, 1, 1, 0],
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "linear",
+                  times: [0, 0.2, 0.8, 1],
+                }}
+              >
+                ↓
+              </motion.span>
+            )}
+          </div>
           <span>Scroll</span>
         </motion.div>
 

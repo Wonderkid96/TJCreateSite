@@ -570,46 +570,70 @@ export default function Hero() {
         {/* Vignette — passive, no cursor-tracking */}
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.2)_100%)]" />
 
-        {/* Scroll prompt — sits on the right edge from the moment the page
-            loads, fades out the instant the user starts scrolling, and
-            returns after 3 s of stillness if they're still in the hero.
-            The arrow descends a short invisible track on a continuous
-            loop to make the "scroll" intent unmistakable. */}
+        {/* Scroll prompt — visible from first paint, hides on scroll, returns
+            after 3 s of stillness, dismissed permanently past 70 % of the
+            hero. The capsule (circle + arrow + label) drifts downward on a
+            continuous loop so the motion itself reads as "scroll like this". */}
         <motion.div
           initial={{ opacity: 1 }}
           animate={{ opacity: showScrollPrompt ? 1 : 0 }}
           transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-          className="absolute hidden md:flex right-10 top-[28%] flex-col items-center gap-3 pointer-events-none will-change-transform font-mono text-[11px] uppercase tracking-[0.2em] text-ink/65"
+          className="absolute hidden md:flex right-10 top-[24%] flex-col items-center pointer-events-none will-change-transform font-mono text-[11px] uppercase tracking-[0.2em] text-ink/70"
         >
-          <div className="relative h-10 w-4 overflow-hidden">
-            {reducedMotion ? (
+          {reducedMotion ? (
+            // Static fallback — no drift, no fade cycle. Circle stays put
+            // so the visual idea (capsule with arrow + label) is intact.
+            <div className="relative flex h-[78px] w-[78px] flex-col items-center justify-center gap-1.5">
               <span
                 aria-hidden
-                className="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center leading-none text-[14px]"
-              >
-                ↓
-              </span>
-            ) : (
+                className="absolute inset-0 rounded-full border border-ink/25 bg-ink/[0.04]"
+              />
+              <span aria-hidden className="relative text-[14px] leading-none">↓</span>
+              <span className="relative">Scroll</span>
+            </div>
+          ) : (
+            <motion.div
+              className="relative flex h-[78px] w-[78px] flex-col items-center justify-center gap-1.5"
+              animate={{ y: [0, 0, 110, 110] }}
+              transition={{
+                // 2.4 s cycle: ~0.4 s settle, ~1.5 s drift, ~0.4 s release.
+                duration: 2.4,
+                repeat: Infinity,
+                ease: [0.4, 0, 0.6, 1],
+                times: [0, 0.18, 0.82, 1],
+              }}
+            >
+              {/* Circle bg — fades in slightly after the text so it reads
+                  as appearing behind the label, not wrapping it from
+                  the start. Holds during the drift, fades out at bottom. */}
               <motion.span
                 aria-hidden
-                className="absolute inset-x-0 text-center leading-none text-[14px]"
-                initial={{ y: -14, opacity: 0 }}
-                animate={{
-                  y: [-14, 40],
-                  opacity: [0, 1, 1, 0],
-                }}
+                className="absolute inset-0 rounded-full border border-ink/30 bg-ink/[0.04]"
+                animate={{ opacity: [0, 0, 1, 1, 0] }}
                 transition={{
-                  duration: 1.5,
+                  duration: 2.4,
                   repeat: Infinity,
                   ease: "linear",
-                  times: [0, 0.2, 0.8, 1],
+                  times: [0, 0.08, 0.22, 0.82, 1],
+                }}
+              />
+              {/* Arrow + label — share a single fade so they always
+                  appear/disappear together. Drift comes from the parent. */}
+              <motion.div
+                className="relative flex flex-col items-center gap-1.5"
+                animate={{ opacity: [0, 1, 1, 0] }}
+                transition={{
+                  duration: 2.4,
+                  repeat: Infinity,
+                  ease: "linear",
+                  times: [0, 0.1, 0.82, 1],
                 }}
               >
-                ↓
-              </motion.span>
-            )}
-          </div>
-          <span>Scroll</span>
+                <span aria-hidden className="text-[14px] leading-none">↓</span>
+                <span>Scroll</span>
+              </motion.div>
+            </motion.div>
+          )}
         </motion.div>
 
         {/* Top chrome */}

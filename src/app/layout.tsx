@@ -222,6 +222,7 @@ export default function RootLayout({
         </Script>
       </head>
       <body className="bg-paper text-ink">
+        <a href="#work" className="skip-link">Skip to work</a>
         <ThemeProvider>
           <Splash />
           <SmoothScroll />

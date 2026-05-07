@@ -25,7 +25,13 @@ export default function Marquee({
   const x = useMotionValue(0);
   const wrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const [paused, setPaused] = useState(false);
+  // Honour the user's motion preference: start paused so the auto-scroll
+  // never kicks in. Drag/wheel still works for users who explicitly want
+  // to interact with it.
+  const [paused, setPaused] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
   const resumeTimeout = useRef<number | null>(null);
 
   const pause = () => {

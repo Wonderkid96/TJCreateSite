@@ -36,7 +36,9 @@ export default function WorkGrid() {
         </div>
 
         <div className="hidden md:block font-mono text-[10px] lg:text-[11px] uppercase tracking-[0.12em] lg:tracking-[0.2em] text-muted whitespace-nowrap text-right">
-          A mix of print, identity, and motion. Click any tile for a closer look.
+          Print · Identity · Motion · 3D
+          <br />
+          {String(PROJECTS.length).padStart(2, "0")} selected · 2024–26
         </div>
       </div>
 

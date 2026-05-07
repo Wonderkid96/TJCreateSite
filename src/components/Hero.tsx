@@ -17,7 +17,7 @@ import {
 
 const WORDS = ["Toby", "Johnson"];
 const SUB =
-  "Graphic + motion designer building visual systems for record labels, artists, and ambitious brands.";
+  "Graphic + motion designer. Record labels, artists, and brands. Based in Lincoln.";
 
 // Source image pixel dimensions expressed as width ÷ height.
 // Used by safeTranslate to derive the rendered layer height at any viewport width.
@@ -557,11 +557,13 @@ export default function Hero() {
             // mix-blend-multiply on a large display heading forces a layer
             // composite on every paint as the parallax bg slides under it.
             // On mobile that's a lot of overdraw for marginal aesthetic
-            // benefit, so drop the blend mode there.
+            // benefit, so drop the blend mode there. A faint cream
+            // text-shadow restores readability over the busy cloud layer.
             className={
               "font-display hero-line text-[clamp(2.2rem,8.8vw,4.8rem)] md:text-[clamp(2.6rem,10vw,11rem)] tracking-[-0.035em] -ml-[0.02em] text-ink" +
               (isMobile ? "" : " mix-blend-multiply")
             }
+            style={isMobile ? { textShadow: "0 1px 14px rgba(244,241,233,0.45)" } : undefined}
           >
             {WORDS.map((w) => (
               <span key={w} className="block">

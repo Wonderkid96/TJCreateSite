@@ -38,7 +38,11 @@ export default function LogoMarquee({ items, speed = "normal" }: Props) {
   const x = useMotionValue(0);
   const wrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const [paused, setPaused] = useState(false);
+  // Reduced-motion users start paused so the strip doesn't auto-drift.
+  const [paused, setPaused] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
   const resumeTimeout = useRef<number | null>(null);
 
   const pause = () => {

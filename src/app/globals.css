@@ -282,5 +282,40 @@ html.reveal-mounted [data-reveal].is-visible {
     transform: none;
     transition: none;
   }
+
+  /* Kill marquee + drift loops, scramble flicker, scale hovers. Keep
+     functional UI transitions (theme fade, modal open/close) but strip
+     anything decorative or continuous. */
+  .grain,
+  [data-reveal="text"] .tw-word {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Skip-link — visually hidden until focused. Lets keyboard users jump
+   straight to the work section without tabbing through every nav anchor. */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  padding: 0.5rem 1rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  border-radius: 2px;
+  transition: top 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  top: 1rem;
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 

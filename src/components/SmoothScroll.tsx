@@ -8,7 +8,10 @@ export default function SmoothScroll() {
     // Mobile/tablet: keep native scroll physics. Lenis + syncTouch can feel
     // over-processed on touch and can destabilize sticky sections.
     const useNativeScroll = window.matchMedia("(pointer: coarse), (max-width: 1024px)").matches;
-    if (useNativeScroll) {
+    // Reduced-motion users: bypass smooth-scroll entirely so jump links land
+    // immediately and the eased momentum doesn't kick in mid-scroll.
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (useNativeScroll || prefersReduced) {
       (window as unknown as { __lenis?: Lenis }).__lenis = undefined;
       return;
     }
@@ -17,7 +20,7 @@ export default function SmoothScroll() {
     // `syncTouch` makes touch gestures feel continuous with the scroll,
     // avoiding the jolt between native momentum and scroll-driven animations.
     const lenis = new Lenis({
-      duration: 1.15,
+      duration: 1.0,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
       syncTouch: true,

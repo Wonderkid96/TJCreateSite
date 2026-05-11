@@ -65,3 +65,7 @@ public/work/imported/portraits/*.jpg
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# ── Brand reference docs (kept locally, never committed) ──────────
+# No leading slash = matches at any depth.
+style-guide-*.pdf

@@ -38,18 +38,27 @@ export default function Nav() {
     return () => clearInterval(id);
   }, []);
 
-  // Close the mobile panel on Escape or anchor click. Returns focus to the
-  // hamburger so keyboard users do not lose context (WCAG 2.4.3).
+  // Close the mobile panel on Escape.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setOpen(false);
-        hamburgerRef.current?.focus();
-      }
+      if (e.key === "Escape") setOpen(false);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  // Return focus to the hamburger when the panel closes (WCAG 2.4.3).
+  // Calling focus() inline in the Escape handler raced with React's
+  // state commit and the AnimatePresence exit, so the focus did not
+  // always land. Watching `open` -> false here guarantees the focus
+  // call happens after the commit.
+  const wasOpenRef = useRef(false);
+  useEffect(() => {
+    if (wasOpenRef.current && !open) {
+      hamburgerRef.current?.focus();
+    }
+    wasOpenRef.current = open;
   }, [open]);
 
   return (

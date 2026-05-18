@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import ScrambleText from "./ScrambleText";
 import { useTheme } from "./ThemeProvider";
@@ -19,6 +19,7 @@ const LINKS = [
 export default function Nav() {
   const [time, setTime] = useState("");
   const [open, setOpen] = useState(false);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
 
   // Update the London time every 30 seconds.
   useEffect(() => {
@@ -37,7 +38,7 @@ export default function Nav() {
     return () => clearInterval(id);
   }, []);
 
-  // Close the mobile panel on Escape or anchor click.
+  // Close the mobile panel on Escape.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -45,6 +46,19 @@ export default function Nav() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  // Return focus to the hamburger when the panel closes (WCAG 2.4.3).
+  // Calling focus() inline in the Escape handler raced with React's
+  // state commit and the AnimatePresence exit, so the focus did not
+  // always land. Watching `open` -> false here guarantees the focus
+  // call happens after the commit.
+  const wasOpenRef = useRef(false);
+  useEffect(() => {
+    if (wasOpenRef.current && !open) {
+      hamburgerRef.current?.focus();
+    }
+    wasOpenRef.current = open;
   }, [open]);
 
   return (
@@ -74,12 +88,13 @@ export default function Nav() {
         <div className="md:hidden flex items-center gap-3">
           <ThemeToggle />
           <button
+            ref={hamburgerRef}
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls="mobile-nav-panel"
             data-cursor="hover"
-            className="relative w-9 h-9 -mr-1 flex items-center justify-center"
+            className="relative w-9 h-9 -mr-1 flex items-center justify-center rounded-sm focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
             <span

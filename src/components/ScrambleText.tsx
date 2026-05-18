@@ -19,6 +19,19 @@ const CHAR_POOL =
 // Update the scramble roughly every ~45ms — readable but frenetic.
 const FRAME_MS = 45;
 
+function useReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReduced(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  return reduced;
+}
+
 export default function ScrambleText({
   text,
   active,
@@ -27,6 +40,15 @@ export default function ScrambleText({
   className = "",
   lockWidth = false,
 }: Props) {
+  const reducedMotion = useReducedMotion();
+
+  // Honour prefers-reduced-motion by skipping the scramble entirely and
+  // rendering the static text. The aria-label on lockWidth is dropped here
+  // since the visible text now matches what a screen reader would announce.
+  if (reducedMotion) {
+    return <span className={className}>{text}</span>;
+  }
+
   if (lockWidth) {
     return (
       <span className="relative inline-grid align-baseline" aria-label={text}>

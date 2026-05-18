@@ -327,6 +327,13 @@ export default function SnakeGame({ active }: { active: boolean }) {
 
   return (
     <div className="mt-4 border-t border-paper/15 pt-4 flex flex-col gap-3">
+      {/* Live region for screen readers (WCAG 4.1.3). Announces game over
+          once when the run ends. Score updates during play would be too
+          chatty, so we stay silent until the final state. */}
+      <div role="status" aria-live="polite" className="sr-only">
+        {gameOver ? `Game over. Final score ${score}, length ${length}.` : ""}
+      </div>
+
       {/* Stats bar spans the full panel width — sits above the board, never
           overlaps it. Mono so the numbers stay fixed-width as they tick. */}
         <div className="flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/70">

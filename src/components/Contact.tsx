@@ -24,24 +24,36 @@ export default function Contact() {
   //  2. On desktop, only mount once the section is close to view, so the
   //     Canvas isn't burning frames while the user is reading further up.
   const [showEnvelope, setShowEnvelope] = useState(false);
+  // Eager mount once the browser is idle. The chunk and font are already
+  // preloaded by Splash, so this just lets the WebGL context allocate,
+  // parse the font, build TextGeometry and paint the first frame while
+  // the user is still up the page. By the time they scroll to Contact
+  // the scene is running, so there is no visible pop-in mid-scroll.
+  // Touch / coarse-pointer devices stay opted out (the 3D @ feeds off
+  // cursor movement and is the page's heaviest GPU cost).
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(pointer: coarse)").matches) return;
-    const el = sectionRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShowEnvelope(true);
-          io.disconnect();
-        }
-      },
-      // Start loading ~one viewport before the section enters view so the
-      // 3D scene is ready by the time the user actually sees it.
-      { rootMargin: "100% 0px 100% 0px" }
-    );
-    io.observe(el);
-    return () => io.disconnect();
+
+    type IdleWindow = Window & {
+      requestIdleCallback?: (
+        cb: IdleRequestCallback,
+        opts?: { timeout: number },
+      ) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    const w = window as IdleWindow;
+
+    let id: number;
+    if (w.requestIdleCallback) {
+      id = w.requestIdleCallback(() => setShowEnvelope(true), { timeout: 800 });
+    } else {
+      id = window.setTimeout(() => setShowEnvelope(true), 250);
+    }
+    return () => {
+      if (w.cancelIdleCallback) w.cancelIdleCallback(id);
+      else window.clearTimeout(id);
+    };
   }, []);
   return (
     <section

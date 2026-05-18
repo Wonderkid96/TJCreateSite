@@ -20,17 +20,64 @@ type Props = {
 
 export default function ProjectModal({ project, onClose }: Props) {
   const mounted = typeof document !== "undefined";
+  const dialogRef = useRef<HTMLDivElement>(null);
 
+  // Focus trap + return-focus: when the modal opens, remember whatever was
+  // focused (the tile button), move focus to the close control, cycle Tab
+  // within the dialog, and restore focus on close so keyboard users land
+  // back on the tile they came from. WCAG 2.1.2 / 2.4.3.
   useEffect(() => {
     if (!project) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const dialog = dialogRef.current;
+
+    const getFocusable = () =>
+      dialog
+        ? Array.from(
+            dialog.querySelectorAll<HTMLElement>(
+              'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"]), iframe, input:not([disabled]), select:not([disabled]), textarea:not([disabled])',
+            ),
+          ).filter((el) => el.offsetParent !== null || el === document.activeElement)
+        : [];
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab" || !dialog) return;
+      const focusable = getFocusable();
+      if (focusable.length === 0) {
+        e.preventDefault();
+        dialog.focus();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey && (active === first || !dialog.contains(active))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
+
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
+
+    // Initial focus: the close button is the natural first target.
+    const focusFrame = requestAnimationFrame(() => {
+      const closeBtn = dialog?.querySelector<HTMLElement>("[data-modal-close]");
+      closeBtn?.focus();
+    });
+
     return () => {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
+      cancelAnimationFrame(focusFrame);
+      previouslyFocused?.focus?.();
     };
   }, [project, onClose]);
 
@@ -52,33 +99,44 @@ export default function ProjectModal({ project, onClose }: Props) {
           onClick={onClose}
         >
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="project-modal-title"
+            tabIndex={-1}
             initial={{ opacity: 0, y: 40, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
             transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="absolute inset-4 md:inset-10 overflow-hidden rounded-[2px] bg-paper text-ink flex flex-col"
+            className="absolute inset-4 md:inset-10 overflow-hidden rounded-[2px] bg-paper text-ink flex flex-col focus:outline-none"
           >
             <div className="flex items-center justify-between px-6 md:px-10 py-5 border-b border-line">
               <div className="flex items-baseline gap-6">
                 <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
                   {project.category}
                 </div>
-                <div className="font-display text-2xl md:text-3xl leading-none tracking-tight">
+                <h2
+                  id="project-modal-title"
+                  className="font-display text-2xl md:text-3xl leading-none tracking-tight"
+                >
                   {project.title}
-                </div>
+                </h2>
                 <div className="hidden md:block font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
                   {project.client} · {project.year}
                 </div>
               </div>
 
               <button
+                type="button"
+                data-modal-close
                 onClick={onClose}
                 data-cursor="hover"
-                className="font-mono text-[11px] uppercase tracking-[0.2em] hover:text-accent transition-colors flex items-center gap-3"
+                aria-label={`Close ${project.title} details`}
+                className="font-mono text-[11px] uppercase tracking-[0.2em] hover:text-accent transition-colors flex items-center gap-3 rounded-sm focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
               >
                 <span className="hidden md:inline">Close</span>
-                <span className="relative w-5 h-5">
+                <span aria-hidden className="relative w-5 h-5">
                   <span className="absolute inset-0 m-auto w-full h-px bg-current rotate-45" />
                   <span className="absolute inset-0 m-auto w-full h-px bg-current -rotate-45" />
                 </span>

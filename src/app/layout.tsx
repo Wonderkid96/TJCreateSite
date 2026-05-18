@@ -40,7 +40,7 @@ const SITE_DESC =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Toby Johnson · Graphic & Motion Designer · TJCreate",
+    default: "Graphic & Motion Designer · Toby Johnson · TJCreate",
     template: "%s · TJCreate",
   },
   description: SITE_DESC,
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "Toby Johnson · Graphic & Motion Designer",
+    title: "Graphic & Motion Designer · Toby Johnson",
     description: SITE_DESC,
     locale: "en_GB",
     // Images are auto-attached from src/app/opengraph-image.tsx —
@@ -84,7 +84,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Toby Johnson · Graphic & Motion Designer",
+    title: "Graphic & Motion Designer · Toby Johnson",
     description: SITE_DESC,
     // Twitter image is auto-attached from src/app/twitter-image.tsx.
   },
@@ -204,6 +204,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* Preload the hero background images so the LCP candidate
+            (the visible sky + cloud layers behind the falling man)
+            paints without waiting on the Hero CSS chain to resolve. */}
+        <link rel="preload" href="/work/imported/bg/sky-long.avif" as="image" type="image/avif" />
+        <link rel="preload" href="/work/imported/bg/cloud-long.avif" as="image" type="image/avif" />
         {/* Preload the 3D @ typeface so it's ready before the user reaches Contact. */}
         <link rel="preload" href="/fonts/optimer_bold.typeface.json" as="fetch" crossOrigin="anonymous" />
         {/* Apply saved theme before paint to avoid a flash of the wrong colours. */}

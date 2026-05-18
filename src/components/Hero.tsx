@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import {
   motion,
   useMotionValue,
@@ -485,10 +486,15 @@ export default function Hero() {
           "--paper": "#f4f1e9",
         } as React.CSSProperties
       }
-      className="relative w-full h-[260vh] sm:h-[280vh] md:h-[300vh] lg:h-[320vh]"
+      className="relative w-full h-[260vh] sm:h-[280vh] md:h-[300vh] lg:h-[320vh] bg-[#c9d8e2]"
     >
       <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-[#c9d8e2] isolate">
-        {/* Sky */}
+        {/* Sky. Rendered as a Next.js Image with priority so the browser
+            treats it as the LCP candidate and fetches it before anything
+            else. Previously this was a CSS background-image, which
+            does not benefit from priority hints and could paint after
+            the splash dismissed, leaving a brief flash of the section
+            fallback colour. */}
         <motion.div
           style={{
             y: skyY,
@@ -499,14 +505,13 @@ export default function Hero() {
           }}
           className="absolute top-0 will-change-transform"
         >
-          <div
-            className="h-full w-full"
-            style={{
-              backgroundImage: "url(/work/imported/bg/sky-long.avif)",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center top",
-            }}
+          <Image
+            src="/work/imported/bg/sky-long.avif"
+            alt=""
+            fill
+            priority
+            sizes={`${skyWidthVw}vw`}
+            className="object-cover object-top"
           />
         </motion.div>
 

@@ -95,6 +95,12 @@ export default function Marquee({
   return (
     <div
       ref={wrapRef}
+      // Pause on hover and on keyboard focus inside the marquee so users who
+      // can't read at the auto-scroll speed can stop the motion (WCAG 2.2.2).
+      onPointerEnter={pause}
+      onPointerLeave={scheduleResume}
+      onFocus={pause}
+      onBlur={scheduleResume}
       className="relative w-full overflow-hidden py-8 border-y border-line select-none"
     >
       <motion.div

@@ -40,7 +40,7 @@ const SITE_DESC =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Toby Johnson · Graphic & Motion Designer · TJCreate",
+    default: "Graphic & Motion Designer · Toby Johnson · TJCreate",
     template: "%s · TJCreate",
   },
   description: SITE_DESC,
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "Toby Johnson · Graphic & Motion Designer",
+    title: "Graphic & Motion Designer · Toby Johnson",
     description: SITE_DESC,
     locale: "en_GB",
     // Images are auto-attached from src/app/opengraph-image.tsx —
@@ -84,7 +84,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Toby Johnson · Graphic & Motion Designer",
+    title: "Graphic & Motion Designer · Toby Johnson",
     description: SITE_DESC,
     // Twitter image is auto-attached from src/app/twitter-image.tsx.
   },

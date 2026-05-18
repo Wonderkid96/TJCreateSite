@@ -5,7 +5,7 @@ import OpengraphImage from "./opengraph-image";
 // build time; can't re-export from ./opengraph-image.
 export const runtime = "edge";
 export const alt =
-  "Toby Johnson · Graphic & Motion Designer · TJCreate";
+  "Graphic & Motion Designer · Toby Johnson · TJCreate";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

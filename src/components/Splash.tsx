@@ -44,9 +44,19 @@ export default function Splash() {
     import("@/components/Envelope3D");
     fetch("/fonts/optimer_bold.typeface.json", { priority: "low" } as RequestInit);
 
-    if (alreadySeen) {
+    // Users who have asked the OS for reduced motion get the splash skipped
+    // entirely (WCAG 2.3.3 / 2.2.1). The progress bar and fade are decorative,
+    // the site does not depend on them.
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (alreadySeen || prefersReducedMotion) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setVisible(false);
+      try {
+        sessionStorage.setItem(SESSION_KEY, "1");
+      } catch {}
       return;
     }
 

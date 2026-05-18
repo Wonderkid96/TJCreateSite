@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import ScrambleText from "./ScrambleText";
 import { useTheme } from "./ThemeProvider";
@@ -19,6 +19,7 @@ const LINKS = [
 export default function Nav() {
   const [time, setTime] = useState("");
   const [open, setOpen] = useState(false);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
 
   // Update the London time every 30 seconds.
   useEffect(() => {
@@ -37,11 +38,15 @@ export default function Nav() {
     return () => clearInterval(id);
   }, []);
 
-  // Close the mobile panel on Escape or anchor click.
+  // Close the mobile panel on Escape or anchor click. Returns focus to the
+  // hamburger so keyboard users do not lose context (WCAG 2.4.3).
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        hamburgerRef.current?.focus();
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -74,12 +79,13 @@ export default function Nav() {
         <div className="md:hidden flex items-center gap-3">
           <ThemeToggle />
           <button
+            ref={hamburgerRef}
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls="mobile-nav-panel"
             data-cursor="hover"
-            className="relative w-9 h-9 -mr-1 flex items-center justify-center"
+            className="relative w-9 h-9 -mr-1 flex items-center justify-center rounded-sm focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
             <span

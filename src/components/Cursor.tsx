@@ -62,9 +62,9 @@ export default function Cursor() {
     // Only run the RAF loop while the cursor is still catching up.
     // Stops itself once settled; mousemove wakes it again.
     const tick = () => {
-      // 45% per-frame lerp — tight follow (~2 frame tail).
-      lx += (tx - lx) * 0.45;
-      ly += (ty - ly) * 0.45;
+      // 72% per-frame lerp — still soft, but much closer to the pointer.
+      lx += (tx - lx) * 0.72;
+      ly += (ty - ly) * 0.72;
       wrap.style.transform = `translate3d(${lx}px, ${ly}px, 0)`;
       // Keep running until sub-pixel threshold is met, then stop.
       if (Math.abs(tx - lx) < 0.1 && Math.abs(ty - ly) < 0.1) {
@@ -154,7 +154,7 @@ export default function Cursor() {
           backgroundColor: "#f4f1e9",
           color: "#0a0a0a",
           transition:
-            "width 220ms cubic-bezier(.2,.8,.2,1), height 220ms cubic-bezier(.2,.8,.2,1)",
+            "width 140ms cubic-bezier(.2,.8,.2,1), height 140ms cubic-bezier(.2,.8,.2,1)",
         }}
       >
         <span

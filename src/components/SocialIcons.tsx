@@ -6,6 +6,8 @@
  * close).
  */
 
+import Image from "next/image";
+
 export const INSTAGRAM_URL = "https://instagram.com/tj.create";
 export const LINKEDIN_URL = "https://linkedin.com/in/tobyjohnsoncreate";
 export const BEHANCE_URL = "https://www.behance.net/tobyjohnson5";
@@ -48,7 +50,7 @@ export function LinkedInIcon({ size = 18 }: { size?: number }) {
 
 export function BehanceIcon({ size = 18 }: { size?: number }) {
   return (
-    <img
+    <Image
       src="/behance.webp"
       width={size}
       height={size}

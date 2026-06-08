@@ -75,7 +75,7 @@ export default function Contact() {
           Only mounted once the section is near the viewport so the R3F
           loop doesn't burn frames while the user is browsing further up
           the page. */}
-      <div className="absolute inset-x-0 top-0 h-[55%] pointer-events-none" aria-hidden>
+      <div className="absolute inset-x-0 top-0 h-[42%] pointer-events-none" aria-hidden>
         {showEnvelope && (
           <Suspense fallback={null}>
             <Envelope3D trackRef={sectionRef} />
@@ -100,27 +100,27 @@ export default function Contact() {
             transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
             className="font-display text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
           >
-            Let&apos;s <span className="italic">talk</span>
+            Email <span className="italic">me</span>
           </motion.h2>
         </div>
 
         <div className="hidden md:block font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 text-right max-w-[24ch]">
-          Let&apos;s make
+          Available for commissions,
           <br />
-          something!
+          campaigns and ongoing support
         </div>
       </div>
 
       <a
         href={`mailto:${CONTACT_EMAIL}`}
-        className="block group mt-10 md:mt-14"
+        className="block group mt-6 md:mt-10"
       >
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px 0px -20% 0px" }}
           transition={{ duration: 1, ease: [0.2, 0.8, 0.2, 1] }}
-          className="font-display text-[clamp(3rem,14vw,16rem)] leading-[0.85] tracking-tighter"
+          className="font-display text-[clamp(2.8rem,11vw,10rem)] leading-[0.86] tracking-tight"
         >
           <div className="overflow-hidden">
             <motion.span
@@ -298,4 +298,3 @@ export default function Contact() {
     </section>
   );
 }
-

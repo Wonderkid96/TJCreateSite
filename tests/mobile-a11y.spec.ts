@@ -53,7 +53,7 @@ test.describe("Mobile a11y + interaction fixes (audit/ecc-pass branch)", () => {
     // On a touch device, pointer:coarse should be true, and Envelope3D should skip mount
     if (pointerCoarse) {
       const threejsLoaded = await page.evaluate(() => {
-        return !!(window as any).THREE;
+        return !!(window as Window & { THREE?: unknown }).THREE;
       }).catch(() => false);
       expect(threejsLoaded).toBe(false);
     }

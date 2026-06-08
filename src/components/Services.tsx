@@ -30,7 +30,7 @@ export default function Services() {
             transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
             className="font-display text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
           >
-            What I <span className="italic">do</span>
+            Services
           </motion.h2>
         </div>
       </div>

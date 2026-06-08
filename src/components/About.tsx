@@ -1,14 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useScroll, useTransform, useMotionValue, useSpring, type MotionValue } from "motion/react";
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from "motion/react";
 import { useRef } from "react";
 import { SocialLinks } from "./SocialIcons";
 
 // ─── Copy ────────────────────────────────────────────────────────────────────
 
-const BIO =
-  "I'm Toby Johnson, a graphic and motion designer based in Lincoln, UK, working with record labels, artists, agencies and brands on campaign artwork, visual identity and motion graphics. Nearly 10 years in, I integrate quickly into teams and deliver work that's clear and effective.";
+const BIO_PRIMARY =
+  "I'm Toby Johnson, a graphic and motion designer based in Lincoln, UK. Most of my work sits around music, culture and brand campaigns, especially where print, motion and 3D need to feel like one system rather than separate jobs.";
+const BIO_SECONDARY =
+  "I like projects with a strong point of view, clear references and room to make the idea sharper. That can be a tour poster, a release campaign, a motion system or a visual identity that needs to hold together across formats.";
 
 // Shown in the stat grid below the bio.
 const STATS = [
@@ -26,20 +28,12 @@ export default function About() {
   const ref = useRef<HTMLElement>(null);
   const ruleRef = useRef<HTMLDivElement>(null);
 
-  // Scroll-driven word-by-word opacity reveal for the bio paragraph.
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 40%", "center center"],
-  });
-
   // The horizontal rule below the bio animates from 0 → full width.
   const { scrollYProgress: ruleProgress } = useScroll({
     target: ruleRef,
     offset: ["start 90%", "start 50%"],
   });
   const ruleScaleX = useTransform(ruleProgress, [0, 1], [0, 1]);
-
-  const words = BIO.split(" ");
 
   return (
     <section
@@ -61,12 +55,12 @@ export default function About() {
             transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
             className="font-display text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
           >
-            About <span className="italic">Me</span>
+            About <span className="italic">Toby</span>
           </motion.h2>
         </div>
 
         <div className="hidden md:block font-mono text-[11px] uppercase tracking-[0.2em] text-muted text-right">
-          Est. 2022
+          Lincoln, UK
         </div>
       </div>
 
@@ -77,18 +71,20 @@ export default function About() {
         </div>
 
         <div className="md:col-span-6 flex flex-col gap-10">
-          {/* Bio paragraph — each word fades in as you scroll */}
-          <p className="w-full lg:max-w-[28ch] font-display text-[clamp(1.45rem,3vw,2.8rem)] lg:text-[clamp(1.8rem,4.2vw,3.8rem)] leading-[1.15] tracking-tight">
-            {words.map((w, i) => {
-              const start = i / words.length;
-              const end = start + 1 / words.length;
-              return (
-                <Word key={i} progress={scrollYProgress} range={[start, end]}>
-                  {w}
-                </Word>
-              );
-            })}
-          </p>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px 0px -15% 0px" }}
+            transition={{ duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
+            className="flex flex-col gap-5"
+          >
+            <p className="w-full lg:max-w-[26ch] font-display text-[clamp(1.45rem,3vw,2.7rem)] lg:text-[clamp(1.8rem,4vw,3.4rem)] leading-[1.12] tracking-tight">
+              {BIO_PRIMARY}
+            </p>
+            <p className="max-w-[38rem] text-base md:text-lg leading-relaxed text-ink/72">
+              {BIO_SECONDARY}
+            </p>
+          </motion.div>
 
           {/* Animated rule + social links */}
           <div className="mt-8">
@@ -199,26 +195,5 @@ function PortraitTilt() {
         />
       </motion.div>
     </motion.div>
-  );
-}
-
-/** Single word in the scroll-driven bio reveal. */
-function Word({
-  progress,
-  range,
-  children,
-}: {
-  progress: MotionValue<number>;
-  range: [number, number];
-  children: React.ReactNode;
-}) {
-  const opacity = useTransform(progress, range, [0.18, 1]);
-  return (
-    <motion.span
-      style={{ opacity }}
-      className="bio-word inline-block mr-[0.25em] transition-[color,transform] duration-220 ease-[cubic-bezier(.2,.8,.2,1)]"
-    >
-      {children}
-    </motion.span>
   );
 }

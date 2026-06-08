@@ -18,7 +18,7 @@ import {
 
 const WORDS = ["Toby", "Johnson"];
 const SUB =
-  "Graphic + motion designer. Record labels, artists, and brands. Based in Lincoln.";
+  "Graphic and motion design for record labels, artists and brands. Campaign artwork, identity, motion and 3D, based in Lincoln and working remotely.";
 
 // Source image pixel dimensions expressed as width ÷ height.
 // Used by safeTranslate to derive the rendered layer height at any viewport width.
@@ -28,17 +28,14 @@ const CLOUD_ASPECT = 3269 / 8125; // cloud-long.avif: 3269 px wide × 8125 px ta
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const speedLinesRef = useRef<HTMLCanvasElement>(null);
-  const scrollVelRef      = useRef(0);   // smoothed velocity in px/s
+  const scrollVelRef      = useRef(0);   // smoothed absolute velocity in px/s
+  const scrollVelSignedRef = useRef(0);  // smoothed signed velocity in px/s
   const scrollRangeRef    = useRef(1);   // total hero scroll range in px (breakpoint-aware)
   const lastScrollEventRef = useRef(0);  // performance.now() of last scroll tick
   // Detect "mobile-ish" synchronously on first render so RAF-heavy effects
   // (speed lines, velocity tracking) can short-circuit before they ever
   // allocate. SSR returns false; the resize/MQ listener below corrects it.
-  const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
-  });
+  const [isMobile, setIsMobile] = useState(false);
   const isMobileRef       = useRef(isMobile);
   // Mirror state into a ref so non-React hot paths (canvas RAF closures
   // captured at mount) can read the latest value without re-binding.
@@ -58,8 +55,10 @@ export default function Hero() {
     preloadFallingFrames();
   }, []);
 
-  // rAF draw loop — paints the current target frame to canvas. Runs for
-  // the life of the component; cheap when idle (draws only on change).
+  // rAF draw loop — paints the current target frame to canvas. Rather than
+  // abstract "speed lines", fast scroll produces a velocity-driven smear on
+  // the body itself: a few vertically offset ghost passes plus a tiny blur on
+  // the live frame. The trail direction flips with scroll direction.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -67,22 +66,122 @@ export default function Hero() {
     if (!ctx) return;
     let raf = 0;
     let lastDrawn = -1;
-    const loop = () => {
+    let lastTrail = 0;
+    let drivenTrail = 0;
+    const TRAIL_SHOW = 360;
+    const TRAIL_FULL = 1850;
+
+    const loop = (ts: DOMHighResTimeStamp) => {
       raf = requestAnimationFrame(loop);
       const p = targetProgressRef.current;
       const idx = Math.min(
         FALLING_FRAME_COUNT - 1,
         Math.max(0, Math.floor(p * FALLING_FRAME_COUNT)),
       );
-      if (idx === lastDrawn) return;
       const img = getFallingFrame(p);
       // Paint whatever is loaded now — don't gate on full readiness. The
       // first frame is available almost instantly since it starts loading
       // at the top of the module; subsequent frames fill in as they arrive.
       if (!img || !img.complete || img.naturalWidth === 0) return;
+
+      if (ts - lastScrollEventRef.current > 80) scrollVelSignedRef.current = 0;
+      const rawSigned = scrollVelSignedRef.current;
+      drivenTrail += (rawSigned - drivenTrail) * (Math.abs(rawSigned) > Math.abs(drivenTrail) ? 0.28 : 0.16);
+
+      const trailT = Math.max(
+        0,
+        Math.min(1, (Math.abs(drivenTrail) - TRAIL_SHOW) / (TRAIL_FULL - TRAIL_SHOW)),
+      );
+      const trailPx = trailT * 34;
+
+      if (idx === lastDrawn && Math.abs(trailPx - lastTrail) < 0.35) return;
       lastDrawn = idx;
+      lastTrail = trailPx;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (trailT > 0.01) {
+        const dir = Math.sign(drivenTrail) || 1;
+        const ghostCount = 4;
+
+        for (let i = ghostCount; i >= 1; i--) {
+          const t = i / ghostCount;
+          const y = -dir * trailPx * t;
+          const stretch = 1 + t * 0.11 * trailT;
+          const alpha = 0.045 + t * 0.075 * trailT;
+
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.filter = `blur(${0.8 + t * 1.6}px) saturate(1.04)`;
+          ctx.translate(0, y - (canvas.height * (stretch - 1) * 0.5));
+          ctx.scale(1, stretch);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          ctx.restore();
+        }
+
+        // Velocity filaments — thin white shear lines that hug the figure
+        // rather than screen-wide streaks. Think condensation off an edge,
+        // driven by the body's movement through air.
+        ctx.save();
+        ctx.strokeStyle = "rgba(255,255,255,0.9)";
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.filter = `blur(${0.4 + trailT * 0.9}px)`;
+
+        const centerX = canvas.width * 0.5;
+        const centerY = canvas.height * 0.5;
+        const baseLen = 9 + trailPx * 0.95;
+        const sideOffset = canvas.width * 0.11;
+        const topOffset = canvas.height * 0.13;
+        const lowerOffset = canvas.height * 0.06;
+        const filamentSets = [
+          { x: centerX - sideOffset, y: centerY - topOffset, len: baseLen * 0.95, width: 0.9 + trailT * 0.45 },
+          { x: centerX + sideOffset, y: centerY - topOffset * 0.92, len: baseLen * 1.05, width: 0.85 + trailT * 0.4 },
+          { x: centerX - sideOffset * 0.62, y: centerY + lowerOffset, len: baseLen * 0.72, width: 0.7 + trailT * 0.35 },
+          { x: centerX + sideOffset * 0.66, y: centerY + lowerOffset * 1.05, len: baseLen * 0.76, width: 0.7 + trailT * 0.35 },
+        ];
+
+        filamentSets.forEach((filament, index) => {
+          const sway = (index % 2 === 0 ? -1 : 1) * trailT * 1.8;
+          const y0 = filament.y - dir * 2;
+          const y1 = filament.y - dir * filament.len;
+          const x0 = filament.x;
+          const x1 = filament.x + sway;
+          const gradient = ctx.createLinearGradient(x0, y0, x1, y1);
+          gradient.addColorStop(0, `rgba(255,255,255,${0.6 + trailT * 0.2})`);
+          gradient.addColorStop(0.35, `rgba(255,255,255,${0.3 + trailT * 0.2})`);
+          gradient.addColorStop(1, "rgba(255,255,255,0)");
+          ctx.beginPath();
+          ctx.moveTo(x0, y0);
+          ctx.lineTo(x1, y1);
+          ctx.strokeStyle = gradient;
+          ctx.lineWidth = filament.width;
+          ctx.stroke();
+        });
+
+        // A faint centre filament stops the effect reading as four detached
+        // strokes and helps tie it back into the body's spine.
+        const centerGrad = ctx.createLinearGradient(
+          centerX,
+          centerY - dir * 4,
+          centerX,
+          centerY - dir * (baseLen * 0.9),
+        );
+        centerGrad.addColorStop(0, `rgba(255,255,255,${0.34 + trailT * 0.16})`);
+        centerGrad.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY - dir * 4);
+        ctx.lineTo(centerX, centerY - dir * (baseLen * 0.9));
+        ctx.strokeStyle = centerGrad;
+        ctx.lineWidth = 0.6 + trailT * 0.3;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      ctx.save();
+      ctx.filter = trailT > 0.01 ? `blur(${trailT * 0.55}px)` : "none";
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
@@ -91,171 +190,29 @@ export default function Hero() {
   // Scroll progress (0 → 1 across the hero's sticky scroll range).
   const progress = useMotionValue(0);
 
-  // ── Speed lines — velocity tracking ─────────────────────────────────────
+  // ── Motion-trail velocity tracking ───────────────────────────────────────
   // Converts scroll progress/s → physical px/s using the live scroll range.
   // This makes thresholds consistent across all breakpoints: a 500 px/s scroll
   // always feels the same whether the hero is 260 vh (mobile) or 320 vh (lg).
-  // Skipped on mobile — speed lines are disabled there (see effect below).
   useEffect(() => {
-    if (isMobile) return;
-    let smoothVel = 0;
-    let lastP     = 0;
-    let lastT     = performance.now();
+    let smoothSigned = 0;
+    let lastP = 0;
+    let lastT = performance.now();
 
     const unsubscribe = progress.on("change", (p: number) => {
-      const now   = performance.now();
-      const dt    = Math.max(1, now - lastT);
-      const rawPx = (Math.abs(p - lastP) / (dt * 0.001)) * scrollRangeRef.current;
-      smoothVel = smoothVel < rawPx
-        ? smoothVel * 0.45 + rawPx * 0.55
-        : smoothVel * 0.88 + rawPx * 0.12;
-      scrollVelRef.current      = smoothVel;
-      lastScrollEventRef.current = now;   // stamp every scroll tick
+      const now = performance.now();
+      const dt = Math.max(1, now - lastT);
+      const rawSigned = ((p - lastP) / (dt * 0.001)) * scrollRangeRef.current;
+      smoothSigned += (rawSigned - smoothSigned) * (Math.abs(rawSigned) > Math.abs(smoothSigned) ? 0.55 : 0.14);
+      scrollVelSignedRef.current = smoothSigned;
+      scrollVelRef.current = Math.abs(smoothSigned);
+      lastScrollEventRef.current = now;
       lastP = p;
       lastT = now;
     });
 
     return unsubscribe;
-  }, [progress, isMobile]);
-
-  // Speed lines RAF — streaks that move UPWARD past the falling character.
-  // The character falls down, so from its frame of reference the environment
-  // rushes upward. Lines animate position each frame; speed and opacity are
-  // driven by scroll velocity so they only appear during fast scrolling.
-  //
-  // Disabled on mobile: a per-frame canvas RAF + 28 streak draws is enough
-  // GPU/CPU work to noticeably hurt scroll smoothness on lower-end phones,
-  // and fast-enough native scroll to actually trigger the streaks (>500 px/s)
-  // is rare on a touch device anyway.
-  useEffect(() => {
-    if (isMobile) return;
-    const canvas = speedLinesRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    // Pre-generate streak descriptors. Fixed per-line randomness keeps
-    // their x positions and proportions stable — only y animates.
-    const STREAK_COUNT = 28;
-    const hash = (n: number) => ((n * 2654435761) >>> 0) / 0xffffffff;
-    const streaks = Array.from({ length: STREAK_COUNT }, (_, i) => ({
-      xNorm:       (hash(i * 2)  - 0.5) * 0.9,
-      y:            hash(i * 5),
-      lenH:         0.04 + hash(i * 7)  * 0.09,   // shorter: 4–13 % of canvas h
-      tilt:        (hash(i * 11) - 0.5) * 0.07,
-      // Very thin — mix of hairlines (0.2 px) up to 0.85 px max
-      width:        0.2  + hash(i * 13) * 0.65,
-      alpha:        0.22 + hash(i * 17) * 0.52,
-      // Each streak travels at its own speed so they never look locked-step
-      speedMult:    0.55 + hash(i * 29) * 0.90,   // 0.55 – 1.45 ×
-      // Shimmer: independent sine wave per streak
-      flickPhase:   hash(i * 31) * Math.PI * 2,
-      flickFreq:    1.2  + hash(i * 37) * 3.5,    // 1.2 – 4.7 Hz
-    }));
-
-    // Sync canvas pixel size to CSS size.
-    const syncSize = () => {
-      const w = canvas.offsetWidth;
-      const h = canvas.offsetHeight;
-      if (canvas.width !== w || canvas.height !== h) {
-        canvas.width  = w;
-        canvas.height = h;
-      }
-    };
-    const ro = new ResizeObserver(syncSize);
-    ro.observe(canvas);
-    syncSize();
-
-    let raf      = 0;
-    let driven   = 0;  // display velocity in px/s, lags behind raw
-    let lastTs   = -1;
-
-    // Thresholds in physical pixels/second — consistent across all breakpoints.
-    // VEL_SHOW: minimum speed before any streak appears (~moderate fast scroll).
-    // VEL_FULL: speed at which streaks reach full opacity/length.
-    const VEL_SHOW = 500;
-    const VEL_FULL = 1800;
-
-    const loop = (ts: DOMHighResTimeStamp) => {
-      raf = requestAnimationFrame(loop);
-      const delta = lastTs < 0 ? 0.016 : Math.min(0.05, (ts - lastTs) / 1000);
-      lastTs = ts;
-
-      // If no scroll event has fired in the last 80 ms the user has stopped —
-      // hard-zero the source so driven decays all the way to nothing.
-      if (ts - lastScrollEventRef.current > 80) scrollVelRef.current = 0;
-
-      const raw = scrollVelRef.current;
-      // Fast attack (0.25) so lines appear immediately on fast scroll.
-      // Fast decay (0.18) so they vanish within ~0.3 s once scrolling stops.
-      driven += (raw - driven) * (driven < raw ? 0.25 : 0.18);
-
-      const w = canvas.width;
-      const h = canvas.height;
-      ctx.clearRect(0, 0, w, h);
-
-      // Hard floor at VEL_SHOW — nothing drawn below this speed.
-      const t = Math.max(0, Math.min(1, (driven - VEL_SHOW) / (VEL_FULL - VEL_SHOW)));
-      if (t < 0.01) return;
-
-      // Streak travel speed: directly proportional to scroll speed so
-      // the motion visually mirrors how fast the user is scrolling.
-      // At VEL_FULL, streaks cover ~55 % of screen height per second.
-      const pixPerSec = h * 0.55 * t;
-
-      // Narrower spread on mobile so streaks stay close to the character.
-      const xSpread = isMobileRef.current ? 0.32 : 0.46;
-
-      for (const s of streaks) {
-        // Each streak has its own speed so they never move in lockstep.
-        s.y -= (pixPerSec * delta * s.speedMult) / h;
-        if (s.y < -s.lenH) s.y = 1.0;
-
-        const cx  = w * 0.5;
-        const x   = cx + s.xNorm * w * xSpread;
-        const yPx = s.y * h;
-        const len = s.lenH * h;
-        const dx  = s.tilt * len;
-
-        const x0 = x - dx * 0.5, y0 = yPx;
-        const x1 = x + dx * 0.5, y1 = yPx + len;
-
-        // Subtle shimmer: each line pulses independently at its own frequency.
-        const flicker = 1.0 + Math.sin(ts * 0.001 * s.flickFreq + s.flickPhase) * 0.18;
-        const a = Math.min(1, t * s.alpha * flicker);
-
-        // Peaked (triangular) gradient — brightest at 35 % from head,
-        // tapers to nothing at both ends. Mimics a real light streak passing by.
-        const grd = ctx.createLinearGradient(x0, y0, x1, y1);
-        grd.addColorStop(0,    `rgba(255,255,255,0)`);
-        grd.addColorStop(0.35, `rgba(255,255,255,${a})`);
-        grd.addColorStop(1,    `rgba(255,255,255,0)`);
-
-        // Pass 1 — soft halo: 4× wider, ~12 % alpha. Gives the streak a
-        // gentle luminous glow without needing ctx.shadowBlur (which is slow).
-        ctx.beginPath();
-        ctx.moveTo(x0, y0);
-        ctx.lineTo(x1, y1);
-        ctx.strokeStyle = grd;
-        ctx.lineWidth   = s.width * 4;
-        ctx.globalAlpha = 0.12;
-        ctx.stroke();
-
-        // Pass 2 — sharp core: full alpha, hairline width.
-        ctx.lineWidth   = s.width;
-        ctx.globalAlpha = 1;
-        ctx.stroke();
-
-        ctx.globalAlpha = 1; // reset (safety)
-      }
-    };
-
-    raf = requestAnimationFrame(loop);
-    return () => {
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-    };
-  }, [isMobile]);
+  }, [progress]);
 
   useEffect(() => {
     const section = ref.current;
@@ -341,6 +298,16 @@ export default function Hero() {
     return () => mq.removeEventListener("change", sync);
   }, []);
 
+  // Scroll prompt — visible on first paint to nudge the user. Hides
+  // while they're actively moving, returns after 3s of stillness so the
+  // hint reappears if they pause without progressing. Permanently
+  // dismissed once 70% of the hero has been consumed (they've got it).
+  const [showScrollPrompt, setShowScrollPrompt] = useState(true);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const scrollPromptIdleRef = useRef<number | null>(null);
+  const scrollPromptDismissedRef = useRef(false);
+  const lastPromptProgressRef = useRef(0);
+
   // Scroll -> target progress. Actual draw happens in the rAF loop above
   // so we never paint more than once per frame regardless of scroll rate.
   // Doubles as the visibility driver for the scroll prompt: any meaningful
@@ -413,16 +380,6 @@ export default function Hero() {
   // All values below are progress thresholds in the range [0, 1] where:
   //   0   = hero scroll start (page top)
   //   1   = hero scroll end (section fully consumed, about to unpin)
-  //
-  // Scroll prompt — visible on first paint to nudge the user. Hides
-  // while they're actively moving, returns after 3s of stillness so the
-  // hint reappears if they pause without progressing. Permanently
-  // dismissed once 70% of the hero has been consumed (they've got it).
-  const [showScrollPrompt, setShowScrollPrompt] = useState(true);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const scrollPromptIdleRef = useRef<number | null>(null);
-  const scrollPromptDismissedRef = useRef(false);
-  const lastPromptProgressRef = useRef(0);
 
   // Detect prefers-reduced-motion so the descending arrow loop can be
   // swapped for a static glyph. Live-listens for system pref changes.
@@ -451,26 +408,26 @@ export default function Hero() {
   // at the end (parallax carry-through as the section unpins).
   const titleX = useTransform(
     progress,
-    [0,      0.18,  0.6,  1],
-    ["-30%", "0%", "1%", "2%"],
+    [0, 0.6, 1],
+    ["0%", "1%", "2%"],
   );
   const titleOpacity = useTransform(
     progress,
-    [0, 0.1,  0.92, 1],
-    [0,   1,    1,   0.9],
+    [0, 0.92, 1],
+    [1, 1, 0.9],
   );
 
   // Subtitle — same drift logic as the title but enters slightly later
   // (0.08 → 0.25) to create a natural stagger between headline and sub-text.
   const subX = useTransform(
     progress,
-    [0,      0.22,  0.6,  1],
-    ["-20%", "0%", "1%", "2%"],
+    [0, 0.6, 1],
+    ["0%", "1%", "2%"],
   );
   const subOpacity = useTransform(
     progress,
-    [0.08, 0.25, 0.92, 1],
-    [0,      1,    1,   0.9],
+    [0, 0.92, 1],
+    [1, 1, 0.9],
   );
 
   return (
@@ -542,21 +499,9 @@ export default function Hero() {
           style={{ scale: fallingScale }}
           className="absolute inset-0 flex items-center justify-center pointer-events-none will-change-transform"
         >
-          {/* Speed lines — radial manga streaks, opacity driven by scroll velocity.
-              Desktop only: the streaks need fast scroll velocity to even
-              show up, and the canvas + mix-blend-mode adds compositing
-              cost we'd rather avoid on mobile scroll. */}
-          {!isMobile && (
-            <canvas
-              ref={speedLinesRef}
-              className="absolute inset-0 w-full h-full"
-              style={{ mixBlendMode: "screen" }}
-              aria-hidden
-            />
-          )}
-
           {/* Falling man — canvas driven by rAF draws of pre-decoded
-              ImageBitmaps. See src/lib/falling-frames.ts. */}
+              ImageBitmaps. Fast scroll adds a velocity-driven smear to
+              the body itself instead of decorative screen-wide streaks. */}
           <canvas
             ref={canvasRef}
             width={FALLING_FRAME_WIDTH}
@@ -660,7 +605,7 @@ export default function Hero() {
             // benefit, so drop the blend mode there. A faint cream
             // text-shadow restores readability over the busy cloud layer.
             className={
-              "font-display hero-line text-[clamp(2.2rem,8.8vw,4.8rem)] md:text-[clamp(2.6rem,10vw,11rem)] tracking-[-0.035em] -ml-[0.02em] text-ink" +
+              "font-display hero-line text-[clamp(2.2rem,8.8vw,4.8rem)] md:text-[clamp(2.6rem,10vw,11rem)] tracking-[-0.025em] md:tracking-[-0.035em] text-ink" +
               (isMobile ? "" : " mix-blend-multiply")
             }
             style={isMobile ? { textShadow: "0 1px 14px rgba(244,241,233,0.45)" } : undefined}
@@ -688,8 +633,8 @@ export default function Hero() {
             </p>
 
             <div className="flex flex-wrap gap-2.5 md:gap-3">
-              <HeroButton href="#work" label="Portfolio." />
-              <HeroButton href="#contact" label="Contact." variant="outline" />
+              <HeroButton href="#work" label="View work" />
+              <HeroButton href="#contact" label="Email me" variant="outline" />
             </div>
           </motion.div>
         </motion.div>

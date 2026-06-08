@@ -31,14 +31,14 @@ export default function WorkGrid() {
             transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
             className="font-display text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
           >
-            My <span className="italic">work</span>
+            Selected <span className="italic">work</span>
           </motion.h2>
         </div>
 
         <div className="hidden md:block font-mono text-[10px] lg:text-[11px] uppercase tracking-[0.12em] lg:tracking-[0.2em] text-muted whitespace-nowrap text-right">
           Print · Identity · Motion · 3D
           <br />
-          {String(PROJECTS.length).padStart(2, "0")} selected · 2024–26
+          {String(PROJECTS.length).padStart(2, "0")} projects · 2021-26
         </div>
       </div>
 

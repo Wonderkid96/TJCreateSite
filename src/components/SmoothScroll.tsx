@@ -16,15 +16,13 @@ export default function SmoothScroll() {
       return;
     }
 
-    // Unified smooth scroll across every breakpoint + input type.
-    // `syncTouch` makes touch gestures feel continuous with the scroll,
-    // avoiding the jolt between native momentum and scroll-driven animations.
+    // Desktop only: keep a little smoothing, but make it feel much closer
+    // to native input so the page tracks the wheel immediately.
     const lenis = new Lenis({
-      duration: 1.0,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      duration: 0.55,
+      easing: (t) => 1 - Math.pow(1 - t, 3),
       smoothWheel: true,
-      syncTouch: true,
-      syncTouchLerp: 0.08,
+      syncTouch: false,
       wheelMultiplier: 1,
       touchMultiplier: 1,
     });

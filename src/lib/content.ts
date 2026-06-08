@@ -349,7 +349,7 @@ export const SERVICES = [
     num: "01",
     title: "Graphic Design",
     blurb:
-      "Identity systems, editorial, packaging, merch, and posters. Built to last longer than a trend cycle.",
+      "Identity, print, packaging and artwork systems that still feel right after the campaign rush has passed.",
     items: [
       "Visual identity",
       "Editorial + print",
@@ -361,7 +361,7 @@ export const SERVICES = [
     num: "02",
     title: "Motion Graphics",
     blurb:
-      "Title sequences, lyric videos, and social content. Motion that serves the idea, never decorates it.",
+      "Lyric videos, visualisers, titles and short-form motion, built to carry the same idea as the still work.",
     items: [
       "Title sequences",
       "Lyric videos",
@@ -373,7 +373,7 @@ export const SERVICES = [
     num: "03",
     title: "3D Design",
     blurb:
-      "Texture, depth, dimension. Product visualisation, campaign imagery, and concept work rendered with intent.",
+      "3D for campaign imagery, product shots and concept work, used when a flat treatment is not enough.",
     items: [
       "Product renders",
       "Type / scene design",

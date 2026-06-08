@@ -204,11 +204,6 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* Preload the hero background images so the LCP candidate
-            (the visible sky + cloud layers behind the falling man)
-            paints without waiting on the Hero CSS chain to resolve. */}
-        <link rel="preload" href="/work/imported/bg/sky-long.avif" as="image" type="image/avif" />
-        <link rel="preload" href="/work/imported/bg/cloud-long.avif" as="image" type="image/avif" />
         {/* Preload the 3D @ typeface so it's ready before the user reaches Contact. */}
         <link rel="preload" href="/fonts/optimer_bold.typeface.json" as="fetch" crossOrigin="anonymous" />
         {/* Apply saved theme before paint to avoid a flash of the wrong colours. */}

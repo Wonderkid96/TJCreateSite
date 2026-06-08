@@ -18,8 +18,8 @@ export default function Home() {
       />
       <WorkGrid />
       <Services />
-      <LogoMarquee items={CLIENTS_WITH_LOGOS} />
       <About />
+      <LogoMarquee items={CLIENTS_WITH_LOGOS} />
       <Contact />
     </main>
   );

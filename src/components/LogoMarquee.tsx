@@ -27,11 +27,11 @@ const HOVER_COLOURS = ["#E6352A", "#C8DB45", "#C4A9D0"] as const;
 // "strong" = crisp ink (recommended), "muted" = softer look.
 const LOGO_TONE: "strong" | "muted" = "strong";
 
-const CONTAINER_H_CLASS = "h-40 md:h-48";
-// Each slot sits at 75% of the container height, uniform width, generous gap
-// between them so logos breathe.
+const CONTAINER_H_CLASS = "h-32 md:h-40";
+// Slightly smaller than before so the strip reads as supporting proof rather
+// than competing with the main sections.
 const SLOT_CLASS =
-  "shrink-0 flex items-center justify-center h-[75%] w-40 md:w-48";
+  "shrink-0 flex items-center justify-center h-[68%] w-36 md:w-44";
 
 export default function LogoMarquee({ items, speed = "normal" }: Props) {
   const row = [...items, ...items];
@@ -119,7 +119,7 @@ export default function LogoMarquee({ items, speed = "normal" }: Props) {
           scheduleResume();
         }}
         style={{ x }}
-        className="flex items-center gap-16 md:gap-24 whitespace-nowrap cursor-grab active:cursor-grabbing will-change-transform h-full"
+        className="flex items-center gap-14 md:gap-20 whitespace-nowrap cursor-grab active:cursor-grabbing will-change-transform h-full"
       >
         {row.map((item, i) => (
           <LogoSlot key={`${item.name}-${i}`} item={item} isPaused={paused} />

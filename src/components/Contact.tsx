@@ -90,9 +90,6 @@ export default function Contact() {
       {/* Section header */}
       <div className="flex items-end justify-between mb-12 md:mb-16">
         <div>
-          <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 mb-4">
-            [ 04 / Contact ]
-          </div>
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}

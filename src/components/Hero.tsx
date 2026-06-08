@@ -99,23 +99,35 @@ export default function Hero() {
 
     const drawEdgeStroke = (
       image: HTMLImageElement,
-      strength = 0.2,
-      insetPx = 0.55,
+      strength = 0.18,
     ) => {
-      // Reinforce the existing white contour right on the alpha edge. This is
-      // not a true outer stroke — it slightly contracts the silhouette, then
-      // redraws a faint white version so the baked matte reads cleaner.
+      // Rebuild the white contour from tiny sub-pixel halo passes rather than
+      // trusting the baked frame edge. This smooths the highlight without
+      // drawing a chunky new outer stroke.
+      const passes = [
+        { dx: -0.45, dy: 0, alpha: 0.18 },
+        { dx: 0.45, dy: 0, alpha: 0.18 },
+        { dx: 0, dy: -0.45, alpha: 0.16 },
+        { dx: 0, dy: 0.45, alpha: 0.16 },
+        { dx: -0.35, dy: -0.35, alpha: 0.11 },
+        { dx: 0.35, dy: -0.35, alpha: 0.11 },
+        { dx: -0.35, dy: 0.35, alpha: 0.11 },
+        { dx: 0.35, dy: 0.35, alpha: 0.11 },
+      ];
+
       ctx.save();
-      ctx.globalAlpha = strength;
-      ctx.globalCompositeOperation = "source-over";
-      ctx.filter = "blur(0.35px)";
-      ctx.drawImage(
-        image,
-        insetPx,
-        insetPx,
-        canvas.width - insetPx * 2,
-        canvas.height - insetPx * 2,
-      );
+      ctx.globalCompositeOperation = "screen";
+      ctx.filter = "blur(0.45px)";
+      for (const pass of passes) {
+        ctx.globalAlpha = strength * pass.alpha;
+        ctx.drawImage(
+          image,
+          pass.dx,
+          pass.dy,
+          canvas.width,
+          canvas.height,
+        );
+      }
       ctx.restore();
     };
 
@@ -277,7 +289,7 @@ export default function Hero() {
       ctx.save();
       ctx.filter = "none";
       drawFeatheredFrame(img, 0.68, 0.82);
-      drawEdgeStroke(img, 0.16, 0.5);
+      drawEdgeStroke(img, 0.16);
       ctx.restore();
     };
     raf = requestAnimationFrame(loop);

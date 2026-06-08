@@ -20,9 +20,6 @@ export default function Services() {
     >
       <div className="flex items-end justify-between mb-16 md:mb-24">
         <div>
-          <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 mb-4">
-            [ 02 / Services ]
-          </div>
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}

@@ -21,9 +21,6 @@ export default function WorkGrid() {
     >
       <div className="mb-16 md:mb-24 flex items-end justify-between">
         <div>
-          <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted mb-4">
-            [ 01 / My Work ]
-          </div>
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}

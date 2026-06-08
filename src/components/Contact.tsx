@@ -69,13 +69,13 @@ export default function Contact() {
           "--ink": "#0a0a0a",
         } as React.CSSProperties
       }
-      className="relative px-6 md:px-10 pt-24 md:pt-32 pb-24 md:pb-32 bg-ink text-paper overflow-hidden"
+      className="relative px-6 md:px-10 pt-20 md:pt-24 pb-20 md:pb-24 bg-ink text-paper overflow-hidden"
     >
       {/* 3D @ — covers top 55% of section only, fades out before content below.
           Only mounted once the section is near the viewport so the R3F
           loop doesn't burn frames while the user is browsing further up
           the page. */}
-      <div className="absolute inset-x-0 top-0 h-[42%] pointer-events-none" aria-hidden>
+      <div className="absolute inset-x-0 top-0 h-[54%] pointer-events-none" aria-hidden>
         {showEnvelope && (
           <Suspense fallback={null}>
             <Envelope3D trackRef={sectionRef} />
@@ -88,7 +88,7 @@ export default function Contact() {
       <div data-cursor="view" data-cursor-label="EMAIL" className="relative z-10">
 
       {/* Section header */}
-      <div className="flex items-end justify-between mb-16 md:mb-24">
+      <div className="flex items-end justify-between mb-12 md:mb-16">
         <div>
           <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 mb-4">
             [ 04 / Contact ]
@@ -113,14 +113,14 @@ export default function Contact() {
 
       <a
         href={`mailto:${CONTACT_EMAIL}`}
-        className="block group mt-6 md:mt-10"
+        className="block group mt-3 md:mt-5"
       >
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px 0px -20% 0px" }}
           transition={{ duration: 1, ease: [0.2, 0.8, 0.2, 1] }}
-          className="font-display text-[clamp(2.8rem,11vw,10rem)] leading-[0.86] tracking-tight"
+          className="font-display text-[clamp(2.8rem,11vw,9rem)] leading-[0.86] tracking-tight"
         >
           <div className="overflow-hidden">
             <motion.span
@@ -163,7 +163,7 @@ export default function Contact() {
       {/* Grid, legal and footer — default cursor from here down */}
       <div className="relative z-10">
 
-      <div className="mt-24 grid grid-cols-1 md:grid-cols-2 gap-10 border-t border-paper/20 pt-10">
+      <div className="mt-14 md:mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-paper/20 pt-8">
         <div>
           <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50 mb-2">
             Email
@@ -184,7 +184,7 @@ export default function Contact() {
         </div>
       </div>
 
-      <div className="mt-20 md:mt-24 border-t border-paper/20 pt-10 md:pt-12">
+      <div className="mt-14 md:mt-16 border-t border-paper/20 pt-8 md:pt-10">
         <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 mb-5">
           Legal
         </div>
@@ -290,7 +290,7 @@ export default function Contact() {
 
       <footer
         aria-label="Site footer"
-        className="relative z-10 mt-24 flex items-end justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50"
+        className="relative z-10 mt-16 md:mt-18 flex items-end justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50"
       >
         <div>© Toby Johnson, 2026</div>
         <div>Made in Lincoln</div>

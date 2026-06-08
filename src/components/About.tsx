@@ -40,7 +40,7 @@ export default function About() {
       id="about"
       aria-label="About Toby Johnson"
       ref={ref}
-      className="relative px-6 md:px-10 py-24 md:py-40"
+      className="relative px-6 md:px-10 pt-24 md:pt-40 pb-16 md:pb-20"
     >
       {/* Section header */}
       <div className="flex items-end justify-between mb-16 md:mb-24">
@@ -103,7 +103,7 @@ export default function About() {
       </div>
 
       {/* Stat grid */}
-      <div className="mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-line pt-10 md:pt-12">
+      <div className="mt-10 md:mt-12 grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6 border-t border-line pt-7 md:pt-8">
         {STATS.map((item, index) => (
           <div
             key={item.k}

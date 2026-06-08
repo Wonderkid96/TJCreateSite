@@ -64,12 +64,60 @@ export default function Hero() {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
     let raf = 0;
     let lastDrawn = -1;
     let lastTrail = 0;
     let drivenTrail = 0;
     const TRAIL_SHOW = 360;
     const TRAIL_FULL = 1850;
+
+    const drawFeatheredFrame = (
+      image: HTMLImageElement,
+      blurPx = 0.75,
+      chokePx = 0.9,
+    ) => {
+      // Base draw.
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      // Gentle matte cleanup: slightly contract the alpha, then blur the mask
+      // a fraction so the white fringe and stair-stepping on the cutout edge
+      // do not read as harsh pixels at large desktop sizes.
+      ctx.save();
+      ctx.globalCompositeOperation = "destination-in";
+      ctx.filter = `blur(${blurPx}px)`;
+      ctx.drawImage(
+        image,
+        chokePx,
+        chokePx,
+        canvas.width - chokePx * 2,
+        canvas.height - chokePx * 2,
+      );
+      ctx.restore();
+    };
+
+    const drawEdgeStroke = (
+      image: HTMLImageElement,
+      strength = 0.2,
+      insetPx = 0.55,
+    ) => {
+      // Reinforce the existing white contour right on the alpha edge. This is
+      // not a true outer stroke — it slightly contracts the silhouette, then
+      // redraws a faint white version so the baked matte reads cleaner.
+      ctx.save();
+      ctx.globalAlpha = strength;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.filter = "blur(0.35px)";
+      ctx.drawImage(
+        image,
+        insetPx,
+        insetPx,
+        canvas.width - insetPx * 2,
+        canvas.height - insetPx * 2,
+      );
+      ctx.restore();
+    };
 
     const loop = (ts: DOMHighResTimeStamp) => {
       raf = requestAnimationFrame(loop);
@@ -104,6 +152,54 @@ export default function Hero() {
         const dir = Math.sign(drivenTrail) || 1;
         const ghostCount = 4;
 
+        // Sky wake — keeps the sense of speed in the background under the
+        // body instead of smearing the figure itself.
+        ctx.save();
+        ctx.globalCompositeOperation = "screen";
+        ctx.filter = `blur(${8 + trailT * 14}px)`;
+        const wakeCenterX = canvas.width * 0.5;
+        const wakeTop = canvas.height * 0.44;
+        const wakeLen = 38 + trailPx * 2.1;
+        const wakeWidth = canvas.width * (0.08 + trailT * 0.05);
+        const wake = ctx.createLinearGradient(
+          wakeCenterX,
+          wakeTop,
+          wakeCenterX,
+          wakeTop + wakeLen,
+        );
+        wake.addColorStop(0, "rgba(255,255,255,0)");
+        wake.addColorStop(0.22, `rgba(255,255,255,${0.04 + trailT * 0.06})`);
+        wake.addColorStop(0.55, `rgba(190,235,255,${0.06 + trailT * 0.08})`);
+        wake.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = wake;
+        ctx.fillRect(
+          wakeCenterX - wakeWidth * 0.5,
+          wakeTop,
+          wakeWidth,
+          wakeLen,
+        );
+
+        const sideWakeOffset = canvas.width * 0.08;
+        for (const side of [-1, 1]) {
+          const sideWake = ctx.createLinearGradient(
+            wakeCenterX + side * sideWakeOffset,
+            wakeTop + 10,
+            wakeCenterX + side * sideWakeOffset,
+            wakeTop + wakeLen * 0.92,
+          );
+          sideWake.addColorStop(0, "rgba(255,255,255,0)");
+          sideWake.addColorStop(0.35, `rgba(180,225,255,${0.035 + trailT * 0.05})`);
+          sideWake.addColorStop(1, "rgba(255,255,255,0)");
+          ctx.fillStyle = sideWake;
+          ctx.fillRect(
+            wakeCenterX + side * sideWakeOffset - wakeWidth * 0.22,
+            wakeTop + 6,
+            wakeWidth * 0.44,
+            wakeLen * 0.92,
+          );
+        }
+        ctx.restore();
+
         for (let i = ghostCount; i >= 1; i--) {
           const t = i / ghostCount;
           const y = -dir * trailPx * t;
@@ -115,7 +211,7 @@ export default function Hero() {
           ctx.filter = `blur(${0.8 + t * 1.6}px) saturate(1.04)`;
           ctx.translate(0, y - (canvas.height * (stretch - 1) * 0.5));
           ctx.scale(1, stretch);
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          drawFeatheredFrame(img, 0.9, 1.1);
           ctx.restore();
         }
 
@@ -179,8 +275,9 @@ export default function Hero() {
       }
 
       ctx.save();
-      ctx.filter = trailT > 0.01 ? `blur(${trailT * 0.55}px)` : "none";
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      ctx.filter = "none";
+      drawFeatheredFrame(img, 0.68, 0.82);
+      drawEdgeStroke(img, 0.16, 0.5);
       ctx.restore();
     };
     raf = requestAnimationFrame(loop);

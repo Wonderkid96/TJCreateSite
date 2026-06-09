@@ -65,7 +65,7 @@ export default function Contact() {
       // against a permanent dark background.
       style={
         {
-          "--paper": "#f4f1e9",
+          "--paper": "#fffdf8",
           "--ink": "#0a0a0a",
         } as React.CSSProperties
       }

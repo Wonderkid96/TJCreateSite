@@ -151,7 +151,7 @@ export default function Cursor() {
           height: 14,
           // Pinned to cream regardless of theme. Combined with mix-blend-difference
           // on the wrapper this inverts visibly on both light + dark backgrounds.
-          backgroundColor: "#f4f1e9",
+          backgroundColor: "#fffdf8",
           color: "#0a0a0a",
           transition:
             "width 140ms cubic-bezier(.2,.8,.2,1), height 140ms cubic-bezier(.2,.8,.2,1)",

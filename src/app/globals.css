@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #f4f1e9;
+  --paper: #fffdf8;
   --ink: #0a0a0a;
   --ink-soft: #1a1a1a;
   --muted: #6b645a;
@@ -13,10 +13,10 @@
 
 :root[data-theme="dark"] {
   --paper: #0a0a0a;
-  --ink: #f4f1e9;
+  --ink: #fffdf8;
   --ink-soft: #e8e4d9;
   --muted: #8a8378;
-  --line: rgba(244, 241, 233, 0.14);
+  --line: rgba(255, 253, 248, 0.14);
 }
 
 html,

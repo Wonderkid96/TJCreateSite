@@ -549,7 +549,7 @@ export default function Hero() {
       style={
         {
           "--ink": "#0a0a0a",
-          "--paper": "#f4f1e9",
+          "--paper": "#fffdf8",
         } as React.CSSProperties
       }
       className="relative w-full h-[260vh] sm:h-[280vh] md:h-[300vh] lg:h-[320vh] bg-[#c9d8e2]"
@@ -717,7 +717,7 @@ export default function Hero() {
               "font-display hero-line text-[clamp(2.2rem,8.8vw,4.8rem)] md:text-[clamp(2.6rem,10vw,11rem)] tracking-[-0.025em] md:tracking-[-0.035em] text-ink" +
               (isMobile ? "" : " mix-blend-multiply")
             }
-            style={isMobile ? { textShadow: "0 1px 14px rgba(244,241,233,0.45)" } : undefined}
+            style={isMobile ? { textShadow: "0 1px 14px rgba(255,253,248,0.45)" } : undefined}
           >
             {WORDS.map((w) => (
               <span key={w} className="block">

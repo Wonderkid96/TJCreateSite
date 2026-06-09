@@ -23,7 +23,7 @@ export default async function OpengraphImage() {
         style={{
           width: "100%",
           height: "100%",
-          background: "#f4f1e9",
+          background: "#fffdf8",
           color: "#0a0a0a",
           padding: 72,
           display: "flex",

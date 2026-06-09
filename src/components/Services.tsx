@@ -11,10 +11,10 @@ export default function Services() {
       className="relative px-6 md:px-10 py-24 md:py-40 bg-ink text-paper"
       style={
         {
-          "--paper": "#f4f1e9",
+          "--paper": "#fffdf8",
           "--ink": "#0a0a0a",
           "--muted": "#8a8378",
-          "--line": "rgba(244, 241, 233, 0.14)",
+          "--line": "rgba(255, 253, 248, 0.14)",
         } as React.CSSProperties
       }
     >
@@ -48,7 +48,7 @@ export default function Services() {
               className="absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)]"
               style={{
                 background:
-                  "linear-gradient(90deg, #E6352A 0%, #F4F1E9 38%, #C8DB45 68%, #C4A9D0 100%)",
+                  "linear-gradient(90deg, #E6352A 0%, #FFFDF8 38%, #C8DB45 68%, #C4A9D0 100%)",
               }}
             />
             {/* Inner content fades + slides in — outer card bg stays solid */}

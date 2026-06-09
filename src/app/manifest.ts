@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "Graphic and motion designer working with record labels, artists, and ambitious brands.",
     start_url: "/",
     display: "standalone",
-    background_color: "#f4f1e9",
-    theme_color: "#f4f1e9",
+    background_color: "#fffdf8",
+    theme_color: "#fffdf8",
     icons: [
       { src: "/icon.svg", sizes: "any", type: "image/svg+xml" },
       { src: "/apple-icon.png", sizes: "180x180", type: "image/png" },

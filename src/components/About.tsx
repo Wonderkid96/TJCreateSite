@@ -91,7 +91,7 @@ export default function About() {
               style={{
                 scaleX: ruleScaleX,
                 background:
-                  "linear-gradient(90deg, #E6352A 0%, #F4F1E9 38%, #C8DB45 68%, #C4A9D0 100%)",
+                  "linear-gradient(90deg, #E6352A 0%, #FFFDF8 38%, #C8DB45 68%, #C4A9D0 100%)",
               }}
             />
             <SocialLinks size={22} tone="ink" className="mt-5" />

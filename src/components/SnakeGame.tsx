@@ -103,7 +103,7 @@ export default function SnakeGame({ active }: { active: boolean }) {
     ctx.fillRect(0, 0, w, h);
 
     // Grid lines — barely-there for a playfield feel.
-    ctx.strokeStyle = "rgba(244,241,233,0.05)";
+    ctx.strokeStyle = "rgba(255,253,248,0.05)";
     ctx.lineWidth = 1;
     for (let i = 1; i < COLS; i++) {
       ctx.beginPath();
@@ -135,8 +135,8 @@ export default function SnakeGame({ active }: { active: boolean }) {
       const s = snake[i];
       const alpha = Math.max(0.45, 0.95 - i * 0.025);
       ctx.fillStyle = i === 0
-        ? "#f4f1e9"
-        : `rgba(244,241,233,${alpha})`;
+        ? "#fffdf8"
+        : `rgba(255,253,248,${alpha})`;
       ctx.fillRect(
         s.x * cellW + pad,
         s.y * cellH + pad,

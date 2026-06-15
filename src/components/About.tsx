@@ -9,7 +9,7 @@ import { SocialLinks } from "./SocialIcons";
 // ─── Copy ────────────────────────────────────────────────────────────────────
 
 const BIO_PRIMARY =
-  "I'm Toby Johnson, a graphic and motion designer making campaign worlds for music, culture and brands.";
+  "I'm Toby Johnson, a graphic and motion designer building strategic visuals for the music, culture and brand industries.";
 const BIO_SECONDARY =
   "Artwork, posters, motion, 3D, socials, release campaigns, tour assets. I pull the pieces together so the whole thing feels intentional, not stitched together at the end.";
 const BIO_TERTIARY =

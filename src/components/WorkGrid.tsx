@@ -5,6 +5,7 @@ import { useState } from "react";
 import { PROJECTS, type Project } from "@/lib/content";
 import ProjectTile from "./ProjectTile";
 import ProjectModal from "./ProjectModal";
+import SectionTitle from "./SectionTitle";
 
 // Parallax strength (px) for each tile's inner media layer.
 // Controls how far the background image shifts as the tile scrolls in/out of view.
@@ -21,15 +22,9 @@ export default function WorkGrid() {
     >
       <div className="mb-16 md:mb-24 flex items-end justify-between">
         <div>
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "0px 0px -20% 0px" }}
-            transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
-            className="font-display text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
-          >
+          <SectionTitle>
             Selected <span className="italic">work</span>
-          </motion.h2>
+          </SectionTitle>
         </div>
 
         <div className="hidden md:block font-mono text-[10px] lg:text-[11px] uppercase tracking-[0.12em] lg:tracking-[0.2em] text-muted whitespace-nowrap text-right">

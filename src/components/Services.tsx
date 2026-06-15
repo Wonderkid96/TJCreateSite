@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { SERVICES } from "@/lib/content";
+import SectionTitle from "./SectionTitle";
 
 export default function Services() {
   return (
@@ -20,15 +21,7 @@ export default function Services() {
     >
       <div className="flex items-end justify-between mb-16 md:mb-24">
         <div>
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "0px 0px -20% 0px" }}
-            transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
-            className="font-display text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
-          >
-            Services
-          </motion.h2>
+          <SectionTitle>Services</SectionTitle>
         </div>
       </div>
 
@@ -47,8 +40,7 @@ export default function Services() {
             <div
               className="absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)]"
               style={{
-                background:
-                  "linear-gradient(90deg, #E6352A 0%, #FFFDF8 38%, #C8DB45 68%, #C4A9D0 100%)",
+                background: "var(--spectrum)",
               }}
             />
             {/* Inner content fades + slides in — outer card bg stays solid */}

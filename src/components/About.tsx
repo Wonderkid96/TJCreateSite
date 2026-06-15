@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "motion/react";
+import SectionTitle from "./SectionTitle";
 import { useRef } from "react";
 import { SocialLinks } from "./SocialIcons";
 
@@ -45,15 +46,9 @@ export default function About() {
       {/* Section header */}
       <div className="flex items-end justify-between mb-16 md:mb-24">
         <div>
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "0px 0px -20% 0px" }}
-            transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
-            className="font-display text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
-          >
+          <SectionTitle>
             About <span className="italic">Toby</span>
-          </motion.h2>
+          </SectionTitle>
         </div>
 
         <div className="hidden md:block font-mono text-[11px] uppercase tracking-[0.2em] text-muted text-right">
@@ -90,8 +85,7 @@ export default function About() {
               className="h-[2px] w-full rounded-full origin-left"
               style={{
                 scaleX: ruleScaleX,
-                background:
-                  "linear-gradient(90deg, #E6352A 0%, #FFFDF8 38%, #C8DB45 68%, #C4A9D0 100%)",
+                background: "var(--spectrum)",
               }}
             />
             <SocialLinks size={22} tone="ink" className="mt-5" />
@@ -132,11 +126,11 @@ export default function About() {
                 <span aria-hidden className="relative inline-flex h-2.5 w-2.5 shrink-0">
                   <span
                     className="absolute inset-0 rounded-full opacity-70 animate-ping"
-                    style={{ backgroundColor: "#80EF80" }}
+                    style={{ backgroundColor: "var(--signal)" }}
                   />
                   <span
                     className="relative inline-block rounded-full h-2.5 w-2.5"
-                    style={{ backgroundColor: "#80EF80" }}
+                    style={{ backgroundColor: "var(--signal)" }}
                   />
                 </span>
               )}

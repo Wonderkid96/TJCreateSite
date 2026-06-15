@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import SectionTitle from "./SectionTitle";
 import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import SnakeGame from "./SnakeGame";
 import { SocialLinks } from "./SocialIcons";
@@ -90,15 +91,9 @@ export default function Contact() {
       {/* Section header */}
       <div className="flex items-end justify-between mb-12 md:mb-16">
         <div>
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "0px 0px -20% 0px" }}
-            transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
-            className="font-display text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] tracking-tight"
-          >
+          <SectionTitle>
             Email <span className="italic">me</span>
-          </motion.h2>
+          </SectionTitle>
         </div>
 
         <div className="hidden md:block font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60 text-right max-w-[24ch]">

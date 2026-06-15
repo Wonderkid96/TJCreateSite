@@ -9,6 +9,8 @@
   --lime: #c8db45;
   --lilac: #c4a9d0;
   --line: rgba(10, 10, 10, 0.12);
+  --signal: #80ef80;
+  --spectrum: linear-gradient(90deg, #e6352a 0%, #fffdf8 38%, #c8db45 68%, #c4a9d0 100%);
 }
 
 :root[data-theme="dark"] {
@@ -34,6 +36,7 @@ body {
   --color-lime: var(--lime);
   --color-lilac: var(--lilac);
   --color-line: var(--line);
+  --color-signal: var(--signal);
   --font-display: var(--font-display);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);

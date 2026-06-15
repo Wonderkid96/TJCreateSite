@@ -172,11 +172,11 @@ function AvailabilityChip({ time, onClick }: { time: string; onClick?: () => voi
       <span aria-hidden className="relative inline-flex h-1.5 w-1.5 shrink-0">
         <span
           className="absolute inset-0 rounded-full opacity-70 animate-ping"
-          style={{ backgroundColor: "#80EF80" }}
+          style={{ backgroundColor: "var(--signal)" }}
         />
         <span
           className="relative inline-block rounded-full h-1.5 w-1.5"
-          style={{ backgroundColor: "#80EF80" }}
+          style={{ backgroundColor: "var(--signal)" }}
         />
       </span>
       <span className="tabular-nums">{time}</span>

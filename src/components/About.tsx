@@ -9,9 +9,11 @@ import { SocialLinks } from "./SocialIcons";
 // ─── Copy ────────────────────────────────────────────────────────────────────
 
 const BIO_PRIMARY =
-  "I'm Toby Johnson, a graphic and motion designer based in Lincoln, UK. Most of my work sits around music, culture and brand campaigns, especially where print, motion and 3D need to feel like one system rather than separate jobs.";
+  "I'm Toby Johnson, a graphic and motion designer making campaign worlds for music, culture and brands.";
 const BIO_SECONDARY =
-  "I like projects with a strong point of view, clear references and room to make the idea sharper. That can be a tour poster, a release campaign, a motion system or a visual identity that needs to hold together across formats.";
+  "Artwork, posters, motion, 3D, socials, release campaigns, tour assets. I pull the pieces together so the whole thing feels intentional, not stitched together at the end.";
+const BIO_TERTIARY =
+  "I'm best on projects with a strong point of view, good references and a bit of friction. The kind of brief that needs taste, structure and someone willing to push it past the obvious answer.";
 
 // Shown in the stat grid below the bio.
 const STATS = [
@@ -75,6 +77,9 @@ export default function About() {
             </p>
             <p className="max-w-[38rem] text-base md:text-lg leading-relaxed text-ink/72">
               {BIO_SECONDARY}
+            </p>
+            <p className="max-w-[38rem] text-base md:text-lg leading-relaxed text-ink/72">
+              {BIO_TERTIARY}
             </p>
           </motion.div>
 

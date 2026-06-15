@@ -714,7 +714,7 @@ export default function Hero() {
             // benefit, so drop the blend mode there. A faint cream
             // text-shadow restores readability over the busy cloud layer.
             className={
-              "font-display hero-line text-[clamp(2.2rem,8.8vw,4.8rem)] md:text-[clamp(2.6rem,10vw,11rem)] tracking-[-0.025em] md:tracking-[-0.035em] text-ink" +
+              "font-display hero-line text-[clamp(2.2rem,8.8vw,4.8rem)] md:text-[clamp(2.6rem,7.5vw,8rem)] tracking-[-0.025em] md:tracking-[-0.035em] text-ink" +
               (isMobile ? "" : " mix-blend-multiply")
             }
             style={isMobile ? { textShadow: "0 1px 14px rgba(255,253,248,0.45)" } : undefined}

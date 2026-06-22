@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Serif, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
 import "./globals.css";
@@ -11,11 +12,11 @@ import Nav from "@/components/Nav";
 import Splash from "@/components/Splash";
 import { ThemeProvider, NO_FLASH_SNIPPET } from "@/components/ThemeProvider";
 
-const display = Instrument_Serif({
+// Header / display face — Special Gothic Expanded One, self-hosted from the
+// local TTF. Bold expanded grotesque used for all headings via `.font-display`.
+const display = localFont({
+  src: "./fonts/SpecialGothicExpandedOne-Regular.ttf",
   variable: "--font-display",
-  weight: "400",
-  style: ["normal", "italic"],
-  subsets: ["latin"],
   display: "swap",
 });
 

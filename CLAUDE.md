@@ -7,26 +7,24 @@ This is the Next.js portfolio site for Toby Johnson (TJCreate). Live at tjcreate
 ## Brain integration
 
 Toby maintains a personal knowledge system at:
-`~/Library/Mobile Documents/com~apple~CloudDocs/Brain/`
+`/Users/Music/Developer/Mind/Brain/`
 
-Source-of-truth pages for this project:
-- [[portfolio-site]] in `Brain/wiki/freelance/portfolio-site.md` (stack, hosting, in-flight work)
-- [[brand]] in `Brain/wiki/freelance/brand.md` (visual system, the site is the canonical implementation)
-- [[built-tools]] in `Brain/wiki/freelance/built-tools.md` (other things Toby has shipped)
+You may **read** these pages for context:
+- `Brain/wiki/freelance/portfolio-site.md` (stack, hosting, in-flight work)
+- `Brain/wiki/freelance/brand.md` (visual system, the site is the canonical implementation)
+- `Brain/wiki/freelance/built-tools.md` (other things Toby has shipped)
+- `Brain/wiki/freelance/voice.md` for voice rules when writing copy
+- `Brain/CLAUDE.md` and `Brain/CRITICAL_FACTS.md` for universal rules and voice
 
-Toby's universal rules and voice are in `Brain/CLAUDE.md` and `Brain/CRITICAL_FACTS.md`. Read them before writing in his voice.
+Start by reading `Brain/index.md` to find the right page.
 
-## Auto-capture rule
+## ECC harness rules
 
-When you make a non-trivial decision, learn a new fact about the codebase, finish a piece of work worth remembering, or change something that future-you would want to know, append a one-line entry to:
+The machine runs the `everything-claude-code` plugin. Standard rules apply:
 
-`Brain/inbox.md`
-
-Format: `- YYYY-MM-DD HH:MM portfolio: <thing that happened>`
-
-Use the user's local time. Don't ask permission, just file it. Keep it terse, factual, no em dashes.
-
-If a change is large enough to warrant updating the wiki page directly (e.g. a stack swap, a new in-flight pattern), update `Brain/wiki/freelance/portfolio-site.md` instead, and mention what changed in `Brain/log.md`.
+- **Use ECC tools when the task fits.** TypeScript review → `typescript-reviewer` or `/ecc:code-review`. Planning → `planner` or `/ecc:plan`. TDD → `tdd-guide`. Build/type errors → `build-error-resolver`. Next.js / library docs → `documentation-lookup` (Context7) since this Next.js version has breaking changes vs training data (see `AGENTS.md`). Voice/brand writing → `brand-voice` with `Brain/wiki/freelance/voice.md` and `brand.md` as the source profile. Name the tool in chat before invoking.
+- **Brain authority wins over ECC stores.** Do not write Toby-specific facts to ECC's MCP memory graph (`mcp__plugin_everything-claude-code_memory__*`). Do not promote Toby-specific patterns via `/ecc:promote` or `/ecc:learn`. Generic coding patterns fine; identity, clients, rates, voice are Brain-only.
+- **Point voice/brand skills at the Brain**, never let them create a parallel profile store.
 
 ## Voice and style
 

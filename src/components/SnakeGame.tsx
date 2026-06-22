@@ -384,7 +384,7 @@ export default function SnakeGame({ active }: { active: boolean }) {
         {gameOver && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[rgba(10,10,10,0.72)] backdrop-blur-[2px]">
             <div className="font-display text-xl md:text-2xl tracking-tight text-paper">
-              Game <span className="italic">over</span>
+              Game over
               <span className="text-accent">.</span>
             </div>
             <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-paper/75">

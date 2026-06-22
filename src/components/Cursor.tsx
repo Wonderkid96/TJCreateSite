@@ -108,9 +108,22 @@ export default function Cursor() {
     // resets correctly as the user scrolls out of the contact zone.
     // Use tx/ty (actual mouse coords) not lx/ly (lerped dot position).
     // Also hook Lenis directly — it bypasses the native scroll event.
-    const recheck = () => {
+    //
+    // elementFromPoint forces a synchronous hit-test, so it's coalesced to at
+    // most one call per animation frame. Both Lenis and the native scroll
+    // event fire during a smooth scroll, so without this the hit-test ran
+    // twice per frame; the rAF gate collapses them into one. Skipped entirely
+    // until the pointer has actually entered the viewport.
+    let recheckRaf = 0;
+    const runRecheck = () => {
+      recheckRaf = 0;
+      if (tx < 0 || ty < 0) return;
       const el = document.elementFromPoint(tx, ty) as HTMLElement | null;
       if (el) onOver({ target: el } as unknown as MouseEvent);
+    };
+    const recheck = () => {
+      if (recheckRaf) return;
+      recheckRaf = requestAnimationFrame(runRecheck);
     };
 
     type LenisLite = { on: (e: string, cb: () => void) => void; off?: (e: string, cb: () => void) => void };
@@ -126,6 +139,7 @@ export default function Cursor() {
       window.removeEventListener("scroll", recheck, { passive: true } as EventListenerOptions);
       lenis?.off?.("scroll", recheck);
       cancelAnimationFrame(rafId);
+      cancelAnimationFrame(recheckRaf);
     };
   }, []);
 

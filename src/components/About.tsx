@@ -29,23 +29,23 @@ export default function About() {
       style={DARK_VARS}
       className="relative flex min-h-screen items-center overflow-hidden bg-ink text-paper"
     >
-      {/* Full-bleed portrait — the subject sits to the right of frame, so a
-          left-to-right darken carries the copy with no seam.
-          Desktop: a right-origin zoom anchors the subject hard to the right
-          edge. The image is portrait (4:5) in a landscape box, so it fills the
-          full width and object-position can't shift it horizontally — scaling
-          from the right edge is what pushes the subject right and clears more
-          dark space on the left for the copy. Mobile keeps the plain crop. */}
-      <Image
-        src="/work/imported/portraits/toby-about.avif"
-        alt="Portrait of Toby Johnson"
-        fill
-        sizes="100vw"
-        className="object-cover object-[58%_56%] md:origin-right md:scale-[1.45] md:translate-x-[10%]"
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-black via-black/55 to-transparent" />
-      {/* Mobile: copy overlaps more, so add a vertical darken too. */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent md:hidden" />
+      {/* Portrait anchored to the right at a natural scale. The image (4:5
+          portrait) lives in a right-hand column so it isn't blown up to cover
+          the whole landscape panel; the left stays dark for the copy. On
+          mobile it covers the full panel. */}
+      <div className="absolute inset-y-0 right-0 w-full md:w-[56%] lg:w-[48%]">
+        <Image
+          src="/work/imported/portraits/toby-about.avif"
+          alt="Portrait of Toby Johnson"
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover object-[52%_40%]"
+        />
+        {/* Blend the portrait's left edge into the dark panel (desktop). */}
+        <div className="absolute inset-0 hidden bg-gradient-to-r from-ink via-ink/40 to-transparent md:block" />
+      </div>
+      {/* Mobile: darken so the copy stays legible over the full-bleed portrait. */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent md:hidden" />
 
       <div className="relative w-full px-6 py-24 md:px-10 md:py-32">
         <div className="mb-8 font-mono text-[11px] uppercase tracking-[0.25em] text-paper/65">

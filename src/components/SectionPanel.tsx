@@ -15,14 +15,21 @@ type Props = {
    * scale or dim away.
    */
   last?: boolean;
+  /**
+   * Extra viewport-heights the panel stays pinned and fully visible before the
+   * next panel begins sliding over it. Higher = more dwell time per section.
+   */
+  dwellVh?: number;
 };
+
+const DEFAULT_DWELL_VH = 80;
 
 /**
  * Full-bleed sticky panel for the stacked-scroll deck — on desktop.
  *
- * Desktop (≥768px, motion allowed): each panel is `sticky top-0`, one viewport
- * tall, so panel N pins while the next slides up and covers it, scaling back
- * and dimming as it goes.
+ * Desktop (≥768px, motion allowed): each panel pins for one viewport plus a
+ * `dwellVh` hold, so the section sits and reads before the next panel slides
+ * up and covers it (scaling back + dimming as it goes).
  *
  * Mobile / reduced-motion: the deck is dropped. Panels become plain
  * full-height sections that grow with their content (no clipping, no
@@ -32,8 +39,9 @@ export default function SectionPanel({
   children,
   className = "",
   last = false,
+  dwellVh = DEFAULT_DWELL_VH,
 }: Props) {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -45,30 +53,43 @@ export default function SectionPanel({
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  // 0 while pinned at the top, 1 once fully scrolled away under the next panel.
+  // Progress across the panel's whole slot (pinned hold + the slide-over).
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
-  const scale = useTransform(scrollYProgress, [0, 1], [1, last ? 1 : 0.92]);
-  const filter = useTransform(
+
+  // The cover only happens in the final viewport of the slot; before that the
+  // panel is held fully visible (the dwell).
+  const coverStart = dwellVh / (100 + dwellVh);
+  const scale = useTransform(
     scrollYProgress,
-    (p) => `brightness(${1 - (last ? 0 : 0.45) * p})`,
+    [coverStart, 1],
+    [1, last ? 1 : 0.92],
   );
+  const filter = useTransform(scrollYProgress, (p) => {
+    const t = Math.max(0, Math.min(1, (p - coverStart) / (1 - coverStart)));
+    return `brightness(${1 - (last ? 0 : 0.45) * t})`;
+  });
 
   const slide = isDesktop && !reduce;
 
+  if (!slide) {
+    return (
+      <div ref={ref} className={`relative w-full ${className}`}>
+        {children}
+      </div>
+    );
+  }
+
   return (
-    <motion.section
-      ref={ref}
-      style={slide ? { scale, filter, transformOrigin: "50% 35%" } : undefined}
-      className={
-        slide
-          ? `sticky top-0 h-screen w-full overflow-hidden ${className}`
-          : `relative w-full ${className}`
-      }
-    >
-      {children}
-    </motion.section>
+    <div ref={ref} style={{ height: `${100 + dwellVh}vh` }} className="relative w-full">
+      <motion.section
+        style={{ scale, filter, transformOrigin: "50% 35%" }}
+        className={`sticky top-0 h-screen w-full overflow-hidden ${className}`}
+      >
+        {children}
+      </motion.section>
+    </div>
   );
 }

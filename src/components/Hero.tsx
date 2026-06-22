@@ -3,6 +3,7 @@
 import Image from "next/image";
 import {
   motion,
+  useMotionTemplate,
   useMotionValue,
   useMotionValueEvent,
   useTransform,
@@ -246,6 +247,22 @@ export default function Hero() {
 
   const fallingScale = useTransform(progress, [0, 0.5, 1], [0.98, 1, 1.04]);
 
+  // Falling-man dissolve: in the final ~12% of the hero scroll he fades from
+  // the bottom up, as though dropping into the clouds. Driven by a linear-
+  // gradient mask whose transparent band climbs from the floor to the top.
+  const fadeLo = useTransform(progress, (p) => {
+    const f = Math.max(0, (p - 0.88) / 0.12);
+    return `${Math.min(115, f * 130 - 15)}%`;
+  });
+  const fadeHi = useTransform(progress, (p) => {
+    const f = Math.max(0, (p - 0.88) / 0.12);
+    return `${Math.min(130, f * 130)}%`;
+  });
+  // Desktop keeps the soft radial vignette and intersects it with the rising
+  // fade; mobile just uses the fade.
+  const fallingMaskDesktop = useMotionTemplate`radial-gradient(ellipse 55% 70% at 50% 48%, #000 58%, transparent 92%), linear-gradient(to top, transparent ${fadeLo}, #000 ${fadeHi})`;
+  const fallingMaskMobile = useMotionTemplate`linear-gradient(to top, transparent ${fadeLo}, #000 ${fadeHi})`;
+
   // ─── Scroll-driven animation choreography ────────────────────────────────
   //
   // All values below are progress thresholds in the range [0, 1] where:
@@ -363,18 +380,25 @@ export default function Hero() {
               decoded frame per scroll position. A single drawImage per frame
               change; soft edges come from the CSS mask below, not per-frame
               canvas work. */}
-          <canvas
+          <motion.canvas
             ref={canvasRef}
             width={FALLING_FRAME_WIDTH}
             height={FALLING_FRAME_HEIGHT}
             className="h-[42%] sm:h-[46%] md:h-[50%] lg:h-[56%] w-auto object-contain"
-            style={isMobile ? undefined : {
-              WebkitMaskImage:
-                "radial-gradient(ellipse 55% 70% at 50% 48%, black 58%, transparent 92%)",
-              maskImage:
-                "radial-gradient(ellipse 55% 70% at 50% 48%, black 58%, transparent 92%)",
-              filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.35))",
-            }}
+            style={
+              isMobile
+                ? {
+                    WebkitMaskImage: fallingMaskMobile,
+                    maskImage: fallingMaskMobile,
+                  }
+                : {
+                    WebkitMaskImage: fallingMaskDesktop,
+                    maskImage: fallingMaskDesktop,
+                    WebkitMaskComposite: "source-in",
+                    maskComposite: "intersect",
+                    filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.35))",
+                  }
+            }
           />
         </motion.div>
 

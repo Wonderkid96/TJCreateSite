@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "motion/react";
 
 type Props = {
   children: React.ReactNode;
@@ -58,16 +64,19 @@ export default function SectionPanel({
     target: ref,
     offset: ["start start", "end start"],
   });
+  // Light spring so the cover scale/dim eases smoothly instead of tracking
+  // raw scroll 1:1 (which can read as mechanical at the section boundaries).
+  const smooth = useSpring(scrollYProgress, {
+    stiffness: 140,
+    damping: 32,
+    mass: 0.35,
+  });
 
   // The cover only happens in the final viewport of the slot; before that the
   // panel is held fully visible (the dwell).
   const coverStart = dwellVh / (100 + dwellVh);
-  const scale = useTransform(
-    scrollYProgress,
-    [coverStart, 1],
-    [1, last ? 1 : 0.92],
-  );
-  const filter = useTransform(scrollYProgress, (p) => {
+  const scale = useTransform(smooth, [coverStart, 1], [1, last ? 1 : 0.92]);
+  const filter = useTransform(smooth, (p) => {
     const t = Math.max(0, Math.min(1, (p - coverStart) / (1 - coverStart)));
     return `brightness(${1 - (last ? 0 : 0.45) * t})`;
   });

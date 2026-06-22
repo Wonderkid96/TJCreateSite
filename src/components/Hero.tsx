@@ -3,7 +3,6 @@
 import Image from "next/image";
 import {
   motion,
-  useMotionTemplate,
   useMotionValue,
   useMotionValueEvent,
   useTransform,
@@ -247,21 +246,10 @@ export default function Hero() {
 
   const fallingScale = useTransform(progress, [0, 0.5, 1], [0.98, 1, 1.04]);
 
-  // Falling-man dissolve: in the final ~12% of the hero scroll he fades from
-  // the bottom up, as though dropping into the clouds. Driven by a linear-
-  // gradient mask whose transparent band climbs from the floor to the top.
-  const fadeLo = useTransform(progress, (p) => {
-    const f = Math.max(0, (p - 0.88) / 0.12);
-    return `${Math.min(115, f * 130 - 15)}%`;
-  });
-  const fadeHi = useTransform(progress, (p) => {
-    const f = Math.max(0, (p - 0.88) / 0.12);
-    return `${Math.min(130, f * 130)}%`;
-  });
-  // Desktop keeps the soft radial vignette and intersects it with the rising
-  // fade; mobile just uses the fade.
-  const fallingMaskDesktop = useMotionTemplate`radial-gradient(ellipse 55% 70% at 50% 48%, #000 58%, transparent 92%), linear-gradient(to top, transparent ${fadeLo}, #000 ${fadeHi})`;
-  const fallingMaskMobile = useMotionTemplate`linear-gradient(to top, transparent ${fadeLo}, #000 ${fadeHi})`;
+  // Falling man sinks away: in the final stretch he drifts downward and fades,
+  // reading as a drop down into the cloud bank rather than vanishing mid-air.
+  const fallingDescent = useTransform(progress, [0.78, 1], ["0%", "42%"]);
+  const fallingFade = useTransform(progress, [0.85, 1], [1, 0]);
 
   // ─── Scroll-driven animation choreography ────────────────────────────────
   //
@@ -373,32 +361,25 @@ export default function Hero() {
 
         {/* Falling man */}
         <motion.div
-          style={{ scale: fallingScale }}
+          style={{ scale: fallingScale, y: fallingDescent, opacity: fallingFade }}
           className="absolute inset-0 flex items-center justify-center pointer-events-none will-change-transform"
         >
           {/* Falling man — canvas driven by a rAF loop that paints one
               decoded frame per scroll position. A single drawImage per frame
               change; soft edges come from the CSS mask below, not per-frame
               canvas work. */}
-          <motion.canvas
+          <canvas
             ref={canvasRef}
             width={FALLING_FRAME_WIDTH}
             height={FALLING_FRAME_HEIGHT}
             className="h-[42%] sm:h-[46%] md:h-[50%] lg:h-[56%] w-auto object-contain"
-            style={
-              isMobile
-                ? {
-                    WebkitMaskImage: fallingMaskMobile,
-                    maskImage: fallingMaskMobile,
-                  }
-                : {
-                    WebkitMaskImage: fallingMaskDesktop,
-                    maskImage: fallingMaskDesktop,
-                    WebkitMaskComposite: "source-in",
-                    maskComposite: "intersect",
-                    filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.35))",
-                  }
-            }
+            style={isMobile ? undefined : {
+              WebkitMaskImage:
+                "radial-gradient(ellipse 55% 70% at 50% 48%, black 58%, transparent 92%)",
+              maskImage:
+                "radial-gradient(ellipse 55% 70% at 50% 48%, black 58%, transparent 92%)",
+              filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.35))",
+            }}
           />
         </motion.div>
 

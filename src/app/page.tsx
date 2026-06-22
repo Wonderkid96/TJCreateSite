@@ -14,8 +14,10 @@ export default function Home() {
       {/* Stacked full-bleed deck: each panel pins to the top and the next
           slides up over it as you scroll (Services → About → Say hello).
           Disciplines marquee and the client logo slider were removed so the
-          page reads as a sequence of full-bleed panels. */}
-      <div className="relative">
+          page reads as a sequence of full-bleed panels. The wrapper is black
+          so when a panel scales back during a transition it reveals black
+          behind it, not the page's off-white. */}
+      <div className="relative bg-ink">
         <SectionPanel className="bg-ink">
           <Services />
         </SectionPanel>

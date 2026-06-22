@@ -246,11 +246,6 @@ export default function Hero() {
 
   const fallingScale = useTransform(progress, [0, 0.5, 1], [0.98, 1, 1.04]);
 
-  // Falling man sinks away: in the final stretch he drifts downward and fades,
-  // reading as a drop down into the cloud bank rather than vanishing mid-air.
-  const fallingDescent = useTransform(progress, [0.78, 1], ["0%", "42%"]);
-  const fallingFade = useTransform(progress, [0.85, 1], [1, 0]);
-
   // ─── Scroll-driven animation choreography ────────────────────────────────
   //
   // All values below are progress thresholds in the range [0, 1] where:
@@ -361,7 +356,7 @@ export default function Hero() {
 
         {/* Falling man */}
         <motion.div
-          style={{ scale: fallingScale, y: fallingDescent, opacity: fallingFade }}
+          style={{ scale: fallingScale }}
           className="absolute inset-0 flex items-center justify-center pointer-events-none will-change-transform"
         >
           {/* Falling man — canvas driven by a rAF loop that paints one

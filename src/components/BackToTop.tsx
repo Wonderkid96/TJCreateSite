@@ -41,7 +41,7 @@ export default function BackToTop() {
         pointerEvents: visible ? "auto" : "none",
       }}
       transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
-      className="fixed z-[85] bottom-5 right-5 md:bottom-7 md:right-7 h-11 w-11 rounded-full border border-line bg-paper/90 text-ink shadow-[0_8px_28px_rgba(10,10,10,0.12)] backdrop-blur-sm hover:border-accent hover:text-accent transition-colors duration-300"
+      className="fixed z-[85] bottom-5 right-5 md:bottom-7 md:right-7 h-11 w-11 rounded-full bg-accent text-white shadow-[0_8px_28px_rgba(10,10,10,0.2)] transition-[filter] duration-300 hover:brightness-110"
     >
       <span aria-hidden className="text-base leading-none">
         ↑

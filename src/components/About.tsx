@@ -41,11 +41,11 @@ export default function About() {
           sizes="(max-width: 768px) 100vw, 50vw"
           className="object-cover object-[52%_40%]"
         />
+        {/* Darken the portrait's left into the panel. Extended a few px past
+            the image's left edge (-left-2) so the gradient always covers it,
+            with no sub-pixel sliver of the bright backdrop showing as a seam. */}
+        <div className="absolute inset-y-0 -left-2 right-0 hidden bg-gradient-to-r from-ink via-ink/40 to-transparent md:block" />
       </div>
-      {/* Desktop: one continuous full-section left-to-right darken. Spanning
-          the whole section (rather than just the image container) means there
-          is no hard edge / seam where the portrait starts — it fades across. */}
-      <div className="absolute inset-0 hidden bg-gradient-to-r from-ink from-40% via-ink/60 to-transparent md:block" />
       {/* Mobile: darken so the copy stays legible over the full-bleed portrait. */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent md:hidden" />
 

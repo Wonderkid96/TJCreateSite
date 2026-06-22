@@ -416,9 +416,9 @@ function ProjectTile({
             <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/80 mb-1">
               {project.category} · {project.client}
             </div>
-            <div className="font-display text-3xl md:text-4xl lg:text-5xl leading-none tracking-tight">
+            <h3 className="font-display text-3xl md:text-4xl lg:text-5xl leading-none tracking-tight">
               <ScrambleText text={project.title} active={hovered} lockWidth />
-            </div>
+            </h3>
           </div>
           <div className="hidden md:flex flex-col items-end gap-1 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/70">
             {project.tags.map((t) => (

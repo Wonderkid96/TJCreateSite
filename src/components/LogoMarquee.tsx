@@ -12,6 +12,8 @@ type LogoItem = {
 type Props = {
   items: LogoItem[];
   speed?: "normal" | "fast";
+  /** Drop the bordered dark strip — transparent background, no top/bottom rule. */
+  bare?: boolean;
 };
 
 // Auto-scroll speeds in px/s for each marquee mode.
@@ -33,7 +35,7 @@ const CONTAINER_H_CLASS = "h-32 md:h-40";
 const SLOT_CLASS =
   "shrink-0 flex items-center justify-center h-[68%] w-36 md:w-44";
 
-export default function LogoMarquee({ items, speed = "normal" }: Props) {
+export default function LogoMarquee({ items, speed = "normal", bare = false }: Props) {
   const row = [...items, ...items];
   const x = useMotionValue(0);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -110,7 +112,9 @@ export default function LogoMarquee({ items, speed = "normal" }: Props) {
       style={
         { "--ink": "#0a0a0a", "--paper": "#fffdf8" } as React.CSSProperties
       }
-      className={`relative w-full overflow-hidden border-y border-line select-none bg-ink ${CONTAINER_H_CLASS}`}
+      className={`relative w-full overflow-hidden select-none ${CONTAINER_H_CLASS} ${
+        bare ? "" : "border-y border-line bg-ink"
+      }`}
     >
       <motion.div
         ref={trackRef}

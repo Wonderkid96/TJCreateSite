@@ -143,37 +143,36 @@ export default function ProjectModal({ project, onClose }: Props) {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto" data-lenis-prevent>
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-10 p-6 md:p-10">
+            {/* No internal scroll — media + details adapt to fit the modal
+                together. Media fills the available space, the detail column
+                sits beside it on desktop and below it on mobile. */}
+            <div className="min-h-0 flex-1 p-5 md:p-8">
+              <div className="flex h-full flex-col gap-5 md:flex-row md:gap-8">
                 <div
-                  // Fixed aspect + minimum height give the media area an
-                  // intrinsic size. Without this, every `kind` collapses to
-                  // 0×0 because its children are all absolute / fill, and
-                  // grid row stretch can't pick up a height to match.
-                  className="md:col-span-8 relative w-full overflow-hidden rounded-[2px] aspect-[4/5] md:aspect-auto md:min-h-[65vh] lg:min-h-[70vh]"
+                  className="relative min-h-0 flex-1 overflow-hidden rounded-[2px] md:flex-[1.7]"
                   style={{ background: project.bg ?? "#111" }}
                 >
                   <ModalMedia project={project} />
                 </div>
 
-                <aside className="md:col-span-4 flex flex-col gap-10">
-                  <div>
-                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted mb-3">
+                <aside className="flex min-h-0 flex-col gap-5 overflow-hidden md:w-[clamp(17rem,30%,23rem)] md:shrink-0">
+                  <div className="min-h-0 overflow-hidden">
+                    <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
                       Overview
                     </div>
-                    <p className="font-display text-2xl md:text-3xl leading-snug tracking-tight">
+                    <p className="text-sm leading-relaxed text-ink/85 md:text-[15px]">
                       {project.blurb}
                     </p>
                   </div>
 
-                  <dl className="grid grid-cols-2 gap-y-6 gap-x-4 border-t border-line pt-6">
+                  <dl className="grid shrink-0 grid-cols-2 gap-x-4 gap-y-4 border-t border-line pt-5">
                     <Meta k="Client" v={project.client} />
                     <Meta k="Year" v={project.year} />
                     <Meta k="Category" v={project.category} />
                     <Meta k="Tags" v={project.tags.join(" · ")} />
                   </dl>
 
-                  <div className="mt-auto font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
+                  <div className="mt-auto shrink-0 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
                     More detail on request.{" "}
                     <a
                       href={`mailto:hello@tjcreate.co.uk?subject=${encodeURIComponent("RE: " + project.title)}`}

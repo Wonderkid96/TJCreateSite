@@ -457,13 +457,6 @@ export default function Hero() {
           )}
         </motion.a>
 
-        {/* Top chrome */}
-        <div className="absolute top-24 md:top-28 inset-x-6 md:inset-x-10 flex items-center justify-end font-mono text-[11px] uppercase tracking-[0.2em]">
-          <span className="hidden md:inline text-white/85">
-            Est. Lincoln, UK
-          </span>
-        </div>
-
         {/* Bottom stack */}
         <motion.div
           style={{ opacity: titleOpacity, x: titleX }}

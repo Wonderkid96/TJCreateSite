@@ -74,7 +74,7 @@ export const PROJECTS: Project[] = [
     category: "Motion",
     tags: ["Motion", "Release"],
     blurb:
-      "Release animation for my single Your Cries, self-released in 2022. The original idea was a music video of a body falling gracefully through the sky. With no budget for that, I leaned a chair back in the studio, filmed myself falling off it, then rotoscoped the footage in After Effects. That single take carried the whole release: the still became the artwork, the rotoscoped loop became the Spotify Canvas and Apple Motion artwork, and now it lives as the hero of this site. Simple concept, still one of my favourites.",
+      "Release animation for my single Your Cries, self-released in 2022. The plan was a music video of a body falling gracefully through the sky. With no budget for that, I leaned a chair back in the studio, filmed myself falling off it, and rotoscoped the footage in After Effects. That single take carried the whole release: the still became the artwork, the rotoscoped loop became the Spotify Canvas and Apple Motion artwork, and it now runs as the hero of this site. Built for nothing, and still doing the work.",
     kind: "falling",
     bg: "#0a0a0a",
   },
@@ -86,7 +86,7 @@ export const PROJECTS: Project[] = [
     category: "Graphic",
     tags: ["Poster", "Music"],
     blurb:
-      "Gig poster for a Filtered night at Angel Coffee House in Lincoln. I named the event, branded it, and played it. The type is built around the spiral of a stirred coffee, hooking the music to the venue it played in. Teal ink, heavy type, A3. An early one, but still a friendly poster I'm happy to have made.",
+      "Gig poster for a Filtered night at Angel Coffee House in Lincoln. I named the event, branded it, and played it. The type is built around the spiral of a stirred coffee, tying the music to the room it ran in. Teal ink, heavy type, A3.",
     image: "/work/imported/posters/filtered-gig-mockup2.avif",
     alt: "Gig poster for Filtered in teal ink with heavy type — music poster design by Toby Johnson",
     kind: "image",
@@ -130,7 +130,7 @@ export const PROJECTS: Project[] = [
     category: "Motion",
     tags: ["Motion", "Study"],
     blurb:
-      "Self-initiated motion study built around carousel tiles rotating and appearing in 3D space. Fashion imagery cycles through a layered sequence, used as a sandbox to push some of the newer After Effects 3D and layer features. Closer to a tool experiment than a brief, but the kind of testing that earns its keep in client work later.",
+      "Self-initiated motion study built around carousel tiles rotating through 3D space, with fashion imagery cycling through a layered sequence. A testbed for the newer After Effects 3D and layer tools, the kind of R&D that pays off in client work.",
     video: "/work/imported/motion/fashion-tiles.mp4",
     videoPoster: "/work/imported/posters-video/fashion-tiles.avif",
     alt: "Fashion Tiles 3D motion study with rotating carousel tiles, motion design by Toby Johnson",
@@ -206,7 +206,7 @@ export const PROJECTS: Project[] = [
     category: "Graphic",
     tags: ["Packaging", "Mockup"],
     blurb:
-      "Packaging for Wonderkid, a producer alias I ran selling beats online. Rendered in-bag with a typographic label system.",
+      "Packaging for Wonderkid, my own producer alias. A typographic label system rendered in-bag, giving a personal release the same finish as a client one.",
     image: "/work/imported/posters/wonderkid-in-bag.avif",
     alt: "Wonderkid limited edition packaging rendered in-bag — product graphic design by Toby Johnson",
     kind: "image",

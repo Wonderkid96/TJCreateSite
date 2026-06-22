@@ -1,15 +1,16 @@
 "use client";
 
 import { motion } from "motion/react";
-import { SERVICES } from "@/lib/content";
+import { SERVICES, CLIENTS_WITH_LOGOS } from "@/lib/content";
 import SectionTitle from "./SectionTitle";
+import LogoMarquee from "./LogoMarquee";
 
 export default function Services() {
   return (
     <section
       id="services"
       aria-label="Services — what I do"
-      className="relative flex min-h-screen flex-col justify-center px-6 md:px-10 py-24 md:py-32 bg-ink text-paper"
+      className="relative flex min-h-screen flex-col px-6 md:px-10 py-16 md:py-20 bg-ink text-paper"
       style={
         {
           "--paper": "#fffdf8",
@@ -19,13 +20,12 @@ export default function Services() {
         } as React.CSSProperties
       }
     >
-      <div className="flex items-end justify-between mb-16 md:mb-24">
-        <div>
+      <div className="flex flex-1 min-h-0 flex-col justify-center">
+        <div className="mb-12 md:mb-16">
           <SectionTitle>Services</SectionTitle>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-paper/10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-paper/10">
         {SERVICES.map((s, i) => (
           // Outer div stays bg-ink at all times so the gap-px grid lines
           // render correctly. Animating opacity on the card itself would
@@ -80,6 +80,17 @@ export default function Services() {
             </motion.div>
           </div>
         ))}
+        </div>
+      </div>
+
+      {/* Selected clients — logo strip across the foot of the section */}
+      <div className="mt-10 md:mt-14">
+        <div className="mb-4 font-mono text-[11px] uppercase tracking-[0.2em] text-paper/45">
+          Selected clients
+        </div>
+        <div className="-mx-6 md:-mx-10">
+          <LogoMarquee items={CLIENTS_WITH_LOGOS} bare />
+        </div>
       </div>
     </section>
   );

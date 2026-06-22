@@ -431,7 +431,7 @@ function ProjectTile({
   );
 }
 
-// Tiles live inside a motion.div grid in WorkGrid — without memo, every
+// Tiles live inside WorkGallery's motion track — without memo, every
 // parent animation frame would re-render all 15 tiles. Props are stable
 // (project objects are module-level, onOpen is a parent arrow), so shallow
 // equality is sufficient.

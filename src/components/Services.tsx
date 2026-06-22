@@ -25,7 +25,7 @@ export default function Services() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-px bg-paper/10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-paper/10">
         {SERVICES.map((s, i) => (
           // Outer div stays bg-ink at all times so the gap-px grid lines
           // render correctly. Animating opacity on the card itself would
@@ -43,8 +43,13 @@ export default function Services() {
                 background: "var(--spectrum)",
               }}
             />
-            {/* Inner content fades + slides in — outer card bg stays solid */}
+            {/* Inner content fades + slides in — outer card bg stays solid.
+                Opt the whole card out of the global RevealObserver typewriter:
+                the card owns its reveal here, so letting the observer also
+                tag/animate the inner h3/p/li double-controlled them and left
+                words un-animated. */}
             <motion.div
+              data-no-auto-text-reveal
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "0px 0px -20% 0px" }}
@@ -58,17 +63,16 @@ export default function Services() {
               <div className="absolute top-8 right-8 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50">
                 {s.num} / 03
               </div>
-              <h3 className="font-display text-4xl md:text-5xl leading-none tracking-tight mt-10">
-                {s.title.split(" ")[0]}
-                <span className="italic"> {s.title.split(" ").slice(1).join(" ")}</span>
+              <h3 className="font-display uppercase text-[clamp(1.4rem,2.2vw,2.4rem)] leading-[0.95] tracking-tight mt-10">
+                {s.title}
               </h3>
               <p className="text-paper/80 max-w-[30ch] leading-relaxed">
                 {s.blurb}
               </p>
               <ul className="mt-auto space-y-2 font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60">
                 {s.items.map((it) => (
-                  <li key={it} className="flex items-center gap-3">
-                    <span className="inline-block h-1 w-1 rounded-full bg-accent" />
+                  <li key={it} className="flex items-start gap-3">
+                    <span className="mt-1.5 inline-block h-1 w-1 shrink-0 rounded-full bg-accent" />
                     {it}
                   </li>
                 ))}

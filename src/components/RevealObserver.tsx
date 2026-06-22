@@ -15,7 +15,7 @@ export default function RevealObserver() {
       // user scrolls back causes the work grid to vanish mid-browse.
       if (!section.dataset.revealOnce) section.dataset.revealOnce = "true";
 
-      // Fast "type-in feel" for text blocks while scrolling in/out.
+      // Simple block fade-in for text elements as they scroll in/out.
       const textEls = Array.from(
         section.querySelectorAll<HTMLElement>("h1, h2, h3, p, li, dt, dd")
       );
@@ -25,7 +25,6 @@ export default function RevealObserver() {
         if (window.getComputedStyle(el).display === "inline") continue;
         el.dataset.reveal = "text";
         el.dataset.revealOnce = "false";
-        enhanceTypewriter(el);
       }
     }
 
@@ -76,31 +75,4 @@ export default function RevealObserver() {
   }, []);
 
   return null;
-}
-
-function enhanceTypewriter(el: HTMLElement) {
-  if (el.dataset.typewriterReady === "true") return;
-  // Only transform simple text blocks; skip richer markup to avoid breaking it.
-  const hasElementChildren = Array.from(el.childNodes).some(
-    (n) => n.nodeType === Node.ELEMENT_NODE
-  );
-  if (hasElementChildren) return;
-
-  const raw = (el.textContent ?? "").replace(/\s+/g, " ").trim();
-  if (!raw) return;
-
-  el.dataset.typewriterReady = "true";
-  el.setAttribute("aria-label", raw);
-  el.textContent = "";
-
-  const words = raw.split(" ");
-  const center = (words.length - 1) / 2;
-  words.forEach((word, i) => {
-    const span = document.createElement("span");
-    span.className = "tw-word";
-    span.style.setProperty("--tw-d", String(Math.abs(i - center)));
-    span.textContent = word;
-    el.appendChild(span);
-    if (i < words.length - 1) el.appendChild(document.createTextNode(" "));
-  });
 }

@@ -104,7 +104,13 @@ export default function LogoMarquee({ items, speed = "normal" }: Props) {
   return (
     <div
       ref={wrapRef}
-      className={`relative w-full overflow-hidden border-y border-line select-none bg-paper ${CONTAINER_H_CLASS}`}
+      // Pin the strip dark regardless of theme: a black background with
+      // off-white logos, matching how the other dark sections lock their
+      // palette locally.
+      style={
+        { "--ink": "#0a0a0a", "--paper": "#fffdf8" } as React.CSSProperties
+      }
+      className={`relative w-full overflow-hidden border-y border-line select-none bg-ink ${CONTAINER_H_CLASS}`}
     >
       <motion.div
         ref={trackRef}
@@ -130,16 +136,16 @@ export default function LogoMarquee({ items, speed = "normal" }: Props) {
 }
 
 function LogoSlot({ item, isPaused }: { item: LogoItem; isPaused: boolean }) {
-  // Default is "var(--ink)" — flips automatically with the theme so logos
-  // read as dark on cream (light mode) and cream on dark (dark mode).
-  const [color, setColor] = useState<string>("var(--ink)");
+  // Off-white by default so logos read as cream on the strip's pinned black
+  // background. Hover still flips to a random palette accent.
+  const [color, setColor] = useState<string>("var(--paper)");
 
   const onEnter = () => {
     setColor(
       HOVER_COLOURS[Math.floor(Math.random() * HOVER_COLOURS.length)],
     );
   };
-  const onLeave = () => setColor("var(--ink)");
+  const onLeave = () => setColor("var(--paper)");
 
   const inner = item.logo ? (
     <div

@@ -28,13 +28,9 @@ const CLOUD_ASPECT = 3269 / 8125; // cloud-long.avif: 3269 px wide × 8125 px ta
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const scrollVelRef      = useRef(0);   // smoothed absolute velocity in px/s
-  const scrollVelSignedRef = useRef(0);  // smoothed signed velocity in px/s
-  const scrollRangeRef    = useRef(1);   // total hero scroll range in px (breakpoint-aware)
-  const lastScrollEventRef = useRef(0);  // performance.now() of last scroll tick
   // Detect "mobile-ish" synchronously on first render so RAF-heavy effects
-  // (speed lines, velocity tracking) can short-circuit before they ever
-  // allocate. SSR returns false; the resize/MQ listener below corrects it.
+  // can short-circuit before they ever allocate. SSR returns false; the
+  // resize/MQ listener below corrects it.
   const [isMobile, setIsMobile] = useState(false);
   const isMobileRef       = useRef(isMobile);
   // Mirror state into a ref so non-React hot paths (canvas RAF closures
@@ -55,10 +51,7 @@ export default function Hero() {
     preloadFallingFrames();
   }, []);
 
-  // rAF draw loop — paints the current target frame to canvas. Rather than
-  // abstract "speed lines", fast scroll produces a velocity-driven smear on
-  // the body itself: a few vertically offset ghost passes plus a tiny blur on
-  // the live frame. The trail direction flips with scroll direction.
+  // rAF draw loop — paints the current target frame to canvas.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -68,70 +61,8 @@ export default function Hero() {
     ctx.imageSmoothingQuality = "high";
     let raf = 0;
     let lastDrawn = -1;
-    let lastTrail = 0;
-    let drivenTrail = 0;
-    const TRAIL_SHOW = 360;
-    const TRAIL_FULL = 1850;
 
-    const drawFeatheredFrame = (
-      image: HTMLImageElement,
-      blurPx = 0.75,
-      chokePx = 0.9,
-    ) => {
-      // Base draw.
-      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-      // Gentle matte cleanup: slightly contract the alpha, then blur the mask
-      // a fraction so the white fringe and stair-stepping on the cutout edge
-      // do not read as harsh pixels at large desktop sizes.
-      ctx.save();
-      ctx.globalCompositeOperation = "destination-in";
-      ctx.filter = `blur(${blurPx}px)`;
-      ctx.drawImage(
-        image,
-        chokePx,
-        chokePx,
-        canvas.width - chokePx * 2,
-        canvas.height - chokePx * 2,
-      );
-      ctx.restore();
-    };
-
-    const drawEdgeStroke = (
-      image: HTMLImageElement,
-      strength = 0.18,
-    ) => {
-      // Rebuild the white contour from tiny sub-pixel halo passes rather than
-      // trusting the baked frame edge. This smooths the highlight without
-      // drawing a chunky new outer stroke.
-      const passes = [
-        { dx: -0.45, dy: 0, alpha: 0.18 },
-        { dx: 0.45, dy: 0, alpha: 0.18 },
-        { dx: 0, dy: -0.45, alpha: 0.16 },
-        { dx: 0, dy: 0.45, alpha: 0.16 },
-        { dx: -0.35, dy: -0.35, alpha: 0.11 },
-        { dx: 0.35, dy: -0.35, alpha: 0.11 },
-        { dx: -0.35, dy: 0.35, alpha: 0.11 },
-        { dx: 0.35, dy: 0.35, alpha: 0.11 },
-      ];
-
-      ctx.save();
-      ctx.globalCompositeOperation = "screen";
-      ctx.filter = "blur(0.45px)";
-      for (const pass of passes) {
-        ctx.globalAlpha = strength * pass.alpha;
-        ctx.drawImage(
-          image,
-          pass.dx,
-          pass.dy,
-          canvas.width,
-          canvas.height,
-        );
-      }
-      ctx.restore();
-    };
-
-    const loop = (ts: DOMHighResTimeStamp) => {
+    const loop = () => {
       raf = requestAnimationFrame(loop);
       const p = targetProgressRef.current;
       const idx = Math.min(
@@ -144,153 +75,11 @@ export default function Hero() {
       // at the top of the module; subsequent frames fill in as they arrive.
       if (!img || !img.complete || img.naturalWidth === 0) return;
 
-      if (ts - lastScrollEventRef.current > 80) scrollVelSignedRef.current = 0;
-      const rawSigned = scrollVelSignedRef.current;
-      drivenTrail += (rawSigned - drivenTrail) * (Math.abs(rawSigned) > Math.abs(drivenTrail) ? 0.28 : 0.16);
-
-      const trailT = Math.max(
-        0,
-        Math.min(1, (Math.abs(drivenTrail) - TRAIL_SHOW) / (TRAIL_FULL - TRAIL_SHOW)),
-      );
-      const trailPx = trailT * 34;
-
-      if (idx === lastDrawn && Math.abs(trailPx - lastTrail) < 0.35) return;
+      if (idx === lastDrawn) return;
       lastDrawn = idx;
-      lastTrail = trailPx;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      if (trailT > 0.01) {
-        const dir = Math.sign(drivenTrail) || 1;
-        const ghostCount = 4;
-
-        // Sky wake — keeps the sense of speed in the background under the
-        // body instead of smearing the figure itself.
-        ctx.save();
-        ctx.globalCompositeOperation = "screen";
-        ctx.filter = `blur(${8 + trailT * 14}px)`;
-        const wakeCenterX = canvas.width * 0.5;
-        const wakeTop = canvas.height * 0.44;
-        const wakeLen = 38 + trailPx * 2.1;
-        const wakeWidth = canvas.width * (0.08 + trailT * 0.05);
-        const wake = ctx.createLinearGradient(
-          wakeCenterX,
-          wakeTop,
-          wakeCenterX,
-          wakeTop + wakeLen,
-        );
-        wake.addColorStop(0, "rgba(255,255,255,0)");
-        wake.addColorStop(0.22, `rgba(255,255,255,${0.04 + trailT * 0.06})`);
-        wake.addColorStop(0.55, `rgba(190,235,255,${0.06 + trailT * 0.08})`);
-        wake.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.fillStyle = wake;
-        ctx.fillRect(
-          wakeCenterX - wakeWidth * 0.5,
-          wakeTop,
-          wakeWidth,
-          wakeLen,
-        );
-
-        const sideWakeOffset = canvas.width * 0.08;
-        for (const side of [-1, 1]) {
-          const sideWake = ctx.createLinearGradient(
-            wakeCenterX + side * sideWakeOffset,
-            wakeTop + 10,
-            wakeCenterX + side * sideWakeOffset,
-            wakeTop + wakeLen * 0.92,
-          );
-          sideWake.addColorStop(0, "rgba(255,255,255,0)");
-          sideWake.addColorStop(0.35, `rgba(180,225,255,${0.035 + trailT * 0.05})`);
-          sideWake.addColorStop(1, "rgba(255,255,255,0)");
-          ctx.fillStyle = sideWake;
-          ctx.fillRect(
-            wakeCenterX + side * sideWakeOffset - wakeWidth * 0.22,
-            wakeTop + 6,
-            wakeWidth * 0.44,
-            wakeLen * 0.92,
-          );
-        }
-        ctx.restore();
-
-        for (let i = ghostCount; i >= 1; i--) {
-          const t = i / ghostCount;
-          const y = -dir * trailPx * t;
-          const stretch = 1 + t * 0.11 * trailT;
-          const alpha = 0.045 + t * 0.075 * trailT;
-
-          ctx.save();
-          ctx.globalAlpha = alpha;
-          ctx.filter = `blur(${0.8 + t * 1.6}px) saturate(1.04)`;
-          ctx.translate(0, y - (canvas.height * (stretch - 1) * 0.5));
-          ctx.scale(1, stretch);
-          drawFeatheredFrame(img, 0.9, 1.1);
-          ctx.restore();
-        }
-
-        // Velocity filaments — thin white shear lines that hug the figure
-        // rather than screen-wide streaks. Think condensation off an edge,
-        // driven by the body's movement through air.
-        ctx.save();
-        ctx.strokeStyle = "rgba(255,255,255,0.9)";
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-        ctx.filter = `blur(${0.4 + trailT * 0.9}px)`;
-
-        const centerX = canvas.width * 0.5;
-        const centerY = canvas.height * 0.5;
-        const baseLen = 9 + trailPx * 0.95;
-        const sideOffset = canvas.width * 0.11;
-        const topOffset = canvas.height * 0.13;
-        const lowerOffset = canvas.height * 0.06;
-        const filamentSets = [
-          { x: centerX - sideOffset, y: centerY - topOffset, len: baseLen * 0.95, width: 0.9 + trailT * 0.45 },
-          { x: centerX + sideOffset, y: centerY - topOffset * 0.92, len: baseLen * 1.05, width: 0.85 + trailT * 0.4 },
-          { x: centerX - sideOffset * 0.62, y: centerY + lowerOffset, len: baseLen * 0.72, width: 0.7 + trailT * 0.35 },
-          { x: centerX + sideOffset * 0.66, y: centerY + lowerOffset * 1.05, len: baseLen * 0.76, width: 0.7 + trailT * 0.35 },
-        ];
-
-        filamentSets.forEach((filament, index) => {
-          const sway = (index % 2 === 0 ? -1 : 1) * trailT * 1.8;
-          const y0 = filament.y - dir * 2;
-          const y1 = filament.y - dir * filament.len;
-          const x0 = filament.x;
-          const x1 = filament.x + sway;
-          const gradient = ctx.createLinearGradient(x0, y0, x1, y1);
-          gradient.addColorStop(0, `rgba(255,255,255,${0.6 + trailT * 0.2})`);
-          gradient.addColorStop(0.35, `rgba(255,255,255,${0.3 + trailT * 0.2})`);
-          gradient.addColorStop(1, "rgba(255,255,255,0)");
-          ctx.beginPath();
-          ctx.moveTo(x0, y0);
-          ctx.lineTo(x1, y1);
-          ctx.strokeStyle = gradient;
-          ctx.lineWidth = filament.width;
-          ctx.stroke();
-        });
-
-        // A faint centre filament stops the effect reading as four detached
-        // strokes and helps tie it back into the body's spine.
-        const centerGrad = ctx.createLinearGradient(
-          centerX,
-          centerY - dir * 4,
-          centerX,
-          centerY - dir * (baseLen * 0.9),
-        );
-        centerGrad.addColorStop(0, `rgba(255,255,255,${0.34 + trailT * 0.16})`);
-        centerGrad.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY - dir * 4);
-        ctx.lineTo(centerX, centerY - dir * (baseLen * 0.9));
-        ctx.strokeStyle = centerGrad;
-        ctx.lineWidth = 0.6 + trailT * 0.3;
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      ctx.save();
-      ctx.filter = "none";
-      drawFeatheredFrame(img, 0.68, 0.82);
-      drawEdgeStroke(img, 0.16);
-      ctx.restore();
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
@@ -298,30 +87,6 @@ export default function Hero() {
 
   // Scroll progress (0 → 1 across the hero's sticky scroll range).
   const progress = useMotionValue(0);
-
-  // ── Motion-trail velocity tracking ───────────────────────────────────────
-  // Converts scroll progress/s → physical px/s using the live scroll range.
-  // This makes thresholds consistent across all breakpoints: a 500 px/s scroll
-  // always feels the same whether the hero is 260 vh (mobile) or 320 vh (lg).
-  useEffect(() => {
-    let smoothSigned = 0;
-    let lastP = 0;
-    let lastT = performance.now();
-
-    const unsubscribe = progress.on("change", (p: number) => {
-      const now = performance.now();
-      const dt = Math.max(1, now - lastT);
-      const rawSigned = ((p - lastP) / (dt * 0.001)) * scrollRangeRef.current;
-      smoothSigned += (rawSigned - smoothSigned) * (Math.abs(rawSigned) > Math.abs(smoothSigned) ? 0.55 : 0.14);
-      scrollVelSignedRef.current = smoothSigned;
-      scrollVelRef.current = Math.abs(smoothSigned);
-      lastScrollEventRef.current = now;
-      lastP = p;
-      lastT = now;
-    });
-
-    return unsubscribe;
-  }, [progress]);
 
   useEffect(() => {
     const section = ref.current;
@@ -336,9 +101,6 @@ export default function Hero() {
       sectionTopAbs = rect.top + window.scrollY;
       sectionH = rect.height;
       vh = window.innerHeight;
-      // Keep the scroll range ref in sync so velocity tracking can
-      // convert progress/s → px/s regardless of which breakpoint is active.
-      scrollRangeRef.current = Math.max(1, sectionH - vh);
       // Cache viewport dims for the parallax transforms — these run on
       // every scroll tick, so reading window.* there is wasteful.
       dimsRef.current = { vw: window.innerWidth, vh };
@@ -395,9 +157,9 @@ export default function Hero() {
     };
   }, [progress]);
 
-  // Detect touch/small viewports synchronously on mount so subsequent
-  // effects (speed lines, etc.) can short-circuit before allocating RAF
-  // loops they're never going to use on mobile.
+  // Detect touch/small viewports synchronously on mount so layout-sensitive
+  // values (parallax layer widths, the canvas mask/drop-shadow) can switch to
+  // their mobile variants without a flash.
   useEffect(() => {
     if (typeof window === "undefined") return;
     const mq = window.matchMedia("(max-width: 767px), (pointer: coarse)");
@@ -526,19 +288,6 @@ export default function Hero() {
     [1, 1, 0.9],
   );
 
-  // Subtitle — same drift logic as the title but enters slightly later
-  // (0.08 → 0.25) to create a natural stagger between headline and sub-text.
-  const subX = useTransform(
-    progress,
-    [0, 0.6, 1],
-    ["0%", "1%", "2%"],
-  );
-  const subOpacity = useTransform(
-    progress,
-    [0, 0.92, 1],
-    [1, 1, 0.9],
-  );
-
   return (
     <section
       id="top"
@@ -608,9 +357,10 @@ export default function Hero() {
           style={{ scale: fallingScale }}
           className="absolute inset-0 flex items-center justify-center pointer-events-none will-change-transform"
         >
-          {/* Falling man — canvas driven by rAF draws of pre-decoded
-              ImageBitmaps. Fast scroll adds a velocity-driven smear to
-              the body itself instead of decorative screen-wide streaks. */}
+          {/* Falling man — canvas driven by a rAF loop that paints one
+              decoded frame per scroll position. A single drawImage per frame
+              change; soft edges come from the CSS mask below, not per-frame
+              canvas work. */}
           <canvas
             ref={canvasRef}
             width={FALLING_FRAME_WIDTH}
@@ -632,12 +382,22 @@ export default function Hero() {
         {/* Scroll prompt — visible from first paint, hides on scroll, returns
             after 3 s of stillness, dismissed permanently past 70 % of the
             hero. The capsule (circle + arrow + label) drifts downward on a
-            continuous loop so the motion itself reads as "scroll like this". */}
-        <motion.div
+            continuous loop so the motion itself reads as "scroll like this".
+            Also a real link: clicking it jumps past the hero to the work grid,
+            so the nudge doubles as a working control rather than pure decoration.
+            Pointer events + tab focus are disabled while it's faded out so the
+            invisible link can't swallow clicks or trap the keyboard. */}
+        <motion.a
+          href="#work"
+          aria-label="Scroll to work"
+          data-cursor="hover"
+          tabIndex={showScrollPrompt ? 0 : -1}
           initial={{ opacity: 1 }}
           animate={{ opacity: showScrollPrompt ? 1 : 0 }}
           transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-          className="absolute hidden md:flex right-10 top-[24%] flex-col items-center pointer-events-none will-change-transform font-mono text-[11px] uppercase tracking-[0.2em] text-ink/70"
+          className={`absolute hidden md:flex right-10 top-[24%] flex-col items-center will-change-transform font-mono text-[11px] uppercase tracking-[0.2em] text-ink/70 ${
+            showScrollPrompt ? "pointer-events-auto" : "pointer-events-none"
+          }`}
         >
           {reducedMotion ? (
             // Static fallback — no drift, no fade cycle. Circle stays put
@@ -693,7 +453,7 @@ export default function Hero() {
               </motion.div>
             </motion.div>
           )}
-        </motion.div>
+        </motion.a>
 
         {/* Top chrome */}
         <div className="absolute top-24 md:top-28 inset-x-6 md:inset-x-10 flex items-center justify-end font-mono text-[11px] uppercase tracking-[0.2em]">
@@ -708,35 +468,29 @@ export default function Hero() {
           className="absolute inset-x-6 md:inset-x-10 bottom-5 sm:bottom-8 md:bottom-14 flex flex-col gap-4 sm:gap-5 md:gap-8 will-change-transform"
         >
           <h1
-            // mix-blend-multiply on a large display heading forces a layer
-            // composite on every paint as the parallax bg slides under it.
-            // On mobile that's a lot of overdraw for marginal aesthetic
-            // benefit, so drop the blend mode there. A faint cream
-            // text-shadow restores readability over the busy cloud layer.
-            className={
-              "font-display hero-line text-[clamp(2.2rem,8.8vw,4.8rem)] md:text-[clamp(2.6rem,7.5vw,8rem)] tracking-[-0.025em] md:tracking-[-0.035em] text-ink" +
-              (isMobile ? "" : " mix-blend-multiply")
-            }
-            style={isMobile ? { textShadow: "0 1px 14px rgba(255,253,248,0.45)" } : undefined}
+            // Solid ink, no mix-blend-multiply. Blending the heading against
+            // the parallax sky forced a full-region layer composite on every
+            // scroll paint; with the wide, heavy display face that overdraw
+            // got expensive enough to read as scroll jank. Near-black ink reads
+            // cleanly over the muted sky on its own — no glow needed.
+            //
+            // Set on a single line (whitespace-nowrap). The clamp is sized so
+            // the wide expanded face still fits one line on small phones, and
+            // stays deliberately restrained on desktop rather than filling the
+            // full width.
+            className="font-display uppercase hero-line whitespace-nowrap text-[clamp(1.35rem,7vw,1.85rem)] md:text-[clamp(2rem,4.4vw,3.6rem)] tracking-[-0.02em] text-ink"
           >
-            {WORDS.map((w) => (
-              <span key={w} className="block">
-                {w === "Johnson" ? (
-                  <>
-                    <span className="italic">J</span>ohnson
-                    <span className="text-accent">.</span>
-                  </>
-                ) : (
-                  w
-                )}
-              </span>
-            ))}
+            {WORDS.join(" ")}
+            <span className="text-accent">.</span>
           </h1>
 
-          <motion.div
-            style={{ opacity: subOpacity, x: subX }}
-            className="flex flex-col gap-5 md:gap-7 will-change-transform"
-          >
+          {/* Plain div, not a second motion layer. The drift/fade is owned
+              entirely by the bottom-stack wrapper above so the heading,
+              subtitle and buttons move as one coordinated unit. A second
+              transform here made the subtitle drift and fade at roughly double
+              the heading's rate, which read as the text "moving at different
+              times". */}
+          <div className="flex flex-col gap-5 md:gap-7">
             <p className="text-[0.95rem] sm:text-base md:text-xl leading-snug max-w-xl text-ink/90">
               {SUB}
             </p>
@@ -745,7 +499,7 @@ export default function Hero() {
               <HeroButton href="#work" label="View work" />
               <HeroButton href="#contact" label="Email me" variant="outline" />
             </div>
-          </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>

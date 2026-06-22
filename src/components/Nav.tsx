@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import ScrambleText from "./ScrambleText";
-import { useTheme } from "./ThemeProvider";
 
 // ─── Nav links ───────────────────────────────────────────────────────────────
 
@@ -16,27 +15,67 @@ const LINKS = [
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
+// Minimal shape of the Lenis instance the smooth-scroll layer exposes on
+// window. We only need its scroll event so the hide/reveal logic runs on the
+// same interpolation clock as the rest of the site.
+type LenisLite = {
+  on: (e: string, cb: (d: { scroll: number }) => void) => void;
+  off?: (e: string, cb: (d: { scroll: number }) => void) => void;
+};
+
 export default function Nav() {
-  const [time, setTime] = useState("");
   const [open, setOpen] = useState(false);
+  // Header slides out of view on scroll-down, returns on scroll-up.
+  const [hidden, setHidden] = useState(false);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
 
-  // Update the London time every 30 seconds.
+  // Direction-aware hide/reveal. Keeps the header out of the way while the
+  // user reads down the page, brings it straight back the moment they scroll
+  // up. Prefers Lenis's scroll event when present (one clock, no double
+  // buffering with the native scroll event); falls back to an rAF-throttled
+  // window listener otherwise.
   useEffect(() => {
-    const tick = () => {
-      setTime(
-        new Intl.DateTimeFormat("en-GB", {
-          hour: "2-digit",
-          minute: "2-digit",
-          timeZone: "Europe/London",
-          hour12: false,
-        }).format(new Date())
-      );
+    // The mobile panel forces the header visible while it is open.
+    if (open) {
+      setHidden(false);
+      return;
+    }
+
+    const REVEAL_TOP = 80; // always show within this band of the top
+    const THRESHOLD = 8;   // ignore sub-pixel jitter / Lenis settle
+    let lastY = window.scrollY;
+
+    const update = (y: number) => {
+      if (y < REVEAL_TOP) {
+        setHidden(false);
+        lastY = y;
+        return;
+      }
+      const delta = y - lastY;
+      if (Math.abs(delta) < THRESHOLD) return;
+      setHidden(delta > 0); // scrolling down hides, up reveals
+      lastY = y;
     };
-    tick();
-    const id = setInterval(tick, 30_000);
-    return () => clearInterval(id);
-  }, []);
+
+    const lenis = (window as unknown as { __lenis?: LenisLite }).__lenis;
+    if (lenis && typeof lenis.on === "function") {
+      const handler = ({ scroll }: { scroll: number }) => update(scroll);
+      lenis.on("scroll", handler);
+      return () => lenis.off?.("scroll", handler);
+    }
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        update(window.scrollY);
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [open]);
 
   // Close the mobile panel on Escape.
   useEffect(() => {
@@ -62,14 +101,19 @@ export default function Nav() {
   }, [open]);
 
   return (
-    <header aria-label="Site header" className="fixed inset-x-0 top-0 z-50 bg-paper border-b border-line">
-      <div className="relative mx-auto flex max-w-[1600px] items-center justify-between px-6 md:px-10 py-4">
+    <header
+      aria-label="Site header"
+      className={`fixed inset-x-0 top-0 z-50 bg-paper border-b border-line transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] will-change-transform ${
+        hidden ? "-translate-y-full" : "translate-y-0"
+      }`}
+    >
+      <div className="relative flex items-center justify-between px-6 md:px-10 py-4">
         <LogoMark onClick={() => setOpen(false)} />
 
-        {/* Desktop nav — absolutely centred so logo expansion never shifts it */}
+        {/* Desktop nav — pinned to the right */}
         <nav
           aria-label="Primary"
-          className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8 font-mono font-bold text-[11px] uppercase tracking-[0.2em]"
+          className="hidden md:flex items-center gap-8 font-mono font-bold text-[11px] uppercase tracking-[0.2em]"
         >
           {LINKS.map((l) => (
             <a key={l.href} href={l.href} data-cursor="hover" className="relative group">
@@ -78,15 +122,8 @@ export default function Nav() {
           ))}
         </nav>
 
-        {/* Desktop: availability status + theme toggle */}
-        <div className="hidden md:flex items-center gap-4 font-mono text-[11px] uppercase tracking-[0.2em]">
-          <AvailabilityChip time={time} />
-          <ThemeToggle />
-        </div>
-
-        {/* Mobile: theme toggle + hamburger */}
-        <div className="md:hidden flex items-center gap-3">
-          <ThemeToggle />
+        {/* Mobile: hamburger */}
+        <div className="md:hidden flex items-center">
           <button
             ref={hamburgerRef}
             type="button"
@@ -132,17 +169,12 @@ export default function Nav() {
                   onClick={() => setOpen(false)}
                   className="flex items-baseline px-6 py-5 group"
                 >
-                  <span className="font-display text-3xl leading-none tracking-tight group-hover:italic transition-[font-style]">
+                  <span className="font-display uppercase text-3xl leading-none tracking-tight">
                     {l.label}
                   </span>
                 </a>
               ))}
             </nav>
-
-            {/* Mobile availability status */}
-            <div className="flex items-center gap-2 px-6 py-4 font-mono text-[10px] uppercase tracking-[0.2em] text-muted border-t border-line">
-              <AvailabilityChip time={time} onClick={() => setOpen(false)} />
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -152,88 +184,8 @@ export default function Nav() {
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
-/**
- * "Available · green dot · HH:MM" chip used in both the desktop bar
- * and the mobile panel footer.
- */
-function AvailabilityChip({ time, onClick }: { time: string; onClick?: () => void }) {
-  return (
-    <div className="flex items-center gap-2">
-      <a
-        href="mailto:hello@tjcreate.co.uk?subject=Hello%20TJCreate"
-        data-cursor="hover"
-        aria-label="Available for work — email hello@tjcreate.co.uk"
-        className="hover:text-accent transition-colors"
-        onClick={onClick}
-      >
-        Available
-      </a>
-      {/* Pulsing green status dot */}
-      <span aria-hidden className="relative inline-flex h-1.5 w-1.5 shrink-0">
-        <span
-          className="absolute inset-0 rounded-full opacity-70 animate-ping"
-          style={{ backgroundColor: "var(--signal)" }}
-        />
-        <span
-          className="relative inline-block rounded-full h-1.5 w-1.5"
-          style={{ backgroundColor: "var(--signal)" }}
-        />
-      </span>
-      <span className="tabular-nums">{time}</span>
-    </div>
-  );
-}
-
-/** Sun/moon theme toggle — click/tap to switch light/dark. */
-function ThemeToggle() {
-  const { theme, toggle } = useTheme();
-  const isDark = theme === "dark";
-
-  return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      data-cursor="hover"
-      className="relative w-8 h-8 flex items-center justify-center rounded-full border border-line hover:border-ink transition-colors"
-    >
-      <span className="sr-only">{isDark ? "Light mode" : "Dark mode"}</span>
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden
-        className="transition-transform duration-500"
-        style={{ transform: isDark ? "rotate(180deg)" : "rotate(0deg)" }}
-      >
-        {isDark ? (
-          /* Sun */
-          <>
-            <circle cx="12" cy="12" r="4" />
-            <path d="M12 2v2" /><path d="M12 20v2" />
-            <path d="M4.93 4.93l1.41 1.41" /><path d="M17.66 17.66l1.41 1.41" />
-            <path d="M2 12h2" /><path d="M20 12h2" />
-            <path d="M4.93 19.07l1.41-1.41" /><path d="M17.66 6.34l1.41-1.41" />
-          </>
-        ) : (
-          /* Moon */
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-        )}
-      </svg>
-    </button>
-  );
-}
-
 /** TJCREATE wordmark — expands to full name on hover via ScrambleText. */
 function LogoMark({ onClick }: { onClick?: () => void }) {
-  const [hovered, setHovered] = useState(false);
-  const text = hovered ? "TOBY JOHNSON CREATE" : "TJCREATE";
-
   return (
     <a
       href="#top"
@@ -241,13 +193,11 @@ function LogoMark({ onClick }: { onClick?: () => void }) {
       aria-label="TJCREATE · Home"
       className="inline-flex flex-col"
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
       <span className="inline-flex items-baseline">
-        <span className="font-sans font-bold text-ink text-[1.35rem] md:text-[1.65rem] leading-none tracking-[-0.01em] whitespace-nowrap">
+        <span className="font-display text-ink text-[1.15rem] md:text-[1.4rem] leading-none tracking-[-0.02em] whitespace-nowrap">
           <ScrambleText
-            text={text}
+            text="TJCREATE"
             active={true}
             colors={["#E6352A", "#C8DB45", "#C4A9D0"]}
             duration={550}
@@ -255,7 +205,7 @@ function LogoMark({ onClick }: { onClick?: () => void }) {
         </span>
         <span
           aria-hidden
-          className="font-sans font-bold text-accent text-[1.35rem] md:text-[1.65rem] leading-none tracking-[-0.01em] ml-[0.05em]"
+          className="font-display text-accent text-[1.15rem] md:text-[1.4rem] leading-none tracking-[-0.02em] ml-[0.05em]"
         >
           .
         </span>

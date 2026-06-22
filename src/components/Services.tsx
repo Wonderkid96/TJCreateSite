@@ -9,7 +9,7 @@ export default function Services() {
     <section
       id="services"
       aria-label="Services — what I do"
-      className="relative px-6 md:px-10 py-24 md:py-40 bg-ink text-paper"
+      className="relative flex min-h-screen flex-col justify-center px-6 md:px-10 py-24 md:py-32 bg-ink text-paper"
       style={
         {
           "--paper": "#fffdf8",

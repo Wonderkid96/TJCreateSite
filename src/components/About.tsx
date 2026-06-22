@@ -41,7 +41,7 @@ export default function About() {
         alt="Portrait of Toby Johnson"
         fill
         sizes="100vw"
-        className="object-cover object-[58%_56%] md:origin-right md:scale-[1.2]"
+        className="object-cover object-[58%_56%] md:origin-right md:scale-[1.45] md:translate-x-[10%]"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-black via-black/55 to-transparent" />
       {/* Mobile: copy overlaps more, so add a vertical darken too. */}

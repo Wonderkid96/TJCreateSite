@@ -326,7 +326,9 @@ export default function Hero() {
             fill
             priority
             sizes={`${skyWidthVw}vw`}
-            className="object-cover object-top"
+            // Slight saturation lift so the sky reads richer without tipping
+            // into oversaturated — keeps the dark heading legible over it.
+            className="object-cover object-top saturate-[1.2]"
           />
         </motion.div>
 

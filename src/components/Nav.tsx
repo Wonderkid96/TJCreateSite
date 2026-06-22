@@ -15,66 +15,30 @@ const LINKS = [
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-// Minimal shape of the Lenis instance the smooth-scroll layer exposes on
-// window. We only need its scroll event so the hide/reveal logic runs on the
-// same interpolation clock as the rest of the site.
-type LenisLite = {
-  on: (e: string, cb: (d: { scroll: number }) => void) => void;
-  off?: (e: string, cb: (d: { scroll: number }) => void) => void;
-};
-
 export default function Nav() {
   const [open, setOpen] = useState(false);
   // Header slides out of view on scroll-down, returns on scroll-up.
   const [hidden, setHidden] = useState(false);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
 
-  // Direction-aware hide/reveal. Keeps the header out of the way while the
-  // user reads down the page, brings it straight back the moment they scroll
-  // up. Prefers Lenis's scroll event when present (one clock, no double
-  // buffering with the native scroll event); falls back to an rAF-throttled
-  // window listener otherwise.
+  // The header only belongs over the hero. Once the hero scrolls out of view
+  // (into the work grid / stacked deck) the header slides away, and returns
+  // when the user scrolls back up into the hero. An IntersectionObserver on
+  // the hero section drives it directly — no scroll math.
   useEffect(() => {
     // The mobile panel forces the header visible while it is open.
     if (open) {
       setHidden(false);
       return;
     }
-
-    const REVEAL_TOP = 80; // always show within this band of the top
-    const THRESHOLD = 8;   // ignore sub-pixel jitter / Lenis settle
-    let lastY = window.scrollY;
-
-    const update = (y: number) => {
-      if (y < REVEAL_TOP) {
-        setHidden(false);
-        lastY = y;
-        return;
-      }
-      const delta = y - lastY;
-      if (Math.abs(delta) < THRESHOLD) return;
-      setHidden(delta > 0); // scrolling down hides, up reveals
-      lastY = y;
-    };
-
-    const lenis = (window as unknown as { __lenis?: LenisLite }).__lenis;
-    if (lenis && typeof lenis.on === "function") {
-      const handler = ({ scroll }: { scroll: number }) => update(scroll);
-      lenis.on("scroll", handler);
-      return () => lenis.off?.("scroll", handler);
-    }
-
-    let ticking = false;
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        update(window.scrollY);
-        ticking = false;
-      });
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const hero = document.getElementById("top");
+    if (!hero) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setHidden(!entry.isIntersecting),
+      { threshold: 0 },
+    );
+    io.observe(hero);
+    return () => io.disconnect();
   }, [open]);
 
   // Close the mobile panel on Escape.

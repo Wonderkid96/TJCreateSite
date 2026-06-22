@@ -69,3 +69,6 @@ public/work/imported/portraits/*.jpg
 # ── Brand reference docs (kept locally, never committed) ──────────
 # No leading slash = matches at any depth.
 style-guide-*.pdf
+
+# Local screenshot verification artifacts
+scripts/shots/

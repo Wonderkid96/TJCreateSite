@@ -11,7 +11,7 @@ export default function NotFound() {
   return (
     <main className="relative flex min-h-[100dvh] flex-col items-center justify-center gap-10 px-6 md:px-10 py-24 text-center">
       <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
-        [ 404 / Not found ]
+        Not Found
       </div>
 
       <h1 className="font-display text-[clamp(4rem,18vw,16rem)] leading-[0.85] tracking-tight">

@@ -9,6 +9,16 @@ import ProjectModal from "./ProjectModal";
 // Per-tile parallax strength (px) for the inner media layer.
 const PARALLAX = [30, 40, 55, 25, 45, 50, 20, 42, 60];
 
+// Line-mode wheels (some mice) report deltas in lines, not pixels. Normalise to
+// pixels so horizontal travel matches vertical scroll 1:1, the same way Lenis
+// normalises vertical wheel input.
+const LINE_HEIGHT = 16;
+
+type LenisLike = {
+  targetScroll: number;
+  scrollTo: (target: number, opts?: { immediate?: boolean; programmatic?: boolean }) => void;
+};
+
 /**
  * Selected work as a pinned horizontal gallery. The section is taller than the
  * viewport; while it is pinned, vertical scroll is mapped 1:1 onto horizontal
@@ -58,6 +68,55 @@ export default function WorkGallery() {
     offset: ["start start", "end end"],
   });
   const x = useTransform(scrollYProgress, [0, 1], [0, -maxX]);
+
+  // Route horizontal wheel/trackpad gestures into the same vertical scroll
+  // position that drives the slider. The content reads as horizontal, so a
+  // sideways swipe is the natural instinct (especially after closing the
+  // lightbox); without this it hits nothing and the section feels stuck.
+  // Vertical scroll stays the single source of truth — we just translate
+  // sideways intent into it, clamped to the section's range.
+  useEffect(() => {
+    if (reduce || isMobile || maxX <= 0 || active) return;
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const onWheel = (e: WheelEvent) => {
+      // Only hijack predominantly-horizontal gestures; vertical scroll is
+      // left entirely to the browser / Lenis.
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+
+      const rect = section.getBoundingClientRect();
+      const pinned = rect.top <= 0 && rect.bottom >= window.innerHeight;
+      if (!pinned) return;
+
+      // Consume the gesture even at the edges so a sideways swipe never
+      // triggers browser back/forward navigation while pinned.
+      e.preventDefault();
+
+      // 1:1 with vertical scroll: 1px of horizontal intent == 1px of slide.
+      const deltaX =
+        e.deltaMode === 1 ? e.deltaX * LINE_HEIGHT
+        : e.deltaMode === 2 ? e.deltaX * window.innerWidth
+        : e.deltaX;
+
+      const lenis = (window as unknown as { __lenis?: LenisLike }).__lenis;
+      const docTop = window.scrollY + rect.top; // section's document-space top
+      const base = lenis ? lenis.targetScroll : window.scrollY;
+      const next = Math.max(docTop, Math.min(docTop + maxX, base + deltaX));
+      if (Math.abs(next - base) < 0.5) return; // already at an edge
+
+      // Drive scroll directly (no eased catch-up) so the slide tracks the
+      // gesture tightly instead of lagging behind a per-event animation.
+      if (lenis) {
+        lenis.scrollTo(next, { immediate: true, programmatic: true });
+      } else {
+        window.scrollTo({ top: next });
+      }
+    };
+
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => window.removeEventListener("wheel", onWheel);
+  }, [reduce, isMobile, maxX, active]);
 
   const open = (p: Project) => {
     if (p.externalUrl) {

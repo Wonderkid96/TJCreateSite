@@ -6,7 +6,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
   // Single-page site — Google ignores URL fragments when indexing, so there
   // is no value in listing #hash anchors. Additional top-level routes can be
-  // added here as they are built.
+  // added here as they are built. Note: /ferret/* routes are intentionally
+  // excluded from the sitemap (hidden from search).
   return [
     {
       url: `${BASE}/`,

@@ -1,29 +1,50 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 
 const VIDEO_SRC = "/work/imported/videos/intro-section.mp4";
 const VIDEO_POSTER = "/work/imported/videos/intro-section-poster.jpg";
+// Portrait 9:16 cut so the footage fills a phone without cropping.
+const VIDEO_SRC_MOBILE = "/work/imported/videos/intro-section-mobile.mp4";
+const VIDEO_POSTER_MOBILE = "/work/imported/videos/intro-section-mobile-poster.jpg";
+
+const MOBILE_QUERY = "(max-width: 767px)";
+
+// Viewport check via useSyncExternalStore: SSR/first hydration render assumes
+// desktop (false), then resolves on the client — no setState-in-effect, so no
+// hydration mismatch and no dev warning.
+const subscribeViewport = (onChange: () => void) => {
+  const mq = window.matchMedia(MOBILE_QUERY);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+};
+const useIsMobile = () =>
+  useSyncExternalStore(
+    subscribeViewport,
+    () => window.matchMedia(MOBILE_QUERY).matches,
+    () => false
+  );
 
 /**
- * Contained video band. On desktop the section is taller than the viewport and
- * the frame is sticky, so as the user scrolls in it pins centred and holds for
- * a short dwell before releasing — the same sticky-pin "lock" the Selected Work
- * and deck sections use, which is what reliably frames it centrally (a JS
- * scroll-snap fights Lenis and rarely catches). Mobile gets a plain full-height
- * frame with no pin, matching how the other sections drop pinning on touch.
+ * Showreel. Two cuts of the intro: a landscape (16:9) cut on desktop and a
+ * portrait (9:16) cut on mobile, chosen by viewport so only one ever loads.
  *
- * The rounded container fills the viewport minus equal padding and the footage
- * covers it (object-cover), so it always fills the frame edge to edge on any
- * screen, cropping slightly rather than letterboxing or warping.
+ * Desktop: the section is taller than the viewport and the frame is sticky, so
+ * it pins centred and holds for a short dwell before releasing (the same
+ * sticky-pin "lock" the other sections use). The footage covers the frame.
  *
- * Preloading: preload="auto" buffers the clip up front so it is ready before
- * the user scrolls onto it. An IntersectionObserver only starts playback once
- * it is on screen and pauses it when it leaves, so an off-screen loop never
- * burns CPU/battery.
+ * Mobile: a full-height brand-red band with the portrait cut shown in its
+ * natural 9:16 frame — fills the screen, no cropping.
+ *
+ * Preloading: preload="auto" buffers the clip up front. An IntersectionObserver
+ * only starts playback once it is on screen and pauses it when it leaves.
  */
 export default function VideoSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const isMobile = useIsMobile();
+
+  const src = isMobile ? VIDEO_SRC_MOBILE : VIDEO_SRC;
+  const poster = isMobile ? VIDEO_POSTER_MOBILE : VIDEO_POSTER;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -50,19 +71,17 @@ export default function VideoSection() {
   return (
     <section
       aria-label="Showreel"
-      // Desktop: one viewport tall plus a short dwell, so the sticky frame pins
-      // centred and holds before releasing. Mobile: just one viewport tall.
-      // Brand-red surround framing the rounded video.
-      className="relative w-full bg-accent md:h-[160svh]"
+      // Mobile: one viewport tall. Desktop: one viewport plus a short dwell so
+      // the sticky frame pins centred. Brand-red surround framing the video.
+      className="relative h-svh w-full bg-accent md:h-[160svh]"
     >
-      <div className="p-6 md:sticky md:top-0 md:flex md:h-svh md:w-full md:items-center md:p-10">
-        {/* Mobile: a natural 16:9 frame (no cropping) in a tight red band.
-            Desktop: pins and fills the viewport, footage covers it. */}
-        <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-ink md:aspect-auto md:h-full">
+      <div className="flex h-svh w-full items-center justify-center p-6 md:sticky md:top-0 md:p-10">
+        {/* Mobile: portrait 9:16 frame (no crop). Desktop: fills the viewport. */}
+        <div className="relative aspect-[9/16] max-h-full w-full overflow-hidden rounded-2xl bg-ink md:aspect-auto md:h-full">
           <video
             ref={videoRef}
-            src={VIDEO_SRC}
-            poster={VIDEO_POSTER}
+            src={src}
+            poster={poster}
             muted
             loop
             playsInline

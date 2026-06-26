@@ -158,7 +158,7 @@ test("mobile: real tap on a work tile opens the modal (no overlay blocking)", as
   await page.waitForTimeout(4200);
   await dismissSplashIfVisible(page);
 
-  const firstTile = page.locator(".bento-cell button").first();
+  const firstTile = page.locator("#work button").first();
   await firstTile.scrollIntoViewIfNeeded();
 
   // Important: verify NOTHING is covering the tile at click time.
@@ -174,7 +174,7 @@ test("mobile: real tap on a work tile opens the modal (no overlay blocking)", as
   // Simulate a real tap (touch event), not a synthetic mouse click.
   await firstTile.tap();
 
-  const modal = page.locator(".fixed.z-\\[90\\]");
+  const modal = page.locator('[role="dialog"][aria-labelledby="project-modal-title"]');
   await expect(modal).toBeVisible({ timeout: 3000 });
 
   await page.screenshot({
@@ -245,11 +245,11 @@ test("project modals — every kind renders media at non-zero size", async ({
   // Walk the DOM for every clickable project tile. Skip tiles whose click
   // opens an external URL (externalUrl in content.ts) — those use
   // window.open and would navigate or popup-block the test.
-  const tileCount = await page.locator(".bento-cell button").count();
+  const tileCount = await page.locator("#work button").count();
   const failures: string[] = [];
 
   for (let i = 0; i < tileCount; i++) {
-    const tile = page.locator(".bento-cell button").nth(i);
+    const tile = page.locator("#work button").nth(i);
     const label = (await tile.textContent()) ?? `tile ${i}`;
     // `Wrong Places` has externalUrl set and opens YouTube — skip.
     if (/wrong places/i.test(label)) continue;
@@ -258,7 +258,7 @@ test("project modals — every kind renders media at non-zero size", async ({
     await tile.click();
     await page.waitForTimeout(1200);
 
-    const mediaWrap = page.locator(".fixed.z-\\[90\\] [class*='col-span-8']").first();
+    const mediaWrap = page.locator('[role="dialog"] [class*=\'col-span-8\']').first();
     // Alternate selector if the class-based one fails in a given browser
     const rect = await mediaWrap.evaluate((el) => {
       const r = el.getBoundingClientRect();
@@ -309,24 +309,5 @@ test("project modals — every kind renders media at non-zero size", async ({
   ).toHaveLength(0);
 });
 
-test("theme toggle flips --paper/--ink", async ({ page }, testInfo) => {
-  await page.goto("/", { waitUntil: "domcontentloaded" });
-  await page.waitForTimeout(1000);
-
-  const readTheme = () =>
-    page.evaluate(() => ({
-      theme: document.documentElement.dataset.theme || "light",
-      paper: getComputedStyle(document.documentElement).getPropertyValue("--paper").trim(),
-    }));
-
-  const before = await readTheme();
-  await page.getByRole("button", { name: /switch to (dark|light) mode/i }).first().click();
-  await page.waitForTimeout(500);
-  const after = await readTheme();
-
-  expect(
-    before.theme,
-    `[${testInfo.project.name}] theme toggle did nothing: ${before.theme} -> ${after.theme}`,
-  ).not.toBe(after.theme);
-  expect(before.paper).not.toBe(after.paper);
-});
+// (Removed: theme-toggle test — the rebrand dropped the dark/light toggle from
+// the UI, so there is no longer a control to exercise.)

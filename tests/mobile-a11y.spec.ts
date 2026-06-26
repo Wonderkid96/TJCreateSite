@@ -11,7 +11,7 @@ test.describe("Mobile a11y + interaction fixes (audit/ecc-pass branch)", () => {
     await page.getByRole("button", { name: /skip intro/i }).click().catch(() => {});
     await page.waitForTimeout(800);
 
-    const tile = page.locator(".bento-cell button").first();
+    const tile = page.locator("#work button").first();
     await tile.tap();
     await page.waitForTimeout(1000);
 
@@ -100,11 +100,11 @@ test.describe("Mobile a11y + interaction fixes (audit/ecc-pass branch)", () => {
     await page.goto("/", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(2000);
 
-    const tiles = await page.locator(".bento-cell button").count();
+    const tiles = await page.locator("#work button").count();
     let foundVideo = false;
 
     for (let i = 0; i < tiles && !foundVideo; i++) {
-      const tile = page.locator(".bento-cell button").nth(i);
+      const tile = page.locator("#work button").nth(i);
       const hasVideo = await tile.evaluate((el) => {
         const video = el.querySelector("video");
         return !!video;

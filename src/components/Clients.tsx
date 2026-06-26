@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "motion/react";
 import { EASE } from "@/lib/motion";
@@ -9,6 +9,16 @@ import SectionTitle from "./SectionTitle";
 
 // Gap between the cursor and the floating client-name label.
 const LABEL_GAP_PX = 22;
+
+// Client-mount detection without setState-in-effect: false during SSR + the
+// first hydration render, true thereafter. Hydration-safe and warning-free.
+const noopSubscribe = () => () => {};
+const useMounted = () =>
+  useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false
+  );
 
 // Brand red panel with pure-white type and logos. --paper is pinned white so
 // both the title (text-paper) and the masked logos (background var(--paper))
@@ -42,9 +52,7 @@ export default function Clients() {
   const labelRef = useRef<HTMLDivElement>(null);
   // Portal only after mount so the server and the client's first render match
   // (both render nothing here) — avoids a hydration mismatch.
-  const [mounted, setMounted] = useState(false);
-  // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time client mount flag for the portal
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
 
   // Imperative so moving the cursor never re-renders the 19-logo grid. The
   // label flips to whichever side of the cursor keeps it on screen: cursor on
@@ -116,7 +124,7 @@ export default function Clients() {
           <div
             ref={labelRef}
             aria-hidden
-            className="pointer-events-none fixed left-0 top-0 z-[90] font-mono text-[11px] uppercase tracking-[0.2em] opacity-0 transition-opacity duration-150"
+            className="pointer-events-none fixed left-0 top-0 z-[80] font-mono text-[11px] uppercase tracking-[0.2em] opacity-0 transition-opacity duration-150"
             style={{ color: "#ffffff", whiteSpace: "nowrap" }}
           />,
           document.body

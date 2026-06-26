@@ -52,10 +52,13 @@ export default function VideoSection() {
       aria-label="Showreel"
       // Desktop: one viewport tall plus a short dwell, so the sticky frame pins
       // centred and holds before releasing. Mobile: just one viewport tall.
-      className="relative h-svh w-full bg-paper md:h-[160svh]"
+      // Brand-red surround framing the rounded video.
+      className="relative w-full bg-accent md:h-[160svh]"
     >
-      <div className="sticky top-0 h-svh w-full p-6 md:p-10">
-        <div className="relative h-full w-full overflow-hidden rounded-2xl bg-ink">
+      <div className="p-6 md:sticky md:top-0 md:flex md:h-svh md:w-full md:items-center md:p-10">
+        {/* Mobile: a natural 16:9 frame (no cropping) in a tight red band.
+            Desktop: pins and fills the viewport, footage covers it. */}
+        <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-ink md:aspect-auto md:h-full">
           <video
             ref={videoRef}
             src={VIDEO_SRC}

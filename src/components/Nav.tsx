@@ -164,24 +164,19 @@ function LogoMark({ onClick }: { onClick?: () => void }) {
       href="#top"
       data-cursor="hover"
       aria-label="TJCREATE · Home"
-      className="inline-flex flex-col"
+      className="inline-flex items-baseline font-display text-[1.15rem] leading-none tracking-[-0.02em] whitespace-nowrap md:text-[1.4rem]"
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <span className="inline-flex items-baseline font-display text-[1.15rem] leading-none tracking-[-0.02em] whitespace-nowrap md:text-[1.4rem]">
-        <span className="text-accent">
-          <ScrambleText text="TJ" active={hovered} colors={LOGO_COLORS} duration={420} />
-        </span>
-        <span className="text-ink">
-          <ScrambleText text="CREATE" active={hovered} colors={LOGO_COLORS} duration={520} />
-        </span>
-        <span aria-hidden className="ml-[0.05em] text-accent">
-          .
-        </span>
+      <span className="text-accent">
+        <ScrambleText text="TJ" active={hovered} colors={LOGO_COLORS} duration={420} />
       </span>
-      <span className="mt-1 font-mono text-[9px] uppercase leading-none tracking-[0.14em] text-ink/45 md:text-[10px]">
-        Portfolio / 2026
+      <span className="text-ink">
+        <ScrambleText text="CREATE" active={hovered} colors={LOGO_COLORS} duration={520} />
+      </span>
+      <span aria-hidden className="ml-[0.05em] text-accent">
+        .
       </span>
     </a>
   );

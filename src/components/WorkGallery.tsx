@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "motion/react";
 import { PROJECTS, type Project } from "@/lib/content";
 import ProjectTile from "./ProjectTile";
 import ProjectModal from "./ProjectModal";
@@ -9,49 +14,56 @@ import ProjectModal from "./ProjectModal";
 // Per-tile parallax strength (px) for the inner media layer.
 const PARALLAX = [30, 40, 55, 25, 45, 50, 20, 42, 60];
 
-// Line-mode wheels (some mice) report deltas in lines, not pixels. Normalise to
-// pixels so horizontal travel matches vertical scroll 1:1, the same way Lenis
-// normalises vertical wheel input.
-const LINE_HEIGHT = 16;
-
-type LenisLike = {
-  targetScroll: number;
-  scrollTo: (target: number, opts?: { immediate?: boolean; programmatic?: boolean }) => void;
-};
+// Past this much pointer travel a press counts as a drag, not a click, so we
+// suppress the tile's open action when the user was scrubbing the row.
+const DRAG_THRESHOLD_PX = 6;
 
 /**
- * Selected work as a pinned horizontal gallery. The section is taller than the
- * viewport; while it is pinned, vertical scroll is mapped 1:1 onto horizontal
- * translation of the tile track, so the whole catalogue scrolls sideways. This
- * is still native vertical scroll (keyboard, trackpad, screen readers all work)
- * — only the visual axis is remapped.
- *
- * Reduced-motion users get a plain native horizontal-scroll strip with no
- * pinning, so nothing is scroll-jacked.
+ * Selected work. Desktop locks the section to the screen and maps vertical
+ * scroll onto horizontal travel, sliding a single large row of square tiles
+ * sideways so the whole catalogue passes through one pinned viewport (still
+ * native vertical scroll — only the visual axis is remapped). Mobile /
+ * reduced-motion get a plain swipeable strip with no pinning.
  */
 export default function WorkGallery() {
   const [active, setActive] = useState<Project | null>(null);
-  const sectionRef = useRef<HTMLElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  const sectionRef = useRef<HTMLElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const [maxX, setMaxX] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
+  // Scroll distance the lock spans. Capped so a long row pans briskly instead
+  // of trapping the user for many screens of scroll.
+  const [lockPx, setLockPx] = useState(0);
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const sync = () => setIsMobile(mq.matches);
+    const mq = window.matchMedia("(min-width: 768px)");
+    const sync = () => setIsDesktop(mq.matches);
     sync();
     mq.addEventListener("change", sync);
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  // Measure how far the track must travel so the last tile ends flush with the
-  // right edge. Re-measured on resize / content changes.
+  // Measure how far the track must travel so the last column ends flush, then
+  // re-measure on resize / content changes.
   useEffect(() => {
     const measure = () => {
       const track = trackRef.current;
-      if (!track) return;
-      setMaxX(Math.max(0, track.scrollWidth - window.innerWidth));
+      const viewport = viewportRef.current;
+      if (!track || !viewport) {
+        setMaxX(0);
+        setLockPx(0);
+        return;
+      }
+      // Travel is measured against the inset viewport (not the full window) so
+      // the last column lands flush inside the right gutter.
+      const travel = Math.max(0, track.scrollWidth - viewport.clientWidth);
+      setMaxX(travel);
+      // Cap the lock at ~4 screens — beyond that the horizontal pan just runs
+      // faster per scroll rather than locking the user in place for longer.
+      setLockPx(Math.min(travel, window.innerHeight * 4));
     };
     measure();
     const ro = new ResizeObserver(measure);
@@ -61,62 +73,13 @@ export default function WorkGallery() {
       ro.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, []);
+  }, [isDesktop]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
   });
   const x = useTransform(scrollYProgress, [0, 1], [0, -maxX]);
-
-  // Route horizontal wheel/trackpad gestures into the same vertical scroll
-  // position that drives the slider. The content reads as horizontal, so a
-  // sideways swipe is the natural instinct (especially after closing the
-  // lightbox); without this it hits nothing and the section feels stuck.
-  // Vertical scroll stays the single source of truth — we just translate
-  // sideways intent into it, clamped to the section's range.
-  useEffect(() => {
-    if (reduce || isMobile || maxX <= 0 || active) return;
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const onWheel = (e: WheelEvent) => {
-      // Only hijack predominantly-horizontal gestures; vertical scroll is
-      // left entirely to the browser / Lenis.
-      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-
-      const rect = section.getBoundingClientRect();
-      const pinned = rect.top <= 0 && rect.bottom >= window.innerHeight;
-      if (!pinned) return;
-
-      // Consume the gesture even at the edges so a sideways swipe never
-      // triggers browser back/forward navigation while pinned.
-      e.preventDefault();
-
-      // 1:1 with vertical scroll: 1px of horizontal intent == 1px of slide.
-      const deltaX =
-        e.deltaMode === 1 ? e.deltaX * LINE_HEIGHT
-        : e.deltaMode === 2 ? e.deltaX * window.innerWidth
-        : e.deltaX;
-
-      const lenis = (window as unknown as { __lenis?: LenisLike }).__lenis;
-      const docTop = window.scrollY + rect.top; // section's document-space top
-      const base = lenis ? lenis.targetScroll : window.scrollY;
-      const next = Math.max(docTop, Math.min(docTop + maxX, base + deltaX));
-      if (Math.abs(next - base) < 0.5) return; // already at an edge
-
-      // Drive scroll directly (no eased catch-up) so the slide tracks the
-      // gesture tightly instead of lagging behind a per-event animation.
-      if (lenis) {
-        lenis.scrollTo(next, { immediate: true, programmatic: true });
-      } else {
-        window.scrollTo({ top: next });
-      }
-    };
-
-    window.addEventListener("wheel", onWheel, { passive: false });
-    return () => window.removeEventListener("wheel", onWheel);
-  }, [reduce, isMobile, maxX, active]);
 
   const open = (p: Project) => {
     if (p.externalUrl) {
@@ -126,11 +89,8 @@ export default function WorkGallery() {
     }
   };
 
-  const tiles = PROJECTS.map((p, i) => (
-    <div
-      key={p.slug}
-      className="shrink-0 h-[58vh] md:h-[64vh] w-[78vw] sm:w-[48vw] lg:w-[34vw]"
-    >
+  const tile = (p: Project, i: number, sizeClass: string) => (
+    <div key={p.slug} className={`shrink-0 ${sizeClass}`}>
       <ProjectTile
         project={p}
         index={i}
@@ -138,53 +98,138 @@ export default function WorkGallery() {
         onOpen={() => open(p)}
       />
     </div>
-  ));
+  );
 
-  // Mobile / reduced-motion: native horizontal scroll strip, no pinning.
-  if (reduce || isMobile) {
-    return (
-      <section
-        id="work"
-        aria-label="Selected work"
-        className="relative bg-paper py-24 md:py-32"
-      >
-        <Header />
-        <div className="flex gap-5 overflow-x-auto px-6 pb-4 md:px-10">{tiles}</div>
-        <ProjectModal project={active} onClose={() => setActive(null)} />
-      </section>
-    );
-  }
+  const pin = isDesktop && !reduce;
 
   return (
-    <section
-      ref={sectionRef}
-      id="work"
-      aria-label="Selected work"
-      // Vertical scroll distance == horizontal travel, so the mapping is 1:1.
-      style={{ height: `calc(100vh + ${maxX}px)` }}
-      className="relative bg-paper"
-    >
-      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
-        <Header />
-        <motion.div
-          ref={trackRef}
-          style={{ x }}
-          className="flex gap-5 px-6 will-change-transform md:gap-8 md:px-10"
+    <>
+      {pin ? (
+        // Desktop: pinned, vertical scroll drives horizontal travel. The slot is
+        // one viewport tall plus the horizontal distance, so the mapping is 1:1.
+        <section
+          ref={sectionRef}
+          id="work"
+          aria-label="Selected work"
+          className="relative bg-paper"
+          style={{ height: `calc(100svh + ${lockPx}px)` }}
         >
-          {tiles}
-        </motion.div>
-      </div>
+          <div className="sticky top-0 flex h-svh flex-col overflow-hidden pt-10 md:pt-14">
+            <Header className="mb-6 md:mb-8" />
+            {/* Inset viewport: side gutters match the other sections' padding,
+                so the gallery stays contained instead of bleeding to the edge. */}
+            <div
+              ref={viewportRef}
+              className="relative mx-6 min-h-0 flex-1 overflow-hidden md:mx-10"
+            >
+              <motion.div
+                ref={trackRef}
+                style={{ x }}
+                className="absolute inset-y-0 left-0 flex items-center gap-6 pb-10 will-change-transform lg:gap-8"
+              >
+                {PROJECTS.map((p, i) =>
+                  tile(p, i, "h-full max-h-[560px] aspect-square")
+                )}
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      ) : (
+        // Mobile / reduced-motion: single swipeable strip, no pinning. The ref
+        // is still attached here so useScroll always has a hydrated target
+        // (the desktop transform just isn't consumed in this branch).
+        <section
+          ref={sectionRef}
+          id="work"
+          aria-label="Selected work"
+          className="relative bg-paper py-24 md:py-32"
+        >
+          <Header />
+          <DragScroll className="flex gap-5 px-6 pb-4">
+            {PROJECTS.map((p, i) =>
+              tile(p, i, "aspect-square w-[78vw] sm:w-[48vw]")
+            )}
+          </DragScroll>
+        </section>
+      )}
+
       <ProjectModal project={active} onClose={() => setActive(null)} />
-    </section>
+    </>
   );
 }
 
-function Header() {
+type DragScrollProps = {
+  children: React.ReactNode;
+  className?: string;
+  /** Enable click-and-drag scrubbing (desktop only — trackpads swipe natively). */
+  enableDrag?: boolean;
+};
+
+/**
+ * Horizontal overflow container with optional click-and-drag scrubbing. Native
+ * scroll stays the source of truth (keyboard, trackpad, scrollbar all work); we
+ * only translate a mouse drag into scrollLeft and suppress the click that would
+ * otherwise open a tile mid-drag.
+ */
+function DragScroll({ children, className = "", enableDrag = false }: DragScrollProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const drag = useRef({ active: false, startX: 0, startScroll: 0, moved: false });
+  const [grabbing, setGrabbing] = useState(false);
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!enableDrag || e.pointerType !== "mouse") return;
+    const el = ref.current;
+    if (!el) return;
+    drag.current = { active: true, startX: e.clientX, startScroll: el.scrollLeft, moved: false };
+    setGrabbing(true);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!drag.current.active) return;
+    const el = ref.current;
+    if (!el) return;
+    const dx = e.clientX - drag.current.startX;
+    if (Math.abs(dx) > DRAG_THRESHOLD_PX) drag.current.moved = true;
+    el.scrollLeft = drag.current.startScroll - dx;
+  };
+
+  const endDrag = () => {
+    if (!drag.current.active) return;
+    drag.current.active = false;
+    setGrabbing(false);
+  };
+
+  // Swallow the click that follows a drag so the user doesn't open a tile they
+  // were only scrubbing past.
+  const onClickCapture = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (drag.current.moved) {
+      e.preventDefault();
+      e.stopPropagation();
+      drag.current.moved = false;
+    }
+  };
+
   return (
-    <div className="mb-8 flex items-end justify-between px-6 md:mb-12 md:px-10">
-      <h2 className="font-display uppercase text-[clamp(2rem,6vw,5rem)] leading-[0.9] tracking-tight">
-        Selected work
-      </h2>
+    <div
+      ref={ref}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={endDrag}
+      onPointerLeave={endDrag}
+      onClickCapture={onClickCapture}
+      className={`overflow-x-auto ${enableDrag ? (grabbing ? "cursor-grabbing select-none" : "cursor-grab") : ""} ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+function Header({ className = "mb-8 md:mb-12" }: { className?: string }) {
+  return (
+    <div
+      className={`flex items-end justify-between px-6 md:px-10 ${className}`}
+    >
+      <h2 className="section-heading">Selected work</h2>
       <div className="hidden text-right font-mono text-[11px] uppercase tracking-[0.2em] text-muted md:block">
         Print · Identity · Motion · 3D
         <br />

@@ -287,10 +287,10 @@ function ProjectTile({
             ? { rotateX: rX, rotateY: rY, transformStyle: "preserve-3d" }
             : undefined
         }
-        className="relative h-full w-full overflow-hidden rounded-[2px] md:aspect-auto aspect-[4/5]"
+        className="relative h-full w-full overflow-hidden rounded-2xl"
       >
         <div
-          className="hover-tile-media absolute inset-0 transition-transform duration-[900ms] ease-[cubic-bezier(.2,.8,.2,1)]"
+          className="hover-tile-media absolute inset-0 transition-transform duration-[900ms] ease-[var(--ease)]"
           style={{ background: project.bg ?? "#111" }}
         >
           <motion.div
@@ -327,7 +327,7 @@ function ProjectTile({
                   alt={project.alt ? `${project.alt} (day)` : `${project.title} (day)`}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover transition-opacity duration-[1200ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-100 group-hover:opacity-0"
+                  className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-100 group-hover:opacity-0"
                   style={{ opacity: isTouchDevice ? (dayNightIsNight ? 0 : 1) : undefined }}
                 />
                 <Image
@@ -335,7 +335,7 @@ function ProjectTile({
                   alt={project.alt ? `${project.alt} (night)` : `${project.title} (night)`}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover transition-opacity duration-[1200ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-0 group-hover:opacity-100"
+                  className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-0 group-hover:opacity-100"
                   style={{ opacity: isTouchDevice ? (dayNightIsNight ? 1 : 0) : undefined }}
                 />
               </>
@@ -406,25 +406,18 @@ function ProjectTile({
 
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/55 pointer-events-none" />
 
-        <div className="absolute top-4 left-4 right-4 flex items-start justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90 mix-blend-difference">
+        <div className="absolute top-5 left-6 right-6 flex items-start justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90 mix-blend-difference">
           <span>({String(index + 1).padStart(2, "0")})</span>
           <span>{project.year}</span>
         </div>
 
-        <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between text-paper">
-          <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/80 mb-1">
-              {project.category} · {project.client}
-            </div>
-            <h3 className="font-display text-3xl md:text-4xl lg:text-5xl leading-none tracking-tight">
-              <ScrambleText text={project.title} active={hovered} lockWidth />
-            </h3>
+        <div className="absolute bottom-6 left-6 right-6 text-paper">
+          <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/80 mb-1">
+            {project.category} · {project.client}
           </div>
-          <div className="hidden md:flex flex-col items-end gap-1 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/70">
-            {project.tags.map((t) => (
-              <span key={t}>#{t.replace(/\s+/g, "")}</span>
-            ))}
-          </div>
+          <h3 className="font-display text-xl md:text-2xl lg:text-3xl leading-[1.05] tracking-tight">
+            <ScrambleText text={project.title} active={hovered} lockWidth />
+          </h3>
         </div>
       </motion.div>
     </button>

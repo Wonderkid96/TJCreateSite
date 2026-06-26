@@ -310,6 +310,11 @@ export const CLIENTS_WITH_LOGOS = [
     url: "https://www.paceartists.com",
   },
   {
+    name: "Optima Design",
+    logo: "/work/imported/logos/optima.svg",
+    url: "https://www.optimadesign.co.uk",
+  },
+  {
     name: "Mojang Studios",
     logo: "/work/imported/logos/mojang-studios.svg",
     url: "https://www.minecraft.net/en-us/mojang-studios",

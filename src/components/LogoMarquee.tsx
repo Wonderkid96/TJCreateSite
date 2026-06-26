@@ -154,7 +154,7 @@ function LogoSlot({ item, isPaused }: { item: LogoItem; isPaused: boolean }) {
   const inner = item.logo ? (
     <div
       aria-hidden
-      className="h-full w-full transition-colors duration-500 ease-[cubic-bezier(.2,.8,.2,1)]"
+      className="h-full w-full transition-colors duration-500 ease-[var(--ease)]"
       style={{
         backgroundColor: color,
         WebkitMaskImage: `url(${item.logo})`,

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { EASE } from "@/lib/motion";
 import ScrambleText from "./ScrambleText";
 
 // ─── Nav links ───────────────────────────────────────────────────────────────
@@ -67,7 +68,7 @@ export default function Nav() {
   return (
     <header
       aria-label="Site header"
-      className={`fixed inset-x-0 top-0 z-50 bg-paper border-b border-line transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] will-change-transform ${
+      className={`fixed inset-x-0 top-0 z-50 bg-paper border-b border-line transition-transform duration-300 ease-[var(--ease)] will-change-transform ${
         hidden ? "-translate-y-full" : "translate-y-0"
       }`}
     >
@@ -122,7 +123,7 @@ export default function Nav() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
+            transition={{ duration: 0.35, ease: EASE }}
             className="md:hidden overflow-hidden border-t border-line bg-paper"
           >
             <nav aria-label="Mobile primary" className="flex flex-col divide-y divide-line">

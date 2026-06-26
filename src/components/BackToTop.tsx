@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { EASE } from "@/lib/motion";
 import { useEffect, useState } from "react";
 
 type LenisLite = {
@@ -40,7 +41,7 @@ export default function BackToTop() {
         y: visible ? 0 : 14,
         pointerEvents: visible ? "auto" : "none",
       }}
-      transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
+      transition={{ duration: 0.35, ease: EASE }}
       className="fixed z-[85] bottom-5 right-5 md:bottom-7 md:right-7 h-11 w-11 rounded-full bg-accent text-white shadow-[0_8px_28px_rgba(10,10,10,0.2)] transition-[filter] duration-300 hover:brightness-110"
     >
       <span aria-hidden className="text-base leading-none">

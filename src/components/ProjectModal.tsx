@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
+import { EASE } from "@/lib/motion";
 import { memo, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Project } from "@/lib/content";
@@ -107,7 +108,7 @@ export default function ProjectModal({ project, onClose }: Props) {
             initial={{ opacity: 0, y: 40, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
+            transition={{ duration: 0.5, ease: EASE }}
             onClick={(e) => e.stopPropagation()}
             className="absolute inset-4 md:inset-10 overflow-hidden rounded-[2px] bg-paper text-ink flex flex-col focus:outline-none"
           >
@@ -257,7 +258,7 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
           alt={project.alt ? `${project.alt} (day)` : `${project.title} (day)`}
           fill
           sizes="66vw"
-          className="object-cover transition-opacity duration-[1200ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-100 group-hover:opacity-0"
+          className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-100 group-hover:opacity-0"
           style={{ opacity: isTouchDevice ? (dayNightIsNight ? 0 : 1) : undefined }}
         />
         <Image
@@ -265,7 +266,7 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
           alt={project.alt ? `${project.alt} (night)` : `${project.title} (night)`}
           fill
           sizes="66vw"
-          className="object-cover transition-opacity duration-[1200ms] ease-[cubic-bezier(.2,.8,.2,1)] opacity-0 group-hover:opacity-100"
+          className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-0 group-hover:opacity-100"
           style={{ opacity: isTouchDevice ? (dayNightIsNight ? 1 : 0) : undefined }}
         />
         <div className="absolute bottom-3 right-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90 bg-ink/70 px-2 py-1 rounded-sm pointer-events-none">

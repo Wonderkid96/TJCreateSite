@@ -1,9 +1,9 @@
 "use client";
 
 import { motion } from "motion/react";
-import { SERVICES, CLIENTS_WITH_LOGOS } from "@/lib/content";
+import { EASE } from "@/lib/motion";
+import { SERVICES } from "@/lib/content";
 import SectionTitle from "./SectionTitle";
-import LogoMarquee from "./LogoMarquee";
 
 export default function Services() {
   return (
@@ -38,7 +38,7 @@ export default function Services() {
             {/* Hover accent bar — lives on the outer div so it's always
                 clipped correctly and unaffected by the inner animation. */}
             <div
-              className="absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-[cubic-bezier(.2,.8,.2,1)]"
+              className="absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-[var(--ease)]"
               style={{
                 background: "var(--spectrum)",
               }}
@@ -56,7 +56,7 @@ export default function Services() {
               transition={{
                 duration: 0.8,
                 delay: i * 0.1,
-                ease: [0.2, 0.8, 0.2, 1],
+                ease: EASE,
               }}
               className="flex flex-col gap-8 h-full"
             >
@@ -80,16 +80,6 @@ export default function Services() {
             </motion.div>
           </div>
         ))}
-        </div>
-      </div>
-
-      {/* Selected clients — logo strip across the foot of the section */}
-      <div className="mt-10 md:mt-14">
-        <div className="mb-4 font-mono text-[11px] uppercase tracking-[0.2em] text-paper/45">
-          Selected clients
-        </div>
-        <div className="-mx-6 md:-mx-10">
-          <LogoMarquee items={CLIENTS_WITH_LOGOS} bare />
         </div>
       </div>
     </section>

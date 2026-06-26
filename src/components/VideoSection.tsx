@@ -72,8 +72,8 @@ export default function VideoSection() {
     <section
       aria-label="Showreel"
       // Mobile: one viewport tall. Desktop: one viewport plus a short dwell so
-      // the sticky frame pins centred. Brand-red surround framing the video.
-      className="relative h-svh w-full bg-accent md:h-[160svh]"
+      // the sticky frame pins centred. Brand-dark surround framing the video.
+      className="relative h-svh w-full bg-ink md:h-[160svh]"
     >
       <div className="flex h-svh w-full items-center justify-center md:sticky md:top-0 md:p-10">
         {/* Mobile: the portrait cut is full-bleed, filling the whole section

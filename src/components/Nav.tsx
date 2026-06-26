@@ -149,8 +149,16 @@ export default function Nav() {
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
-/** TJCREATE wordmark — expands to full name on hover via ScrambleText. */
+// Brand accent palette the wordmark flickers through on hover.
+const LOGO_COLORS = ["#E6352A", "#C8DB45", "#C4A9D0"];
+
+/**
+ * TJCREATE wordmark — "TJ" in brand red, "CREATE" in brand black. At rest it
+ * reads clean; on hover both halves scramble, cycling through symbols and the
+ * accent colours (no name expansion).
+ */
 function LogoMark({ onClick }: { onClick?: () => void }) {
+  const [hovered, setHovered] = useState(false);
   return (
     <a
       href="#top"
@@ -158,24 +166,21 @@ function LogoMark({ onClick }: { onClick?: () => void }) {
       aria-label="TJCREATE · Home"
       className="inline-flex flex-col"
       onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      <span className="inline-flex items-baseline">
-        <span className="font-display text-ink text-[1.15rem] md:text-[1.4rem] leading-none tracking-[-0.02em] whitespace-nowrap">
-          <ScrambleText
-            text="TJCREATE"
-            active={true}
-            colors={["#E6352A", "#C8DB45", "#C4A9D0"]}
-            duration={550}
-          />
+      <span className="inline-flex items-baseline font-display text-[1.15rem] leading-none tracking-[-0.02em] whitespace-nowrap md:text-[1.4rem]">
+        <span className="text-accent">
+          <ScrambleText text="TJ" active={hovered} colors={LOGO_COLORS} duration={420} />
         </span>
-        <span
-          aria-hidden
-          className="font-display text-accent text-[1.15rem] md:text-[1.4rem] leading-none tracking-[-0.02em] ml-[0.05em]"
-        >
+        <span className="text-ink">
+          <ScrambleText text="CREATE" active={hovered} colors={LOGO_COLORS} duration={520} />
+        </span>
+        <span aria-hidden className="ml-[0.05em] text-accent">
           .
         </span>
       </span>
-      <span className="font-mono text-[9px] md:text-[10px] uppercase tracking-[0.14em] text-ink/45 mt-1 leading-none">
+      <span className="mt-1 font-mono text-[9px] uppercase leading-none tracking-[0.14em] text-ink/45 md:text-[10px]">
         Portfolio / 2026
       </span>
     </a>

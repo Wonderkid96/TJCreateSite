@@ -291,7 +291,7 @@ function ProjectTile({
       >
         <div
           className="hover-tile-media absolute inset-0 transition-transform duration-[900ms] ease-[var(--ease)]"
-          style={{ background: project.bg ?? "#111" }}
+          style={{ background: project.bg ?? "#0a0a0a" }}
         >
           <motion.div
             ref={mediaRef}

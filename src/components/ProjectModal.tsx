@@ -151,7 +151,7 @@ export default function ProjectModal({ project, onClose }: Props) {
               <div className="flex h-full flex-col gap-5 md:flex-row md:gap-8">
                 <div
                   className="relative min-h-0 flex-1 overflow-hidden rounded-[2px] md:flex-[1.7]"
-                  style={{ background: project.bg ?? "#111" }}
+                  style={{ background: project.bg ?? "#0a0a0a" }}
                 >
                   <ModalMedia project={project} />
                 </div>

@@ -83,7 +83,7 @@ export default function NarrativePreview() {
                 key={p.slug}
                 href="#work"
                 className="group relative block aspect-square overflow-hidden rounded-[3px]"
-                style={{ backgroundColor: p.bg ?? "#111" }}
+                style={{ backgroundColor: p.bg ?? "#0a0a0a" }}
               >
                 {src && (
                   <Image

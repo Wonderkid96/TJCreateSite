@@ -89,7 +89,7 @@ export default function PosterCoverPreview() {
         </div>
 
         {/* Feature piece */}
-        <a href="#work" className="group relative mb-6 block aspect-[16/10] w-full overflow-hidden rounded-[3px]" style={{ backgroundColor: feature.bg ?? "#111" }}>
+        <a href="#work" className="group relative mb-6 block aspect-[16/10] w-full overflow-hidden rounded-[3px]" style={{ backgroundColor: feature.bg ?? "#0a0a0a" }}>
           {posterFor(feature) && (
             <Image src={posterFor(feature)!} alt={feature.alt ?? feature.title} fill sizes="100vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]" />
           )}
@@ -106,7 +106,7 @@ export default function PosterCoverPreview() {
         {/* Grid */}
         <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
           {grid.map((p) => (
-            <a key={p.slug} href="#work" className="group relative block aspect-square overflow-hidden rounded-[3px]" style={{ backgroundColor: p.bg ?? "#111" }}>
+            <a key={p.slug} href="#work" className="group relative block aspect-square overflow-hidden rounded-[3px]" style={{ backgroundColor: p.bg ?? "#0a0a0a" }}>
               <Image src={posterFor(p)!} alt={p.alt ?? p.title} fill sizes="(max-width:1024px) 50vw, 25vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0" />
               <div className="absolute inset-x-0 bottom-0 p-4">

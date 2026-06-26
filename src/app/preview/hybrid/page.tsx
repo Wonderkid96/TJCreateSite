@@ -80,7 +80,7 @@ export default function HybridPreview() {
           {work.map((p) => {
             const src = posterFor(p);
             return (
-              <a key={p.slug} href="#work" className="group relative block aspect-square overflow-hidden rounded-[3px]" style={{ backgroundColor: p.bg ?? "#111" }}>
+              <a key={p.slug} href="#work" className="group relative block aspect-square overflow-hidden rounded-[3px]" style={{ backgroundColor: p.bg ?? "#0a0a0a" }}>
                 {src && (
                   <Image src={src} alt={p.alt ?? p.title} fill sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]" />
                 )}

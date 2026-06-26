@@ -226,15 +226,8 @@ function DragScroll({ children, className = "", enableDrag = false }: DragScroll
 
 function Header({ className = "mb-8 md:mb-12" }: { className?: string }) {
   return (
-    <div
-      className={`flex items-end justify-between px-6 md:px-10 ${className}`}
-    >
+    <div className={`px-6 md:px-10 ${className}`}>
       <h2 className="section-heading">Selected work</h2>
-      <div className="hidden text-right font-mono text-[11px] uppercase tracking-[0.2em] text-muted md:block">
-        Print · Identity · Motion · 3D
-        <br />
-        {String(PROJECTS.length).padStart(2, "0")} projects · 2021-26
-      </div>
     </div>
   );
 }

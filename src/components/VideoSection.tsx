@@ -75,9 +75,11 @@ export default function VideoSection() {
       // the sticky frame pins centred. Brand-red surround framing the video.
       className="relative h-svh w-full bg-accent md:h-[160svh]"
     >
-      <div className="flex h-svh w-full items-center justify-center p-6 md:sticky md:top-0 md:p-10">
-        {/* Mobile: portrait 9:16 frame (no crop). Desktop: fills the viewport. */}
-        <div className="relative aspect-[9/16] max-h-full w-full overflow-hidden rounded-2xl bg-ink md:aspect-auto md:h-full">
+      <div className="flex h-svh w-full items-center justify-center md:sticky md:top-0 md:p-10">
+        {/* Mobile: the portrait cut is full-bleed, filling the whole section
+            edge to edge (covers, dynamic to any phone). Desktop: padded,
+            rounded frame on the red surround. */}
+        <div className="relative h-full w-full overflow-hidden bg-ink md:rounded-2xl">
           <video
             ref={videoRef}
             src={src}

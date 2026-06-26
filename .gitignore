@@ -72,3 +72,6 @@ style-guide-*.pdf
 
 # Local screenshot verification artifacts
 scripts/shots/
+
+# Camera / Photoshop sidecar metadata
+*.xmp

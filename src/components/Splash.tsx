@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "motion/react";
+import { EASE } from "@/lib/motion";
 import { useEffect, useState } from "react";
 import {
   fallingFramesProgress,
@@ -143,7 +144,7 @@ export default function Splash() {
           key="splash"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
+          transition={{ duration: 0.45, ease: EASE }}
           // Sits above everything including the nav (z-50) and back-to-top
           // (z-85), but below the theme's no-flash script.
           className="fixed inset-0 z-[120] flex items-center justify-center bg-paper"
@@ -178,7 +179,7 @@ export default function Splash() {
                     width: "100%",
                     transform: `scaleX(${progress})`,
                     transformOrigin: "left",
-                    transition: "transform 220ms cubic-bezier(.2,.8,.2,1)",
+                    transition: "transform 220ms var(--ease)",
                     background:
                       "linear-gradient(90deg, #E6352A 0%, #C8DB45 50%, #C4A9D0 100%)",
                   }}

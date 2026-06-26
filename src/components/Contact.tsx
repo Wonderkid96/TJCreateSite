@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { EASE } from "@/lib/motion";
 import { SocialLinks } from "./SocialIcons";
 
 // Central constant so the address only needs updating in one place.
@@ -22,7 +23,7 @@ export default function Contact() {
           "--ink": "#0a0a0a",
         } as React.CSSProperties
       }
-      className="relative flex min-h-screen w-full flex-col justify-center overflow-hidden bg-ink px-6 py-20 text-paper md:px-10"
+      className="relative flex min-h-screen w-full flex-col justify-center overflow-hidden bg-ink px-6 py-16 text-paper md:px-10 md:py-20"
     >
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11px] uppercase tracking-[0.25em] text-paper/60">
         <span>Let&apos;s make something</span>
@@ -54,7 +55,7 @@ export default function Contact() {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px 0px -20% 0px" }}
-          transition={{ duration: 1, ease: [0.2, 0.8, 0.2, 1] }}
+          transition={{ duration: 1, ease: EASE }}
           className="font-display uppercase text-[clamp(3rem,15vw,11rem)] leading-[0.84] tracking-tight transition-colors group-hover:text-accent"
         >
           Say

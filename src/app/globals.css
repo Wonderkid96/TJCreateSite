@@ -11,6 +11,9 @@
   --line: rgba(10, 10, 10, 0.12);
   --signal: #80ef80;
   --spectrum: linear-gradient(90deg, #e6352a 0%, #fffdf8 38%, #c8db45 68%, #c4a9d0 100%);
+  /* Shared easing — the site's standard motion curve, single-sourced for CSS.
+     (Framer transitions use the EASE constant in src/lib/motion.ts.) */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 :root[data-theme="dark"] {
@@ -23,8 +26,8 @@
 
 html,
 body {
-  transition: background-color 420ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    color 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: background-color 420ms var(--ease),
+    color 420ms var(--ease);
 }
 
 @theme inline {
@@ -79,6 +82,60 @@ html.lenis body {
 
 .font-display {
   font-family: var(--font-display), "Arial Narrow", system-ui, sans-serif;
+}
+
+/* Standard section-heading scale — single source for SectionTitle and the
+   Selected Work header so the display type stays in sync. (Hero and Contact
+   intentionally run their own, larger scales.) */
+.section-heading {
+  font-family: var(--font-display), "Arial Narrow", system-ui, sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(2rem, 6vw, 5rem);
+  line-height: 0.9;
+  letter-spacing: -0.025em;
+}
+
+/* Client logo hover: a quick shake, a smooth enlarge that eases back on leave,
+   and a colour flicker through the brand accents (same palette the project
+   titles scramble through). Scale lives on the wrapper and shake on the mark
+   so the two transforms never fight. Gated to no-preference so reduced-motion
+   users get a static logo. */
+@keyframes logoShake {
+  0% { transform: rotate(0deg); }
+  20% { transform: rotate(-4deg); }
+  40% { transform: rotate(3deg); }
+  60% { transform: rotate(-2deg); }
+  80% { transform: rotate(1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Logos sit white on the red Clients panel, so the flicker pops through the
+   non-red accents (red would vanish into the background). */
+@keyframes logoFlicker {
+  0%, 100% { background-color: #ffffff; }
+  33% { background-color: #c8db45; }
+  66% { background-color: #c4a9d0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .logo-scale {
+    transform-origin: center;
+    transition: transform 420ms var(--ease);
+    will-change: transform;
+  }
+
+  .logo-cell:hover .logo-scale,
+  .logo-cell:focus-visible .logo-scale {
+    transform: scale(1.12);
+  }
+
+  .logo-cell:hover .logo-mark,
+  .logo-cell:focus-visible .logo-mark {
+    transform-origin: center center;
+    animation:
+      logoShake 520ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both,
+      logoFlicker 360ms steps(1, end) infinite;
+  }
 }
 
 .font-mono {
@@ -147,8 +204,8 @@ html.lenis body {
 
 /* Hovered tile lifts and enlarges slightly — other tiles unaffected */
 .bento-cell {
-  transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1),
-              box-shadow 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 420ms var(--ease),
+              box-shadow 420ms var(--ease);
 }
 
 .bento-cell:hover {
@@ -212,7 +269,7 @@ html.reveal-mounted [data-reveal] {
   transform: translate3d(var(--reveal-x), 0, 0);
   transition-property: opacity, transform;
   transition-duration: var(--reveal-dur);
-  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-timing-function: var(--ease);
   transition-delay: var(--reveal-delay);
   will-change: opacity, transform;
 }
@@ -291,7 +348,7 @@ html.reveal-mounted [data-reveal].is-visible {
   text-transform: uppercase;
   letter-spacing: 0.2em;
   border-radius: 2px;
-  transition: top 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: top 220ms var(--ease);
 }
 
 .skip-link:focus,

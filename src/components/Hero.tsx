@@ -7,6 +7,7 @@ import {
   useMotionValueEvent,
   useTransform,
 } from "motion/react";
+import { EASE } from "@/lib/motion";
 import { useEffect, useRef, useState } from "react";
 import {
   FALLING_FRAME_COUNT,
@@ -396,7 +397,7 @@ export default function Hero() {
           tabIndex={showScrollPrompt ? 0 : -1}
           initial={{ opacity: 1 }}
           animate={{ opacity: showScrollPrompt ? 1 : 0 }}
-          transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+          transition={{ duration: 0.3, ease: EASE }}
           className={`absolute hidden md:flex right-10 top-[24%] flex-col items-center will-change-transform font-mono text-[11px] uppercase tracking-[0.2em] text-ink/70 ${
             showScrollPrompt ? "pointer-events-auto" : "pointer-events-none"
           }`}

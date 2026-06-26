@@ -7,15 +7,16 @@ import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
 import RevealObserver from "@/components/RevealObserver";
+import ScrollProgress from "@/components/ScrollProgress";
 import BackToTop from "@/components/BackToTop";
 import Nav from "@/components/Nav";
 import Splash from "@/components/Splash";
 import { ThemeProvider, NO_FLASH_SNIPPET } from "@/components/ThemeProvider";
 
 // Header / display face — Special Gothic Expanded One, self-hosted from the
-// local TTF. Bold expanded grotesque used for all headings via `.font-display`.
+// local WOFF2. Bold expanded grotesque used for all headings via `.font-display`.
 const display = localFont({
-  src: "./fonts/SpecialGothicExpandedOne-Regular.ttf",
+  src: "./fonts/SpecialGothicExpandedOne-Regular.woff2",
   variable: "--font-display",
   display: "swap",
 });
@@ -228,6 +229,7 @@ export default function RootLayout({
           <Splash />
           <SmoothScroll />
           <RevealObserver />
+          <ScrollProgress />
           <Cursor />
           <div className="grain" aria-hidden />
           <Nav />

@@ -44,12 +44,12 @@ export default function About() {
         {/* Darken the portrait's left into the panel. Extended a few px past
             the image's left edge (-left-2) so the gradient always covers it,
             with no sub-pixel sliver of the bright backdrop showing as a seam. */}
-        <div className="absolute inset-y-0 -left-2 right-0 hidden bg-gradient-to-r from-ink via-ink/40 to-transparent md:block" />
+        <div className="absolute inset-y-0 -left-2 right-0 hidden bg-gradient-to-r from-ink via-ink/40 to-[#0a0a0a00] md:block" />
       </div>
       {/* Mobile: darken so the copy stays legible over the full-bleed portrait. */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent md:hidden" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/35 to-[#0a0a0a00] md:hidden" />
 
-      <div className="relative w-full px-6 py-24 md:px-10 md:py-32">
+      <div className="relative w-full px-6 py-16 md:px-10 md:py-20">
         <div className="mb-8 font-mono text-[11px] uppercase tracking-[0.25em] text-paper/65">
           About
         </div>

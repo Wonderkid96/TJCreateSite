@@ -21,7 +21,7 @@ export default function PrivacyPage() {
         <div className="prose prose-invert max-w-none space-y-6 text-base leading-relaxed">
           <p>
             Ferret is operated by Toby Johnson (trading as TJCreate), Lincoln, United Kingdom
-            ("we", "us"). This policy explains what data Ferret collects, why, and your rights
+            (&quot;we&quot;, &quot;us&quot;). This policy explains what data Ferret collects, why, and your rights
             under UK GDPR. If you have any questions, contact us at{" "}
             <a href="mailto:hello@tjcreate.co.uk" className="text-accent hover:text-accent/80">
               hello@tjcreate.co.uk
@@ -74,7 +74,7 @@ export default function PrivacyPage() {
               <div>
                 <h3 className="font-bold">Photos and scans.</h3>
                 <p>
-                  The photos you capture are stored only on your device, in the app's private storage, as your scan History. To identify an item, the app sends the relevant image to our AI providers for processing. We do not retain those images on our servers after the identification request.
+                  The photos you capture are stored only on your device, in the app&apos;s private storage, as your scan History. To identify an item, the app sends the relevant image to our AI providers for processing. We do not retain those images on our servers after the identification request.
                 </p>
               </div>
 
@@ -146,7 +146,7 @@ export default function PrivacyPage() {
               You can delete your account and all associated data directly in the app: Settings → Delete account. This permanently removes your account, scan history, and local data.
             </p>
             <p>
-              You also have the right to complain to the UK Information Commissioner's Office ({" "}
+              You also have the right to complain to the UK Information Commissioner&apos;s Office ({" "}
               <a href="https://ico.org.uk" className="text-accent hover:text-accent/80">
                 ico.org.uk
               </a>
@@ -171,7 +171,7 @@ export default function PrivacyPage() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">8. Changes</h2>
             <p>
-              We may update this policy. We will change the "last updated" date above and, for significant changes, surface a notice in the app.
+              We may update this policy. We will change the &quot;last updated&quot; date above and, for significant changes, surface a notice in the app.
             </p>
           </div>
 

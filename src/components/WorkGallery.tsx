@@ -116,16 +116,17 @@ export default function WorkGallery() {
         >
           <div className="sticky top-0 flex h-svh flex-col overflow-hidden pt-10 md:pt-14">
             <Header className="mb-6 md:mb-8" />
-            {/* Inset viewport: side gutters match the other sections' padding,
-                so the gallery stays contained instead of bleeding to the edge. */}
+            {/* Full-bleed viewport: tiles run edge to edge like the other
+                full-bleed sections. The px on the track just keeps the first
+                and last tiles off the very edge; mid-scroll they bleed. */}
             <div
               ref={viewportRef}
-              className="relative mx-6 min-h-0 flex-1 overflow-hidden md:mx-10"
+              className="relative min-h-0 flex-1 overflow-hidden"
             >
               <motion.div
                 ref={trackRef}
                 style={{ x }}
-                className="absolute inset-y-0 left-0 flex items-center gap-6 pb-10 will-change-transform lg:gap-8"
+                className="absolute inset-y-0 left-0 flex items-center gap-6 px-6 pb-10 will-change-transform md:px-10 lg:gap-8"
               >
                 {PROJECTS.map((p, i) =>
                   tile(p, i, "h-full max-h-[560px] aspect-square")

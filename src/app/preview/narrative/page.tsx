@@ -188,7 +188,7 @@ export default function NarrativePreview() {
           </div>
           <div className="flex flex-col justify-center md:col-span-7">
             <p className="font-expanded text-[clamp(1.6rem,3.4vw,3rem)] uppercase leading-[1.02] tracking-tight">
-              I'm Toby, a designer building strategic visuals for music, culture and brands.
+              I&apos;m Toby, a designer building strategic visuals for music, culture and brands.
             </p>
             <p className="mt-6 max-w-[40rem] text-lg leading-relaxed text-ink/70">
               Artwork, posters, motion, 3D, socials, release campaigns, tour assets. I pull the pieces together so the whole thing feels intentional, not stitched together at the end.
@@ -218,7 +218,7 @@ export default function NarrativePreview() {
       {/* ── Contact ──────────────────────────────────────────────────────── */}
       <section id="contact" className="bg-ink px-6 py-28 text-paper md:px-10 md:py-40">
         <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-paper/60">
-          Let's make something
+          Let&apos;s make something
         </div>
         <a
           href="mailto:hello@tjcreate.co.uk"

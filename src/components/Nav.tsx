@@ -27,11 +27,6 @@ export default function Nav() {
   // when the user scrolls back up into the hero. An IntersectionObserver on
   // the hero section drives it directly — no scroll math.
   useEffect(() => {
-    // The mobile panel forces the header visible while it is open.
-    if (open) {
-      setHidden(false);
-      return;
-    }
     const hero = document.getElementById("top");
     if (!hero) return;
     const io = new IntersectionObserver(
@@ -40,7 +35,7 @@ export default function Nav() {
     );
     io.observe(hero);
     return () => io.disconnect();
-  }, [open]);
+  }, []);
 
   // Close the mobile panel on Escape.
   useEffect(() => {
@@ -68,8 +63,10 @@ export default function Nav() {
   return (
     <header
       aria-label="Site header"
+      // Slides away once the hero scrolls out of view, but the open mobile
+      // panel always forces the header visible (derived, not setState).
       className={`fixed inset-x-0 top-0 z-50 bg-paper border-b border-line transition-transform duration-300 ease-[var(--ease)] will-change-transform ${
-        hidden ? "-translate-y-full" : "translate-y-0"
+        hidden && !open ? "-translate-y-full" : "translate-y-0"
       }`}
     >
       <div className="relative flex items-center justify-between px-6 md:px-10 py-4">

@@ -152,7 +152,7 @@ export default function PosterCoverPreview() {
 
       {/* ── Contact ──────────────────────────────────────────────────────── */}
       <section id="contact" style={DARK_VARS} className="bg-ink px-6 py-28 text-paper md:px-10 md:py-40">
-        <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-paper/60">Let's make something</div>
+        <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-paper/60">Let&apos;s make something</div>
         <a href="mailto:hello@tjcreate.co.uk" className="font-expanded mt-8 block text-[clamp(2.4rem,11vw,9rem)] uppercase leading-[0.86] tracking-[-0.01em] transition-colors hover:text-accent">
           hello<span className="text-accent">@</span>
           <br />

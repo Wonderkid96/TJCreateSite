@@ -64,26 +64,16 @@ export default function Contact() {
         </motion.div>
       </a>
 
-      {/* Email + socials */}
-      <div className="mt-12 grid grid-cols-1 gap-8 border-t border-paper/20 pt-8 md:mt-16 md:grid-cols-2">
-        <div>
-          <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50">
-            Email
-          </div>
-          <a
-            href={`mailto:${CONTACT_EMAIL}`}
-            data-cursor="hover"
-            className="text-lg transition-colors hover:text-accent"
-          >
-            {CONTACT_EMAIL}
-          </a>
-        </div>
-        <div>
-          <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50">
-            Socials
-          </div>
-          <SocialLinks size={22} tone="paper" />
-        </div>
+      {/* Email + socials — no labels or divider, so it reads as one section. */}
+      <div className="mt-8 flex flex-col gap-6 md:mt-10">
+        <a
+          href={`mailto:${CONTACT_EMAIL}`}
+          data-cursor="hover"
+          className="w-fit text-lg transition-colors hover:text-accent md:text-xl"
+        >
+          {CONTACT_EMAIL}
+        </a>
+        <SocialLinks size={22} tone="paper" />
       </div>
     </section>
   );

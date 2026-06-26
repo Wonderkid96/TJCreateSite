@@ -183,7 +183,7 @@ export default function PosterPreview() {
             About
           </div>
           <p className="font-expanded max-w-2xl text-[clamp(1.8rem,5.2vw,4.4rem)] uppercase leading-[0.96] tracking-tight md:max-w-3xl">
-            I'm Toby, a designer building <span className="text-accent">strategic visuals</span>{" "}
+            I&apos;m Toby, a designer building <span className="text-accent">strategic visuals</span>{" "}
             for music, culture and brands.
           </p>
           <p className="mt-6 max-w-md text-lg leading-relaxed text-paper/80">

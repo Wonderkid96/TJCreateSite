@@ -500,7 +500,7 @@ function FallingOnSky() {
       <div
         className="absolute inset-0 opacity-60 mix-blend-screen"
         style={{
-          backgroundImage: "url(/work/imported/bg/cloud-long.avif)",
+          backgroundImage: "url(/work/imported/bg/cloud-long.webp)",
           backgroundSize: "cover",
           backgroundPosition: "center",
           animation: "cloudDrift 60s linear infinite",

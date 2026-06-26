@@ -347,7 +347,7 @@ export default function Hero() {
           <div
             className="h-full w-full"
             style={{
-              backgroundImage: "url(/work/imported/bg/cloud-long.avif)",
+              backgroundImage: "url(/work/imported/bg/cloud-long.webp)",
               backgroundSize: "cover",
               backgroundRepeat: "no-repeat",
               backgroundPosition: "center top",

@@ -217,6 +217,13 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
       typeof window !== "undefined" &&
       window.matchMedia("(pointer: coarse)").matches
   );
+  // Reduced-motion users get the poster/first frame; they can start
+  // playback themselves where controls exist (WCAG 2.2.2).
+  const [prefersReducedMotion] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
   const [dayNightIsNight, setDayNightIsNight] = useState(false);
 
   useEffect(() => {
@@ -284,7 +291,7 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
         src={project.video}
         poster={project.videoPoster}
         preload="none"
-        autoPlay
+        autoPlay={!prefersReducedMotion}
         muted
         loop
         playsInline
@@ -312,7 +319,7 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
           <video
             src={project.video}
             muted
-            autoPlay
+            autoPlay={!prefersReducedMotion}
             loop
             playsInline
             preload="auto"

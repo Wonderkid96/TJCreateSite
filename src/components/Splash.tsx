@@ -71,13 +71,17 @@ export default function Splash() {
     const hardDeadline = mountedAt + MAX_SHOW_MS;
     let raf = 0;
     let finished = false;
+    let hideTimeout = 0;
+    // Only push a state update when the visible whole-percent changes —
+    // the rAF loop runs at 60Hz but the bar only has ~100 distinct states.
+    let lastPct = -1;
 
     const finish = () => {
       if (finished) return;
       finished = true;
       cancelAnimationFrame(raf);
       setProgress(1);
-      window.setTimeout(() => {
+      hideTimeout = window.setTimeout(() => {
         setVisible(false);
         try {
           sessionStorage.setItem(SESSION_KEY, "1");
@@ -87,7 +91,12 @@ export default function Splash() {
 
     const tick = () => {
       raf = requestAnimationFrame(tick);
-      setProgress(fallingFramesProgress());
+      const p = fallingFramesProgress();
+      const pct = Math.round(p * 100);
+      if (pct !== lastPct) {
+        lastPct = pct;
+        setProgress(p);
+      }
       const now = performance.now();
       // Normal path: enough frames for smooth scroll viewing + min display
       // time satisfied. On fast connections fallingFramesReady() (all 82)
@@ -110,6 +119,7 @@ export default function Splash() {
 
     return () => {
       cancelAnimationFrame(raf);
+      window.clearTimeout(hideTimeout);
       html.style.overflow = prevHtmlOverflow;
       body.style.overflow = prevBodyOverflow;
     };
@@ -167,7 +177,14 @@ export default function Splash() {
                 TJCREATE<span className="text-accent ml-[0.05em]">.</span>
               </div>
               {/* Gradient progress bar */}
-              <div className="relative h-[2px] w-full overflow-hidden bg-ink/10">
+              <div
+                role="progressbar"
+                aria-label="Loading site"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(progress * 100)}
+                className="relative h-[2px] w-full overflow-hidden bg-ink/10"
+              >
                 <div
                   className="absolute inset-y-0 left-0 will-change-transform"
                   style={{

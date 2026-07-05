@@ -147,20 +147,15 @@ function ProjectTile({
     const v = videoRef.current;
     if (!v) return;
 
-    let isVisible = false;
-    const io = new IntersectionObserver(
-      ([entry]) => { isVisible = entry.isIntersecting; },
-      { threshold: 0 }
-    );
-    io.observe(v);
-
     let raf = 0;
-    let last = performance.now();
+    let running = false;
+    let last = 0;
     let dir = 1;
     v.pause();
+
     const tick = (now: number) => {
+      if (!running) return;
       raf = requestAnimationFrame(tick);
-      if (!isVisible) { last = now; return; }
       if (v.readyState < 2 || !v.duration || Number.isNaN(v.duration)) {
         last = now;
         return;
@@ -178,8 +173,30 @@ function ProjectTile({
         v.currentTime = next;
       }
     };
-    raf = requestAnimationFrame(tick);
-    return () => { io.disconnect(); cancelAnimationFrame(raf); };
+
+    // Run the rAF loop only while the tile is on screen — an always-on
+    // loop burns a frame callback per tile even when nothing is visible.
+    const start = () => {
+      if (running) return;
+      running = true;
+      last = performance.now();
+      raf = requestAnimationFrame(tick);
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(raf);
+    };
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) start();
+        else stop();
+      },
+      { threshold: 0 }
+    );
+    io.observe(v);
+
+    return () => { io.disconnect(); stop(); };
   }, [pingPongEnabled]);
 
   useEffect(() => {
@@ -276,6 +293,10 @@ function ProjectTile({
       onMouseEnter={onEnter}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
+      // Keyboard parity: focus mirrors hover so tab users get the same
+      // visual feedback (tilt state + hover-video) as mouse users.
+      onFocus={onEnter}
+      onBlur={onLeave}
       // The "YOUTUBE ↗" cue is cursor-only, so tell screen reader users a
       // new tab is coming (WCAG 3.2.2). Internal tiles keep their visible
       // text as the accessible name.

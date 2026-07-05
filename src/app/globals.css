@@ -173,12 +173,16 @@ html.lenis body {
   }
 }
 
-/* Keyboard focus — visible ring for a/button elements, hidden for mouse users */
+/* Keyboard focus — visible ring for a/button elements, hidden for mouse users.
+   Dual ring (accent outline + paper halo filling the offset gap) so the ring
+   passes 3:1 on light sections, dark-pinned sections, and the dark theme —
+   red alone is only ~2.5:1 on ink. */
 :focus { outline: none; }
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 2px;
+  box-shadow: 0 0 0 3px #fffdf8;
 }
 
 /* Rotating conic-gradient angle for animated button borders. @property lets
@@ -377,5 +381,6 @@ html.reveal-mounted [data-reveal].is-visible {
   top: 1rem;
   outline: 2px solid var(--accent);
   outline-offset: 3px;
+  box-shadow: 0 0 0 3px #fffdf8;
 }
 

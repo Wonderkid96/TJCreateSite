@@ -46,7 +46,7 @@ export default function Contact() {
       {/* Bold "Say hello" — the email is the headline. */}
       <a
         href={`mailto:${CONTACT_EMAIL}`}
-        aria-label={`Say hello — email ${CONTACT_EMAIL}`}
+        aria-label={`Email ${CONTACT_EMAIL}`}
         data-cursor="view"
         data-cursor-label="EMAIL"
         className="group mt-6 block md:mt-8"

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Schibsted_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
@@ -21,15 +21,21 @@ const display = localFont({
   display: "swap",
 });
 
-const sans = Space_Grotesk({
+// Body / UI face — Schibsted Grotesk. Characterful grotesque, variable
+// 400-900. Replaced Space Grotesk (July 2026) to move the site away from
+// the default AI-build look while keeping the same warm grotesque tone.
+const sans = Schibsted_Grotesk({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
 });
 
-const mono = JetBrains_Mono({
+// Label / metadata face — IBM Plex Mono. Replaced JetBrains Mono (July 2026)
+// for the same reason. Non-variable, so weights are declared explicitly.
+const mono = IBM_Plex_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
   display: "swap",
   preload: false,
 });
@@ -206,8 +212,6 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* Preload the 3D @ typeface so it's ready before the user reaches Contact. */}
-        <link rel="preload" href="/fonts/optimer_bold.typeface.json" as="fetch" crossOrigin="anonymous" />
         {/* Apply saved theme before paint to avoid a flash of the wrong colours. */}
         <Script id="theme-no-flash" strategy="beforeInteractive">
           {NO_FLASH_SNIPPET}

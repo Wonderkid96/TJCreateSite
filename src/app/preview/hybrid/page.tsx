@@ -4,7 +4,10 @@ import { PROJECTS, SERVICES, CLIENTS_WITH_LOGOS } from "@/lib/content";
 import { posterFor, PreviewBanner } from "../shared";
 import LogoMarquee from "@/components/LogoMarquee";
 
-export const metadata = { title: "Preview · Hybrid" };
+export const metadata = {
+  title: "Preview · Hybrid",
+  robots: { index: false, follow: false },
+};
 
 // Pin the palette so the hero stays dark regardless of the active theme,
 // matching how Services/Contact lock their own dark backgrounds.

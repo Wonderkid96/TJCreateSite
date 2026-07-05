@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "TJCreate · Toby Johnson",
     short_name: "TJCreate",
     description:
-      "Graphic and motion designer working with record labels, artists, and ambitious brands.",
+      "Graphic and motion designer working with record labels, artists, and brands on campaign artwork, visual identity, and motion graphics. Based in Lincoln, UK.",
     start_url: "/",
     display: "standalone",
     background_color: "#fffdf8",

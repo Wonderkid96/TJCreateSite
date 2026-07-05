@@ -34,7 +34,7 @@ export const PROJECTS: Project[] = [
       "Lead campaign artwork for Brighton Dome's Together We Stand, a four-label collaboration (New Soil, Bridge The Gap, Jazz Re:freshed, Women in Jazz) featuring Balimaya Project, corto.alto and Rebecca Vasmant Live Ensemble. The brief: one visual strong enough to carry four label identities and three headline acts without leaning on any of them. Built as a 3D block system in modern colour, with a motion variant cut for social. Used across announce, web, print distro and Brighton Dome's wider poster runs.",
     video: "/work/imported/videos/together-we-stand-poster.mp4",
     videoPoster: "/work/imported/posters/together-we-stand-mockup.avif",
-    alt: "Screen-printed concert poster for Brighton Dome record-label showcase — print design by Toby Johnson",
+    alt: "Screen-printed concert poster for Brighton Dome record-label showcase, print design by Toby Johnson",
     kind: "hover-video",
     bg: "#1c1a16",
   },
@@ -62,7 +62,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Tour poster for Jgrrey's \"Playing gigs just so I can see you\" run, advertising her Radio 1 Big Weekend slot, Bristol's Dot to Dot and Last Time Out, Leeds. Floating moons built as 3D spheres in Blender, run through Photoshop threshold and gradients to sit flat against the blueprint indigo. Heavy stock print.",
     image: "/work/imported/posters/jgrrey-mu.avif",
-    alt: "Jgrrey tour poster printed in blueprint indigo — music industry graphic design by Toby Johnson",
+    alt: "Jgrrey tour poster printed in blueprint indigo, music industry graphic design by Toby Johnson",
     kind: "image",
     bg: "#1a1a1a",
   },
@@ -75,6 +75,7 @@ export const PROJECTS: Project[] = [
     tags: ["Motion", "Release"],
     blurb:
       "Release animation for my single Your Cries, self-released in 2022. The plan was a music video of a body falling gracefully through the sky. With no budget for that, I leaned a chair back in the studio, filmed myself falling off it, and rotoscoped the footage in After Effects. That single take carried the whole release: the still became the artwork, the rotoscoped loop became the Spotify Canvas and Apple Motion artwork, and it now runs as the hero of this site. Built for nothing, and still doing the work.",
+    alt: "Rotoscoped figure falling through a cloudy blue sky, release animation for Your Cries by Toby Johnson",
     kind: "falling",
     bg: "#0a0a0a",
   },
@@ -88,7 +89,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Gig poster for a Filtered night at Angel Coffee House in Lincoln. I named the event, branded it, and played it. The type is built around the spiral of a stirred coffee, tying the music to the room it ran in. Teal ink, heavy type, A3.",
     image: "/work/imported/posters/filtered-gig-mockup2.avif",
-    alt: "Gig poster for Filtered in teal ink with heavy type — music poster design by Toby Johnson",
+    alt: "Gig poster for Filtered in teal ink with heavy type, music poster design by Toby Johnson",
     kind: "image",
     bg: "#0a3b45",
   },
@@ -102,7 +103,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Identity and packaging for Offcut, a small Herefordshire workshop building clocks from the floorboards of a decommissioned chapel in Leintwardine. The brand had to carry the provenance of the wood without leaning sentimental. Marks, packaging and printed collateral were built around that single material story. Offcut now ships timepieces across the UK from the same workshop.",
     image: "/work/imported/projects/box-grid.avif",
-    alt: "Black-on-black product packaging system for Offcut — packaging design by Toby Johnson",
+    alt: "Black-on-black product packaging system for Offcut, packaging design by Toby Johnson",
     kind: "image",
     bg: "#0a0a0a",
   },
@@ -177,7 +178,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Phone booth sculpted and modelled in Blender for an environmental 3D scene challenge. Two lighting passes: one daylit, one at night. The tile flips between them on hover, so the same geometry carries both moods of the same place.",
     image: "/work/imported/day-night/phone-booth-day.avif",
-    alt: "Phone booth 3D scene rendered in day and night lighting — 3D design by Toby Johnson",
+    alt: "Phone booth 3D scene rendered in day and night lighting, 3D design by Toby Johnson",
     imageHover: "/work/imported/day-night/phone-booth-night.avif",
     kind: "day-night",
     bg: "#101418",
@@ -208,7 +209,7 @@ export const PROJECTS: Project[] = [
     blurb:
       "Packaging for Wonderkid, my own producer alias. A typographic label system rendered in-bag, giving a personal release the same finish as a client one.",
     image: "/work/imported/posters/wonderkid-in-bag.avif",
-    alt: "Wonderkid limited edition packaging rendered in-bag — product graphic design by Toby Johnson",
+    alt: "Wonderkid limited edition packaging rendered in-bag, product graphic design by Toby Johnson",
     kind: "image",
     bg: "#0f0f0f",
   },
@@ -247,32 +248,18 @@ export const PROJECTS: Project[] = [
 
 // Labels, agencies, and artists with their own vector logos. Potrace-traced from
 // source PNGs so they scale crisp at any size. URLs open in a new tab.
+// Ordered most recognisable first — array order is the display order in the
+// Clients grid (rows of 4 on desktop), so the biggest names lead.
 export const CLIENTS_WITH_LOGOS = [
-  // Labels / agencies
   {
-    name: "Gigantic",
-    logo: "/work/imported/logos/gigantic.svg",
-    url: "https://www.gigantic.com",
+    name: "Mojang Studios",
+    logo: "/work/imported/logos/mojang-studios.svg",
+    url: "https://www.minecraft.net/en-us/mojang-studios",
   },
   {
-    name: "Brighton Dome",
-    logo: "/work/imported/logos/brighton-dome.svg",
-    url: "https://brightondome.org",
-  },
-  {
-    name: "Jazz Re:freshed",
-    logo: "/work/imported/logos/jazz-refreshed.svg",
-    url: "https://jazzrefreshed.com",
-  },
-  {
-    name: "Bridge the Gap",
-    logo: "/work/imported/logos/bridge-the-gap.svg",
-    url: "https://www.bridgethegapmanagement.com",
-  },
-  {
-    name: "Mahogany",
-    logo: "/work/imported/logos/mahogany.svg",
-    url: "https://www.youtube.com/@MahoganySessions",
+    name: "Courtney Barnett",
+    logo: "/work/imported/logos/courtney-barnett.svg",
+    url: "https://courtneybarnett.com.au",
   },
   {
     name: "Marathon Artists",
@@ -280,46 +267,30 @@ export const CLIENTS_WITH_LOGOS = [
     url: "https://marathonartists.com",
   },
   {
-    name: "Moves Recordings",
-    logo: "/work/imported/logos/moves.svg",
-    url: "https://moves.ltd",
+    name: "Brighton Dome",
+    logo: "/work/imported/logos/brighton-dome.svg",
+    url: "https://brightondome.org",
   },
   {
-    name: "New Soil",
-    logo: "/work/imported/logos/new-soil.svg",
-    url: "https://newsoil.co",
+    name: "Mahogany",
+    logo: "/work/imported/logos/mahogany.svg",
+    url: "https://www.youtube.com/@MahoganySessions",
   },
   {
-    name: "Instrumental",
-    logo: "/work/imported/logos/instrumental.svg",
-    url: "https://instrumental.info",
+    name: "Jazz Re:freshed",
+    logo: "/work/imported/logos/jazz-refreshed.svg",
+    url: "https://jazzrefreshed.com",
   },
   {
-    name: "Women in Jazz",
-    logo: "/work/imported/logos/women-in-jazz.svg",
-    url: "https://www.womeninjazz.co.uk",
+    name: "Gigantic",
+    logo: "/work/imported/logos/gigantic.svg",
+    url: "https://www.gigantic.com",
   },
   {
-    name: "Made by Analogue",
-    logo: "/work/imported/logos/analogue-leeds.svg",
-    url: "https://madebyanalogue.co.uk/",
+    name: "Corto.Alto",
+    logo: "/work/imported/logos/corto-alto.svg",
+    url: "https://cortoalto.com",
   },
-  {
-    name: "Pace Artists",
-    logo: "/work/imported/logos/pace.svg",
-    url: "https://www.paceartists.com",
-  },
-  {
-    name: "Optima Design",
-    logo: "/work/imported/logos/optima.svg",
-    url: "https://www.optimadesign.co.uk",
-  },
-  {
-    name: "Mojang Studios",
-    logo: "/work/imported/logos/mojang-studios.svg",
-    url: "https://www.minecraft.net/en-us/mojang-studios",
-  },
-  // Artists with officially-supplied logos
   {
     name: "Jgrrey",
     logo: "/work/imported/logos/jgrrey.svg",
@@ -331,19 +302,49 @@ export const CLIENTS_WITH_LOGOS = [
     url: "https://www.hotwaxband.com",
   },
   {
-    name: "Corto.Alto",
-    logo: "/work/imported/logos/corto-alto.svg",
-    url: "https://cortoalto.com",
+    name: "Women in Jazz",
+    logo: "/work/imported/logos/women-in-jazz.svg",
+    url: "https://www.womeninjazz.co.uk",
   },
   {
-    name: "Courtney Barnett",
-    logo: "/work/imported/logos/courtney-barnett.svg",
-    url: "https://courtneybarnett.com.au",
+    name: "New Soil",
+    logo: "/work/imported/logos/new-soil.svg",
+    url: "https://newsoil.co",
+  },
+  {
+    name: "Bridge the Gap",
+    logo: "/work/imported/logos/bridge-the-gap.svg",
+    url: "https://www.bridgethegapmanagement.com",
+  },
+  {
+    name: "Pace Artists",
+    logo: "/work/imported/logos/pace.svg",
+    url: "https://www.paceartists.com",
+  },
+  {
+    name: "Moves Recordings",
+    logo: "/work/imported/logos/moves.svg",
+    url: "https://moves.ltd",
+  },
+  {
+    name: "Instrumental",
+    logo: "/work/imported/logos/instrumental.svg",
+    url: "https://instrumental.info",
+  },
+  {
+    name: "Made by Analogue",
+    logo: "/work/imported/logos/analogue-leeds.svg",
+    url: "https://madebyanalogue.co.uk/",
   },
   {
     name: "Richard Walters",
     logo: "/work/imported/logos/richard-walters.svg",
     url: "https://richardwalters.bandcamp.com",
+  },
+  {
+    name: "Optima Design",
+    logo: "/work/imported/logos/optima.svg",
+    url: "https://www.optimadesign.co.uk",
   },
 ];
 
@@ -354,7 +355,7 @@ export const SERVICES = [
     num: "01",
     title: "Graphic Design",
     blurb:
-      "Identity, print, packaging and artwork systems that still feel right after the campaign rush has passed.",
+      "I've worked alongside labels, studios and agencies across music, gaming and product, delivering bold design for campaigns, branding and print.",
     items: [
       "Visual identity",
       "Editorial + print",
@@ -366,7 +367,7 @@ export const SERVICES = [
     num: "02",
     title: "Motion Graphics",
     blurb:
-      "Lyric videos, visualisers, titles and short-form motion, built to carry the same idea as the still work.",
+      "I've made lyric videos, visualisers and Spotify Canvases for artists and labels, animating release campaigns from announce to drop.",
     items: [
       "Title sequences",
       "Lyric videos",
@@ -378,7 +379,7 @@ export const SERVICES = [
     num: "03",
     title: "3D Design",
     blurb:
-      "3D for campaign imagery, product shots and concept work, used when a flat treatment is not enough.",
+      "I've modelled product renders, 3D type and full scenes in Blender, for the campaigns and product shots flat artwork can't carry.",
     items: [
       "Product renders",
       "Type / scene design",

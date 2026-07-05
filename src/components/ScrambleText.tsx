@@ -74,18 +74,24 @@ export default function ScrambleText({
 
   // When inactive, render the clean text as a plain span. When active,
   // mount the animated variant — re-mounting resets state cleanly and
-  // avoids setState-in-effect churn.
+  // avoids setState-in-effect churn. The aria-label / aria-hidden pair
+  // keeps screen readers on the real text while the visible characters
+  // scramble (same pattern as the lockWidth variant above).
   if (!active) {
     return <span className={className}>{text}</span>;
   }
   return (
-    <Scrambler
-      key={text}
-      text={text}
-      colors={colors}
-      duration={duration}
-      className={className}
-    />
+    <span aria-label={text}>
+      <span aria-hidden>
+        <Scrambler
+          key={text}
+          text={text}
+          colors={colors}
+          duration={duration}
+          className={className}
+        />
+      </span>
+    </span>
   );
 }
 

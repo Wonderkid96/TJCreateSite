@@ -40,11 +40,6 @@ export default function Splash() {
       // Private mode / disabled storage — just always show. Harmless.
     }
 
-    // Preload the Envelope3D chunk and its font while the splash is visible
-    // so the 3D @ symbol is ready by the time the user scrolls to Contact.
-    import("@/components/Envelope3D");
-    fetch("/fonts/optimer_bold.typeface.json", { priority: "low" } as RequestInit);
-
     // Users who have asked the OS for reduced motion get the splash skipped
     // entirely (WCAG 2.3.3 / 2.2.1). The progress bar and fade are decorative,
     // the site does not depend on them.

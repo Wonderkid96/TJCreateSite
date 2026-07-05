@@ -134,7 +134,9 @@ export default function ProjectModal({ project, onClose }: Props) {
                 onClick={onClose}
                 data-cursor="hover"
                 aria-label={`Close ${project.title} details`}
-                className="font-mono text-[11px] uppercase tracking-[0.2em] hover:text-accent transition-colors flex items-center gap-3 rounded-sm focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                // Padding + negative margin grow the hit area to ~44px
+                // (WCAG 2.5.8) without shifting the visual layout.
+                className="font-mono text-[11px] uppercase tracking-[0.2em] hover:text-accent transition-colors flex items-center gap-3 rounded-sm p-3 -m-3 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
               >
                 <span className="hidden md:inline">Close</span>
                 <span aria-hidden className="relative w-5 h-5">

@@ -4,7 +4,10 @@ import { PROJECTS, SERVICES, CLIENTS_WITH_LOGOS } from "@/lib/content";
 import { posterFor, PreviewBanner } from "../shared";
 import LogoMarquee from "@/components/LogoMarquee";
 
-export const metadata = { title: "Preview · Poster Cover" };
+export const metadata = {
+  title: "Preview · Poster Cover",
+  robots: { index: false, follow: false },
+};
 
 // Pin the palette so dark sections stay dark regardless of theme.
 const DARK_VARS = {

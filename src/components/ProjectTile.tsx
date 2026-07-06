@@ -10,6 +10,7 @@ import {
 } from "motion/react";
 import { memo, useEffect, useRef, useState } from "react";
 import type { Project } from "@/lib/content";
+import { useMediaQuery } from "@/lib/use-media-query";
 import ScrambleText from "./ScrambleText";
 import {
   FALLING_FRAME_COUNT,
@@ -39,18 +40,13 @@ function ProjectTile({
   const hoverVideoEndedRef = useRef(false);
   const hoverVideoReverseRaf = useRef(0);
   const [hovered, setHovered] = useState(false);
-  const [isTouchDevice] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(pointer: coarse)").matches
-  );
-  // One-shot check like isTouchDevice: gates autoplay and JS-driven motion
-  // (WCAG 2.2.2 / 2.3.3). Posters and static frames render instead.
-  const [prefersReducedMotion] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
+  // Hydration-safe: false on the server and the first client render, real
+  // value after — the render branches below (hover-video, parallax insets)
+  // must match server HTML or React throws #418 on touch devices.
+  const isTouchDevice = useMediaQuery("(pointer: coarse)");
+  // Gates autoplay and JS-driven motion (WCAG 2.2.2 / 2.3.3). Posters and
+  // static frames render instead.
+  const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [dayNightIsNight, setDayNightIsNight] = useState(false);
 
   // Cursor tilt

@@ -51,7 +51,11 @@ export default function ScrambleText({
 
   if (lockWidth) {
     return (
-      <span className="relative inline-grid align-baseline" aria-label={text}>
+      // Screen readers get the real text via the sr-only node; aria-label on
+      // a bare <span> is prohibited (axe aria-prohibited-attr), so the
+      // scrambling glyphs are aria-hidden instead.
+      <span className="relative inline-grid align-baseline">
+        <span className="sr-only">{text}</span>
         <span aria-hidden className={`${className} invisible`}>
           {text}
         </span>
@@ -74,14 +78,15 @@ export default function ScrambleText({
 
   // When inactive, render the clean text as a plain span. When active,
   // mount the animated variant — re-mounting resets state cleanly and
-  // avoids setState-in-effect churn. The aria-label / aria-hidden pair
-  // keeps screen readers on the real text while the visible characters
-  // scramble (same pattern as the lockWidth variant above).
+  // avoids setState-in-effect churn. The sr-only / aria-hidden pair keeps
+  // screen readers on the real text while the visible characters scramble
+  // (same pattern as the lockWidth variant above).
   if (!active) {
     return <span className={className}>{text}</span>;
   }
   return (
-    <span aria-label={text}>
+    <span>
+      <span className="sr-only">{text}</span>
       <span aria-hidden>
         <Scrambler
           key={text}

@@ -108,6 +108,10 @@ function pumpQueue() {
 function loadOneFrame(i: number) {
   const img = new window.Image();
   img.decoding = "async";
+  // Frames are a background preload — on slow connections they must not
+  // starve the webfonts and LCP resources, which would push the hero text's
+  // final paint (and LCP) out by seconds.
+  img.fetchPriority = "low";
 
   let settled = false;
   const settle = (ok: boolean) => {

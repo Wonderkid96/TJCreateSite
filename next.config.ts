@@ -27,14 +27,15 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Static media rarely changes. Cache for a day, then serve stale while
-        // revalidating in the background, so repeat visits are instant without
-        // pinning a stale file for a year (filenames aren't fingerprinted).
+        // Static media rarely changes. Cache for a week, then serve stale
+        // while revalidating in the background, so repeat visits are instant
+        // without pinning a stale file forever (filenames aren't
+        // fingerprinted, so immutable would break in-place asset updates).
         source: "/work/:path*",
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=86400, stale-while-revalidate=2592000",
+            value: "public, max-age=604800, stale-while-revalidate=2592000",
           },
         ],
       },

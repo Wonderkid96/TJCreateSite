@@ -254,7 +254,9 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
         alt={project.alt ?? project.title}
         fill
         sizes="(max-width: 768px) 100vw, 66vw"
-        className="object-cover"
+        className={
+          project.modalFit === "contain" ? "object-contain" : "object-cover"
+        }
       />
     );
   }

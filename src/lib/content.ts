@@ -18,6 +18,12 @@ export type Project = {
   bg?: string;
   /** If set, clicking the tile opens this URL (new tab) instead of the modal. */
   externalUrl?: string;
+  /**
+   * How the image fits the modal media pane. "contain" shows the full frame
+   * (letterboxed on `bg`) — used for wide renders that the tile crops.
+   * Defaults to cover.
+   */
+  modalFit?: "contain";
   /** Video plays forward → reverse → forward (no loop reset jump). */
   pingPong?: boolean;
 };
@@ -108,6 +114,21 @@ export const PROJECTS: Project[] = [
     bg: "#0a0a0a",
   },
   {
+    slug: "health-plus",
+    title: "Health Plus",
+    client: "TJCreate",
+    year: "2024",
+    category: "3D",
+    tags: ["3D", "Product"],
+    blurb:
+      "Self-initiated 3D product render for Health Plus, a concept supplement brand. Modelled, textured and lit in Blender.",
+    image: "/work/imported/projects/health-plus-render.avif",
+    alt: "Blue supplement bottle for concept brand Health Plus with capsules suspended around it, 3D product render by Toby Johnson",
+    kind: "image",
+    modalFit: "contain",
+    bg: "#dfe1ea",
+  },
+  {
     slug: "liar-liar",
     title: "Liar Liar",
     client: "Common Request",
@@ -184,6 +205,21 @@ export const PROJECTS: Project[] = [
     bg: "#101418",
   },
   {
+    slug: "huel-render",
+    title: "Huel",
+    client: "TJCreate",
+    year: "2024",
+    category: "3D",
+    tags: ["3D", "Product"],
+    blurb:
+      "Self-initiated 3D study of Huel's ready-to-drink bottle. Not a client commission. Modelled and rendered in Blender.",
+    image: "/work/imported/projects/huel-render.avif",
+    alt: "Huel ready-to-drink bottle falling from a shipping box, 3D product render by Toby Johnson",
+    kind: "image",
+    modalFit: "contain",
+    bg: "#d9d9d9",
+  },
+  {
     slug: "baraka-loop",
     title: "Joshua Baraka",
     client: "Joshua Baraka",
@@ -227,6 +263,21 @@ export const PROJECTS: Project[] = [
     alt: "Carousel motion template for Lilly Era house music label, motion graphics by Toby Johnson",
     kind: "video",
     bg: "#0a0a0a",
+  },
+  {
+    slug: "gameboy-render",
+    title: "Game Boy",
+    client: "TJCreate",
+    year: "2024",
+    category: "3D",
+    tags: ["3D", "Product"],
+    blurb:
+      "Self-initiated 3D study of the original Game Boy. Not a client commission. Modelled and rendered in Blender.",
+    image: "/work/imported/projects/gameboy-render.avif",
+    alt: "Original Nintendo Game Boy floating over colourful retro shapes, 3D product render by Toby Johnson",
+    kind: "image",
+    modalFit: "contain",
+    bg: "#12181f",
   },
   {
     slug: "jb-wrong-places",

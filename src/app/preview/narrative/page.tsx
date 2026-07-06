@@ -18,7 +18,10 @@ const PROCESS = [
 
 const POSITION = ["Brands hire me when", "nice", "isn't enough."];
 
-export const metadata = { title: "Preview · Narrative" };
+export const metadata = {
+  title: "Preview · Narrative",
+  robots: { index: false, follow: false },
+};
 
 export default function NarrativePreview() {
   const work = PROJECTS.slice(0, 6);

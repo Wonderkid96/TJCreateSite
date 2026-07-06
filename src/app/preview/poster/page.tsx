@@ -4,7 +4,10 @@ import { PROJECTS, CLIENTS_WITH_LOGOS } from "@/lib/content";
 import { posterFor, PreviewBanner } from "../shared";
 import HeroSlider, { type Slide } from "../HeroSlider";
 
-export const metadata = { title: "Preview · Poster" };
+export const metadata = {
+  title: "Preview · Poster",
+  robots: { index: false, follow: false },
+};
 
 // Pin the palette so the image/overlay sections stay dark regardless of theme.
 const DARK_VARS = {

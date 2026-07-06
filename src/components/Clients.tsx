@@ -10,6 +10,11 @@ import SectionTitle from "./SectionTitle";
 // Gap between the cursor and the floating client-name label.
 const LABEL_GAP_PX = 22;
 
+// Fine-pointer (mouse) check — the cursor-following label is a desktop
+// affordance, so a synthetic mouse event from a tap shouldn't flash it.
+const canHover = () =>
+  typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches;
+
 // Client-mount detection without setState-in-effect: false during SSR + the
 // first hydration render, true thereafter. Hydration-safe and warning-free.
 const noopSubscribe = () => () => {};
@@ -60,7 +65,7 @@ export default function Clients() {
   const onHover = (name: string | null, e?: React.MouseEvent) => {
     const el = labelRef.current;
     if (!el) return;
-    if (name && e) {
+    if (name && e && canHover()) {
       el.textContent = name;
       const onRightHalf = e.clientX > window.innerWidth / 2;
       el.style.top = `${e.clientY}px`;

@@ -23,7 +23,7 @@ const SUB =
 
 // Source image pixel dimensions expressed as width ÷ height.
 // Used by safeTranslate to derive the rendered layer height at any viewport width.
-const SKY_ASPECT = 1581 / 4451;   // sky-long.avif:   1581 px wide × 4451 px tall
+const SKY_ASPECT = 1581 / 2840;   // sky-long-hero.avif: 1581 px wide × 2840 px tall (bottom cloud bank cropped)
 const CLOUD_ASPECT = 3269 / 8125; // cloud-long.avif: 3269 px wide × 8125 px tall
 
 export default function Hero() {
@@ -322,7 +322,7 @@ export default function Hero() {
           className="absolute top-0 will-change-transform"
         >
           <Image
-            src="/work/imported/bg/sky-long.avif"
+            src="/work/imported/bg/sky-long-hero.avif"
             alt=""
             fill
             priority

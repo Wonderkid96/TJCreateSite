@@ -134,7 +134,9 @@ export default function ProjectModal({ project, onClose }: Props) {
                 onClick={onClose}
                 data-cursor="hover"
                 aria-label={`Close ${project.title} details`}
-                className="font-mono text-[11px] uppercase tracking-[0.2em] hover:text-accent transition-colors flex items-center gap-3 rounded-sm focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                // Padding + negative margin grow the hit area to ~44px
+                // (WCAG 2.5.8) without shifting the visual layout.
+                className="font-mono text-[11px] uppercase tracking-[0.2em] hover:text-accent transition-colors flex items-center gap-3 rounded-sm p-3 -m-3 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
               >
                 <span className="hidden md:inline">Close</span>
                 <span aria-hidden className="relative w-5 h-5">
@@ -215,6 +217,13 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
       typeof window !== "undefined" &&
       window.matchMedia("(pointer: coarse)").matches
   );
+  // Reduced-motion users get the poster/first frame; they can start
+  // playback themselves where controls exist (WCAG 2.2.2).
+  const [prefersReducedMotion] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
   const [dayNightIsNight, setDayNightIsNight] = useState(false);
 
   useEffect(() => {
@@ -245,7 +254,9 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
         alt={project.alt ?? project.title}
         fill
         sizes="(max-width: 768px) 100vw, 66vw"
-        className="object-cover"
+        className={
+          project.modalFit === "contain" ? "object-contain" : "object-cover"
+        }
       />
     );
   }
@@ -282,7 +293,7 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
         src={project.video}
         poster={project.videoPoster}
         preload="none"
-        autoPlay
+        autoPlay={!prefersReducedMotion}
         muted
         loop
         playsInline
@@ -310,7 +321,7 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
           <video
             src={project.video}
             muted
-            autoPlay
+            autoPlay={!prefersReducedMotion}
             loop
             playsInline
             preload="auto"

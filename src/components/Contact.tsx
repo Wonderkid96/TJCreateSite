@@ -46,12 +46,12 @@ export default function Contact() {
       {/* Bold "Say hello" — the email is the headline. */}
       <a
         href={`mailto:${CONTACT_EMAIL}`}
-        aria-label={`Say hello — email ${CONTACT_EMAIL}`}
+        aria-label={`Email ${CONTACT_EMAIL}`}
         data-cursor="view"
         data-cursor-label="EMAIL"
         className="group mt-6 block md:mt-8"
       >
-        <motion.div
+        <motion.h2
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px 0px -20% 0px" }}
@@ -61,7 +61,7 @@ export default function Contact() {
           Say
           <br />
           hello<span className="text-accent">.</span>
-        </motion.div>
+        </motion.h2>
       </a>
 
       {/* Email + socials — no labels or divider, so it reads as one section. */}

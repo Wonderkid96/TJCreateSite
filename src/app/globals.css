@@ -58,6 +58,13 @@ body {
   overscroll-behavior: none;
 }
 
+/* Motion's useScroll measures targets against the scrolling element (html)
+   and expects it to be positioned. Safe: every fixed/absolute element on the
+   site already has its own positioned ancestor. */
+html {
+  position: relative;
+}
+
 html.lenis,
 html.lenis body {
   height: auto;
@@ -117,7 +124,9 @@ html.lenis body {
   66% { background-color: #c4a9d0; }
 }
 
-@media (prefers-reduced-motion: no-preference) {
+/* Logo hover (enlarge + shake + flicker) is a fine-pointer affordance only —
+   gated by hover/pointer so a tap on mobile never triggers (and sticks) it. */
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
   .logo-scale {
     transform-origin: center;
     transition: transform 420ms var(--ease);
@@ -164,12 +173,16 @@ html.lenis body {
   }
 }
 
-/* Keyboard focus — visible ring for a/button elements, hidden for mouse users */
+/* Keyboard focus — visible ring for a/button elements, hidden for mouse users.
+   Dual ring (accent outline + paper halo filling the offset gap) so the ring
+   passes 3:1 on light sections, dark-pinned sections, and the dark theme —
+   red alone is only ~2.5:1 on ink. */
 :focus { outline: none; }
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 2px;
+  box-shadow: 0 0 0 3px #fffdf8;
 }
 
 /* Rotating conic-gradient angle for animated button borders. @property lets
@@ -198,8 +211,20 @@ html.lenis body {
   }
 }
 
-.hover-tile:hover .hover-tile-media {
-  transform: scale(1.06);
+/* Motion-gated helper for the drifting cloud layer — reduced-motion users
+   get a static cloud layer instead. */
+@media (prefers-reduced-motion: no-preference) {
+  .cloud-drift {
+    animation: cloudDrift 60s linear infinite;
+  }
+}
+
+/* Tile zoom on hover — fine-pointer only, so a tap on mobile doesn't leave a
+   tile stuck enlarged. */
+@media (hover: hover) and (pointer: fine) {
+  .hover-tile:hover .hover-tile-media {
+    transform: scale(1.06);
+  }
 }
 
 /* Hovered tile lifts and enlarges slightly — other tiles unaffected */
@@ -356,5 +381,6 @@ html.reveal-mounted [data-reveal].is-visible {
   top: 1rem;
   outline: 2px solid var(--accent);
   outline-offset: 3px;
+  box-shadow: 0 0 0 3px #fffdf8;
 }
 

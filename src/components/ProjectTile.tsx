@@ -44,6 +44,13 @@ function ProjectTile({
       typeof window !== "undefined" &&
       window.matchMedia("(pointer: coarse)").matches
   );
+  // One-shot check like isTouchDevice: gates autoplay and JS-driven motion
+  // (WCAG 2.2.2 / 2.3.3). Posters and static frames render instead.
+  const [prefersReducedMotion] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
   const [dayNightIsNight, setDayNightIsNight] = useState(false);
 
   // Cursor tilt
@@ -74,9 +81,9 @@ function ProjectTile({
   // `pingPong: true` projects run a manual RAF ping-pong below.
   const fallingKind = project.kind === "falling";
   const pingPong = project.pingPong ?? false;
-  const pingPongEnabled = pingPong && !isTouchDevice;
+  const pingPongEnabled = pingPong && !isTouchDevice && !prefersReducedMotion;
   useEffect(() => {
-    if (fallingKind || pingPongEnabled) return;
+    if (fallingKind || pingPongEnabled || prefersReducedMotion) return;
     const v = videoRef.current;
     if (!v) return;
 
@@ -129,7 +136,7 @@ function ProjectTile({
       v.removeEventListener("canplay", onCanPlay);
       v.removeEventListener("loadeddata", onCanPlay);
     };
-  }, [fallingKind, pingPongEnabled]);
+  }, [fallingKind, pingPongEnabled, prefersReducedMotion]);
 
   // Ping-pong playback — forward, then reverse, forever. No loop-reset jump.
   // Gated by IntersectionObserver so the RAF only runs while the tile is
@@ -140,20 +147,15 @@ function ProjectTile({
     const v = videoRef.current;
     if (!v) return;
 
-    let isVisible = false;
-    const io = new IntersectionObserver(
-      ([entry]) => { isVisible = entry.isIntersecting; },
-      { threshold: 0 }
-    );
-    io.observe(v);
-
     let raf = 0;
-    let last = performance.now();
+    let running = false;
+    let last = 0;
     let dir = 1;
     v.pause();
+
     const tick = (now: number) => {
+      if (!running) return;
       raf = requestAnimationFrame(tick);
-      if (!isVisible) { last = now; return; }
       if (v.readyState < 2 || !v.duration || Number.isNaN(v.duration)) {
         last = now;
         return;
@@ -171,17 +173,40 @@ function ProjectTile({
         v.currentTime = next;
       }
     };
-    raf = requestAnimationFrame(tick);
-    return () => { io.disconnect(); cancelAnimationFrame(raf); };
+
+    // Run the rAF loop only while the tile is on screen — an always-on
+    // loop burns a frame callback per tile even when nothing is visible.
+    const start = () => {
+      if (running) return;
+      running = true;
+      last = performance.now();
+      raf = requestAnimationFrame(tick);
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(raf);
+    };
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) start();
+        else stop();
+      },
+      { threshold: 0 }
+    );
+    io.observe(v);
+
+    return () => { io.disconnect(); stop(); };
   }, [pingPongEnabled]);
 
   useEffect(() => {
-    if (!isTouchDevice || project.kind !== "day-night") return;
+    if (!isTouchDevice || prefersReducedMotion || project.kind !== "day-night")
+      return;
     const id = window.setInterval(() => {
       setDayNightIsNight((prev) => !prev);
     }, 3200);
     return () => window.clearInterval(id);
-  }, [isTouchDevice, project.kind]);
+  }, [isTouchDevice, prefersReducedMotion, project.kind]);
 
   // Cancel any in-flight reverse RAF when the tile unmounts
   useEffect(() => {
@@ -268,6 +293,18 @@ function ProjectTile({
       onMouseEnter={onEnter}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
+      // Keyboard parity: focus mirrors hover so tab users get the same
+      // visual feedback (tilt state + hover-video) as mouse users.
+      onFocus={onEnter}
+      onBlur={onLeave}
+      // The "YOUTUBE ↗" cue is cursor-only, so tell screen reader users a
+      // new tab is coming (WCAG 3.2.2). Internal tiles keep their visible
+      // text as the accessible name.
+      aria-label={
+        project.externalUrl
+          ? `${project.title} (opens on YouTube in a new tab)`
+          : undefined
+      }
       data-cursor="view"
       data-cursor-label={cursorLabel}
       className="hover-tile group relative block w-full h-full text-left"
@@ -445,6 +482,23 @@ function FallingOnSky() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Reduced motion: draw the first frame once it has decoded, then stop —
+    // no ping-pong loop.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      let raf = 0;
+      const drawOnce = () => {
+        const img = getFallingFrameByIndex(0);
+        if (!img || !img.complete || img.naturalWidth === 0) {
+          raf = requestAnimationFrame(drawOnce);
+          return;
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+      raf = requestAnimationFrame(drawOnce);
+      return () => cancelAnimationFrame(raf);
+    }
+
     let isVisible = false;
     const io = new IntersectionObserver(
       ([entry]) => { isVisible = entry.isIntersecting; },
@@ -498,12 +552,11 @@ function FallingOnSky() {
         className="object-cover object-center scale-110"
       />
       <div
-        className="absolute inset-0 opacity-60 mix-blend-screen"
+        className="cloud-drift absolute inset-0 opacity-60 mix-blend-screen"
         style={{
           backgroundImage: "url(/work/imported/bg/cloud-long.webp)",
           backgroundSize: "cover",
           backgroundPosition: "center",
-          animation: "cloudDrift 60s linear infinite",
         }}
       />
       <div className="absolute inset-0 flex items-center justify-center">

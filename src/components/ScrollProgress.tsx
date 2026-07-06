@@ -21,7 +21,11 @@ export default function ScrollProgress() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // Coalesce high-frequency scroll events (Lenis can fire faster than
+    // 60Hz) into at most one state update + layout read per frame.
+    let raf = 0;
     const update = () => {
+      raf = 0;
       const max =
         document.documentElement.scrollHeight - window.innerHeight;
       setProgress(max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0);
@@ -29,13 +33,17 @@ export default function ScrollProgress() {
       window.clearTimeout(hideTimer.current);
       hideTimer.current = window.setTimeout(() => setVisible(false), IDLE_HIDE_MS);
     };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
 
     update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
     return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      if (raf) cancelAnimationFrame(raf);
       window.clearTimeout(hideTimer.current);
     };
   }, []);

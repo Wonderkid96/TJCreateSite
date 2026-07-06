@@ -1,19 +1,16 @@
 /**
- * Falling-man animation — 82 transparent-alpha PNG frames hosted on R2.
+ * Falling-man animation — 82 transparent-alpha WebP frames, self-hosted
+ * in /public/work/frames (~1.6MB total vs ~11MB for the original PNGs).
  *
  * We render via <canvas> + ctx.drawImage(HTMLImageElement) rather than:
  *   - HEVC+alpha MP4: only renders in Safari; dead for Chrome + Firefox.
  *   - <img src={url}> swapping: even with a preload, the rendered element
  *     kicks off its own decode per swap, causing visible flicker on fast
  *     scroll.
- *   - createImageBitmap via fetch(): R2's public bucket doesn't return CORS
- *     headers on preflights, so fetch() fails outright.
  *
- * `new Image()` loads the bytes and decodes them inside the Image element
- * without a fetch() and without requiring CORS for basic rendering. Once
- * decoded, ctx.drawImage(img) draws directly from the image's internal
- * bitmap — instant, no per-frame decode. The canvas ends up tainted (no
- * pixel readback) but we never need that.
+ * `new Image()` loads the bytes and decodes them inside the Image element.
+ * Once decoded, ctx.drawImage(img) draws directly from the image's internal
+ * bitmap — instant, no per-frame decode.
  *
  * Loading strategy: frames load in sequential batches of CONCURRENCY (6)
  * so that early frames — visible first when scrolling — arrive before
@@ -27,8 +24,7 @@
  * frame is far less jarring than a blank canvas.
  */
 
-const FRAME_BASE =
-  "https://pub-32701e0732b04900831d917fc70dbc90.r2.dev/frame_";
+const FRAME_BASE = "/work/frames/frame_";
 
 export const FALLING_FRAME_COUNT = 82;
 export const FALLING_FRAME_WIDTH = 726;
@@ -36,7 +32,7 @@ export const FALLING_FRAME_HEIGHT = 699;
 
 export const FALLING_FRAMES: string[] = Array.from(
   { length: FALLING_FRAME_COUNT },
-  (_, i) => `${FRAME_BASE}${String(i + 1).padStart(4, "0")}.png`,
+  (_, i) => `${FRAME_BASE}${String(i + 1).padStart(4, "0")}.webp`,
 );
 
 export const FALLING_FIRST_FRAME = FALLING_FRAMES[0];
@@ -112,10 +108,6 @@ function pumpQueue() {
 function loadOneFrame(i: number) {
   const img = new window.Image();
   img.decoding = "async";
-  // No crossOrigin attribute — R2's public bucket sends no CORS headers,
-  // which would make a CORS-requested image fail to load. Without the
-  // attribute, the browser loads it as a same-origin-ish resource (the
-  // canvas ends up tainted, which we don't care about).
 
   let settled = false;
   const settle = (ok: boolean) => {

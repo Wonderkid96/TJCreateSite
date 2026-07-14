@@ -154,11 +154,8 @@ export default function NarrativePreview() {
         </h2>
         <div className="grid grid-cols-1 gap-px bg-line sm:grid-cols-2 lg:grid-cols-3">
           {SERVICES.map((s) => (
-            <div key={s.num} className="bg-paper p-8 md:p-12">
-              <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
-                {s.num} / 03
-              </div>
-              <h3 className="font-expanded mt-8 text-3xl uppercase tracking-tight md:text-4xl">
+            <div key={s.title} className="bg-paper p-8 md:p-12">
+              <h3 className="font-expanded text-3xl uppercase tracking-tight md:text-4xl">
                 {s.title}
               </h3>
               <p className="mt-5 max-w-[30ch] leading-relaxed text-ink/70">{s.blurb}</p>

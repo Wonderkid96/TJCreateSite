@@ -439,8 +439,10 @@ function ProjectTile({
 
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/55 pointer-events-none" />
 
-        <div className="absolute top-5 left-6 right-6 flex items-start justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90 mix-blend-difference">
-          <span>({String(index + 1).padStart(2, "0")})</span>
+        {/* Year only. The `(01)` bracket-counter that used to sit opposite is
+            retired brand-wide: it read as CAD annotation and numbered the work
+            for no reason a visitor cares about. */}
+        <div className="absolute top-5 left-6 right-6 flex items-start justify-end font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90 mix-blend-difference">
           <span>{project.year}</span>
         </div>
 

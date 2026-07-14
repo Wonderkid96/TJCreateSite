@@ -403,7 +403,6 @@ export const CLIENTS = CLIENTS_WITH_LOGOS.map((c) => c.name);
 
 export const SERVICES = [
   {
-    num: "01",
     title: "Graphic Design",
     blurb:
       "I've worked alongside labels, studios and agencies across music, gaming and product, delivering bold design for campaigns, branding and print.",
@@ -415,7 +414,6 @@ export const SERVICES = [
     ],
   },
   {
-    num: "02",
     title: "Motion Graphics",
     blurb:
       "I've made lyric videos, visualisers and Spotify Canvases for artists and labels, animating release campaigns from announce to drop.",
@@ -427,7 +425,6 @@ export const SERVICES = [
     ],
   },
   {
-    num: "03",
     title: "3D Design",
     blurb:
       "I've modelled product renders, 3D type and full scenes in Blender, for the campaigns and product shots flat artwork can't carry.",

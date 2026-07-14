@@ -25,17 +25,18 @@ export default function Services() {
           <SectionTitle>Services</SectionTitle>
         </div>
 
-        {/* Full-width horizontal rows (three services, so any multi-column
-            grid strands an empty cell). Hairline dividers via gap-px. */}
-        <div className="grid grid-cols-1 gap-px bg-paper/10">
+        {/* Three columns on desktop, one per discipline, stacking to rows on
+            mobile where side-by-side columns would crush the copy. Hairline
+            dividers via gap-px. */}
+        <div className="grid grid-cols-1 gap-px bg-paper/10 md:grid-cols-3">
         {SERVICES.map((s, i) => (
           // Outer div stays bg-ink at all times so the gap-px divider lines
-          // render correctly. Animating opacity on the row itself would
+          // render correctly. Animating opacity on the column itself would
           // make it transparent, letting the grid's bg-paper/10 bleed
-          // through the full row area before it transitions in.
+          // through the full area before it transitions in.
           <div
-            key={s.num}
-            className="bg-ink p-8 md:px-12 md:py-10 group relative overflow-hidden"
+            key={s.title}
+            className="bg-ink p-8 md:px-10 md:py-12 group relative overflow-hidden"
           >
             {/* Hover accent bar — lives on the outer div so it's always
                 clipped correctly and unaffected by the inner animation. */}
@@ -45,11 +46,11 @@ export default function Services() {
                 background: "var(--spectrum)",
               }}
             />
-            {/* Inner content fades + slides in — outer row bg stays solid.
-                Opt the whole row out of the global RevealObserver typewriter:
-                the row owns its reveal here, so letting the observer also
-                tag/animate the inner h3/p/li double-controlled them and left
-                words un-animated. */}
+            {/* Inner content fades + slides in — outer column bg stays solid.
+                Opt the whole column out of the global RevealObserver
+                typewriter: the column owns its reveal here, so letting the
+                observer also tag/animate the inner h3/p/li double-controlled
+                them and left words un-animated. */}
             <motion.div
               data-no-auto-text-reveal
               initial={{ opacity: 0, y: 40 }}
@@ -60,20 +61,15 @@ export default function Services() {
                 delay: i * 0.1,
                 ease: EASE,
               }}
-              className="flex flex-col gap-6 md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,4fr)_minmax(0,3fr)] md:items-start md:gap-12"
+              className="flex h-full flex-col gap-6"
             >
-              <div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50 mb-4">
-                  {s.num} / 03
-                </div>
-                <h3 className="font-display uppercase text-[clamp(1.4rem,2.2vw,2.4rem)] leading-[0.95] tracking-tight">
-                  {s.title}
-                </h3>
-              </div>
-              <p className="text-paper/80 max-w-[44ch] leading-relaxed">
-                {s.blurb}
-              </p>
-              <ul className="space-y-2 font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60">
+              <h3 className="font-display uppercase text-[clamp(1.4rem,2.2vw,2.4rem)] leading-[0.95] tracking-tight">
+                {s.title}
+              </h3>
+              <p className="text-paper/80 leading-relaxed">{s.blurb}</p>
+              {/* Pushed to the bottom of the column so the item lists align
+                  across all three, regardless of blurb length. */}
+              <ul className="mt-auto space-y-2 font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60">
                 {s.items.map((it) => (
                   <li key={it} className="flex items-start gap-3">
                     <span className="mt-1.5 inline-block h-1 w-1 shrink-0 rounded-full bg-accent" />

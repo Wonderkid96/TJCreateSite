@@ -135,9 +135,8 @@ export default function PosterCoverPreview() {
         <div className="mb-12 font-mono text-[11px] uppercase tracking-[0.25em] text-paper/55">What I do</div>
         <ul className="border-t border-line">
           {SERVICES.map((s) => (
-            <li key={s.num} className="grid grid-cols-1 gap-3 border-b border-line py-8 md:grid-cols-12 md:items-baseline md:gap-6">
-              <span className="font-mono text-xs uppercase tracking-[0.2em] text-accent md:col-span-1">{s.num}</span>
-              <h3 className="font-expanded text-[clamp(1.8rem,5vw,3.4rem)] uppercase leading-none tracking-tight md:col-span-5">{s.title}</h3>
+            <li key={s.title} className="grid grid-cols-1 gap-3 border-b border-line py-8 md:grid-cols-12 md:items-baseline md:gap-6">
+              <h3 className="font-expanded text-[clamp(1.8rem,5vw,3.4rem)] uppercase leading-none tracking-tight md:col-span-6">{s.title}</h3>
               <p className="text-paper/70 md:col-span-6">{s.blurb}</p>
             </li>
           ))}

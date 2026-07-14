@@ -150,8 +150,9 @@ export default function Nav() {
 const LOGO_COLORS = ["#E6352A", "#C8DB45", "#C4A9D0"];
 
 /**
- * TJCREATE wordmark — "TJ" in brand red, "CREATE" in brand black. At rest it
- * reads clean; on hover both halves scramble, cycling through symbols and the
+ * TJCREATE wordmark — the full name in brand black, with only the trailing
+ * period in accent red (the brand's accent-period pattern). At rest it reads
+ * clean; on hover both halves scramble, cycling through symbols and the
  * accent colours (no name expansion).
  */
 function LogoMark({ onClick }: { onClick?: () => void }) {
@@ -166,7 +167,7 @@ function LogoMark({ onClick }: { onClick?: () => void }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <span className="text-accent">
+      <span className="text-ink">
         <ScrambleText text="TJ" active={hovered} colors={LOGO_COLORS} duration={420} />
       </span>
       <span className="text-ink">

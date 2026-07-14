@@ -24,11 +24,15 @@ export default function Home() {
     <main className="relative">
       <Hero />
       <WorkGallery />
-      <VideoSection />
-      {/* Stacked full-bleed sections (Services → About → Clients → Contact).
-          Scroll pinning was removed, so these just stack and scroll normally.
-          The wrapper stays black to match the panels' own backgrounds. */}
+      {/* Everything from the Showreel down to the footer shares one black
+          wrapper, and must stay that way. The page background is paper, so two
+          ink siblings stacked directly on it meet at a fractional pixel, their
+          edges anti-alias, and the cream behind bleeds through as a hairline
+          between them. Inside a single ink container there is nothing to show
+          through. Do not lift a black section back out to sit on <main>.
+          Scroll pinning was removed, so these just stack and scroll normally. */}
       <div className="relative bg-ink">
+        <VideoSection />
         <SectionPanel className="bg-ink">
           <Services />
         </SectionPanel>
@@ -41,8 +45,8 @@ export default function Home() {
         <SectionPanel className="bg-ink" last>
           <Contact />
         </SectionPanel>
+        <SiteFooter />
       </div>
-      <SiteFooter />
     </main>
   );
 }

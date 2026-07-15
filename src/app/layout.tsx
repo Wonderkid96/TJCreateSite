@@ -216,16 +216,17 @@ export default function RootLayout({
         <Script id="theme-no-flash" strategy="beforeInteractive">
           {NO_FLASH_SNIPPET}
         </Script>
-        {/* Structured data — lives in <head> per schema.org best
-            practice so crawlers pick it up on the first pass without
-            waiting on hydration. */}
-        <Script
-          id="structured-data"
+        {/* Structured data — a plain <script>, deliberately NOT next/script.
+            next/script serialises even beforeInteractive tags into its loader
+            queue (self.__next_s.push([...])), so the JSON-LD only becomes a
+            real ld+json tag once JavaScript has run. Googlebot might catch it
+            on a second render pass, but Bing, LinkedIn, Slack and the rich
+            results validators never would. A raw tag ships the schema in the
+            served HTML where every crawler reads it on the first pass. */}
+        <script
           type="application/ld+json"
-          strategy="beforeInteractive"
-        >
-          {JSON.stringify(structuredData)}
-        </Script>
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
       </head>
       <body className="bg-paper text-ink">
         <a href="#work" className="skip-link">Skip to work</a>

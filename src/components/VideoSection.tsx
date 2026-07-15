@@ -138,6 +138,11 @@ export default function VideoSection() {
       // the sticky frame pins centred. Brand-dark surround framing the video.
       className="relative h-svh w-full bg-ink md:h-[160svh]"
     >
+      {/* Every other section on the page is titled; this one is deliberately
+          wordless by design, so the heading is visually hidden rather than
+          absent. Without it the showreel is the only section with no heading
+          for crawlers or screen-reader users to anchor to. */}
+      <h2 className="sr-only">Showreel</h2>
       <div className="flex h-svh w-full items-center justify-center md:sticky md:top-0 md:p-10">
         {/* Mobile: the portrait cut is full-bleed, filling the whole section
             edge to edge (covers, dynamic to any phone). Desktop: padded,

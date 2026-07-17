@@ -1,7 +1,7 @@
 import Hero from "@/components/Hero";
 import WorkGallery from "@/components/WorkGallery";
 import VideoSection from "@/components/VideoSection";
-import Services from "@/components/Services";
+import ServicesWipe from "@/components/ServicesWipe";
 import About from "@/components/About";
 import Clients from "@/components/Clients";
 import Contact from "@/components/Contact";
@@ -13,8 +13,8 @@ import SectionPanel from "@/components/SectionPanel";
  *   1. Hero          — hook
  *   2. Selected Work — proof (three-column grid)
  *   3. Showreel      — motion reel
- *   4. Services      — what I do            ┐
- *   5. About         — who I am             │ stacked full-bleed
+ *   4. Services      — what I do (full-screen wipe sequence)
+ *   5. About         — who I am             ┐ stacked full-bleed
  *   6. Clients       — who I've worked with │ sections
  *   7. Contact       — get in touch         ┘
  *   8. Footer
@@ -33,9 +33,11 @@ export default function Home() {
           Scroll pinning was removed, so these just stack and scroll normally. */}
       <div className="relative bg-ink">
         <VideoSection />
-        <SectionPanel className="bg-ink">
-          <Services />
-        </SectionPanel>
+        {/* Services is a full-screen wipe sequence, not a stacked panel: it
+            renders its own brand-colour boards over a pinned stage. It sits in
+            the ink wrapper so the black either side of it never shows a cream
+            seam. */}
+        <ServicesWipe />
         <SectionPanel className="bg-ink">
           <About />
         </SectionPanel>

@@ -43,7 +43,7 @@ const mono = IBM_Plex_Mono({
 const SITE_URL = "https://www.tjcreate.co.uk";
 const SITE_NAME = "TJCreate · Toby Johnson";
 const SITE_DESC =
-  "Graphic and motion designer working with record labels, artists, and brands on campaign artwork, visual identity, and motion graphics. Based in Lincoln, UK.";
+  "Graphic and motion designer working with brands, agencies and businesses on campaign artwork, visual identity, and motion graphics. Based in Lincoln, UK.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -63,6 +63,13 @@ export const metadata: Metadata = {
     "freelance motion designer",
     "graphic designer Lincoln",
     "motion designer UK",
+    "brand identity designer",
+    "brand campaigns",
+    "packaging design",
+    "product design",
+    "advertising design",
+    "commercial motion graphics",
+    "3D product rendering",
     "music industry designer",
     "record label design",
     "campaign artwork",
@@ -147,6 +154,10 @@ const structuredData = {
         "Motion design",
         "3D design",
         "Brand identity",
+        "Packaging design",
+        "Campaign design",
+        "Product visualisation",
+        "Editorial design",
         "Album artwork",
         "Lyric videos",
         "Music visuals",
@@ -165,7 +176,7 @@ const structuredData = {
       url: SITE_URL,
       founder: { "@id": `${SITE_URL}/#toby` },
       description:
-        "Design studio run by Toby Johnson — graphic and motion design for record labels, artists, agencies and brands.",
+        "Design studio run by Toby Johnson: graphic and motion design for brands, agencies and businesses across sectors.",
       image: `${SITE_URL}/opengraph-image`,
       logo: `${SITE_URL}/icon.svg`,
       email: "hello@tjcreate.co.uk",

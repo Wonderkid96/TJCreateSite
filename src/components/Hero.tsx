@@ -19,7 +19,7 @@ import {
 
 const WORDS = ["Toby", "Johnson"];
 const SUB =
-  "Graphic and motion design for record labels, artists and brands. Campaign artwork, identity, motion and 3D, based in Lincoln and working remotely.";
+  "Graphic and motion design for brands, agencies and businesses. Campaign artwork, identity, motion and 3D, based in Lincoln and working remotely.";
 
 // Source image pixel dimensions expressed as width ÷ height.
 // Used by safeTranslate to derive the rendered layer height at any viewport width.

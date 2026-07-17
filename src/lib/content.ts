@@ -405,7 +405,7 @@ export const SERVICES = [
   {
     title: "Graphic Design",
     blurb:
-      "I've worked alongside labels, studios and agencies across music, gaming and product, delivering bold design for campaigns, branding and print.",
+      "Working alongside industry teams in creating engaging and cohesive visuals that empower brands, products, campaigns and events. With experience in print, packaging, social media and more, I'm prepared to fulfil the brief.",
     items: [
       "Visual identity",
       "Editorial + print",
@@ -416,7 +416,7 @@ export const SERVICES = [
   {
     title: "Motion Graphics",
     blurb:
-      "I've made lyric videos, visualisers and Spotify Canvases for artists and labels, animating release campaigns from announce to drop.",
+      "Working with brands and teams to turn an idea or a brief into motion that carries a campaign from concept to launch. With experience in title sequences, promos, broadcast graphics and short-form social, I'm ready to run with the brief.",
     items: [
       "Title sequences",
       "Lyric videos",
@@ -427,7 +427,7 @@ export const SERVICES = [
   {
     title: "3D Design",
     blurb:
-      "I've modelled product renders, 3D type and full scenes in Blender, for the campaigns and product shots flat artwork can't carry.",
+      "Working in Blender and Substance Painter to build renders, type and full scenes that give brands and products a presence flat artwork can't reach. With experience in product renders, 3D type, scene design and campaign visuals, I'm ready to shape the brief.",
     items: [
       "Product renders",
       "Type / scene design",

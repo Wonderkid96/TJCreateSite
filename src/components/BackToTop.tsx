@@ -33,7 +33,6 @@ export default function BackToTop() {
     <motion.button
       type="button"
       onClick={goTop}
-      data-cursor="hover"
       aria-label="Back to top"
       initial={false}
       animate={{

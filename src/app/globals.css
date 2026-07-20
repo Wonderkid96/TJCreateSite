@@ -11,6 +11,14 @@
   --line: rgba(10, 10, 10, 0.12);
   --signal: #80ef80;
   --spectrum: linear-gradient(90deg, #e6352a 0%, #fffdf8 38%, #c8db45 68%, #c4a9d0 100%);
+  /* Display face — Peridot PE Variable, served from the Adobe Fonts web
+     project (kit bhj7dgq, loaded in layout.tsx). Named separately from
+     --font-display so the @theme mapping below isn't self-referential. */
+  --font-display-family: "peridot-pe-variable";
+  /* Extended Heavy: the far corner of both axes (wdth 50-150, wght 100-950).
+     Set via font-variation-settings because the kit's @font-face declares
+     font-stretch:normal, so the `font-stretch` property can't reach wdth. */
+  --display-variation: "ital" 0, "wdth" 150, "wght" 950;
   /* Shared easing — the site's standard motion curve, single-sourced for CSS.
      (Framer transitions use the EASE constant in src/lib/motion.ts.) */
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -40,7 +48,7 @@ body {
   --color-lilac: var(--lilac);
   --color-line: var(--line);
   --color-signal: var(--signal);
-  --font-display: var(--font-display);
+  --font-display: var(--font-display-family);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
 }
@@ -89,6 +97,10 @@ html.lenis body {
 
 .font-display {
   font-family: var(--font-display), "Arial Narrow", system-ui, sans-serif;
+  /* font-weight is set alongside the axis value so the Arial Narrow fallback
+     still renders heavy if the kit is slow or unavailable. */
+  font-weight: 950;
+  font-variation-settings: var(--display-variation);
 }
 
 /* Standard section-heading scale — single source for SectionTitle and the
@@ -96,36 +108,17 @@ html.lenis body {
    intentionally run their own, larger scales.) */
 .section-heading {
   font-family: var(--font-display), "Arial Narrow", system-ui, sans-serif;
+  font-weight: 950;
+  font-variation-settings: var(--display-variation);
   text-transform: uppercase;
   font-size: clamp(2rem, 6vw, 5rem);
   line-height: 0.9;
   letter-spacing: -0.025em;
 }
 
-/* Client logo hover: a quick shake, a smooth enlarge that eases back on leave,
-   and a colour flicker through the brand accents (same palette the project
-   titles scramble through). Scale lives on the wrapper and shake on the mark
-   so the two transforms never fight. Gated to no-preference so reduced-motion
-   users get a static logo. */
-@keyframes logoShake {
-  0% { transform: rotate(0deg); }
-  20% { transform: rotate(-4deg); }
-  40% { transform: rotate(3deg); }
-  60% { transform: rotate(-2deg); }
-  80% { transform: rotate(1deg); }
-  100% { transform: rotate(0deg); }
-}
-
-/* Logos sit white on the red Clients panel, so the flicker pops through the
-   non-red accents (red would vanish into the background). */
-@keyframes logoFlicker {
-  0%, 100% { background-color: #ffffff; }
-  33% { background-color: #c8db45; }
-  66% { background-color: #c4a9d0; }
-}
-
-/* Logo hover (enlarge + shake + flicker) is a fine-pointer affordance only —
-   gated by hover/pointer so a tap on mobile never triggers (and sticks) it. */
+/* Client logo hover: a smooth enlarge that eases back on leave. Fine-pointer
+   affordance only, gated by hover/pointer so a tap on mobile never triggers
+   (and sticks) it, and by reduced-motion preference. */
 @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
   .logo-scale {
     transform-origin: center;
@@ -137,25 +130,10 @@ html.lenis body {
   .logo-cell:focus-visible .logo-scale {
     transform: scale(1.12);
   }
-
-  .logo-cell:hover .logo-mark,
-  .logo-cell:focus-visible .logo-mark {
-    transform-origin: center center;
-    animation:
-      logoShake 520ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both,
-      logoFlicker 360ms steps(1, end) infinite;
-  }
 }
 
 .font-mono {
   font-family: var(--font-mono), ui-monospace, monospace;
-}
-
-/* Alias of the display face — kept so the /preview prototype routes that use
-   `font-expanded` still render Special Gothic Expanded One. */
-.font-expanded {
-  font-family: var(--font-display), "Arial Narrow", system-ui, sans-serif;
-  font-weight: 400;
 }
 
 .grain {
@@ -244,18 +222,6 @@ html.lenis body {
   -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent);
 }
 
-button,
-a {
-  cursor: none;
-}
-
-@media (pointer: coarse) {
-  button,
-  a {
-    cursor: auto;
-  }
-}
-
 .char {
   display: inline-block;
   will-change: transform;
@@ -264,12 +230,6 @@ a {
 .hero-line {
   line-height: 0.85;
   letter-spacing: -0.04em;
-}
-
-@media (min-width: 1024px) {
-  body:not(.touch) {
-    cursor: none;
-  }
 }
 
 /* Desktop/fine-pointer only: subtle button lift on hover. */
@@ -348,9 +308,9 @@ html.reveal-mounted [data-reveal].is-visible {
     transition: none;
   }
 
-  /* Kill marquee + drift loops, scramble flicker, scale hovers. Keep
-     functional UI transitions (theme fade, modal open/close) but strip
-     anything decorative or continuous. */
+  /* Kill marquee + drift loops and scale hovers. Keep functional UI
+     transitions (theme fade, modal open/close) but strip anything
+     decorative or continuous. */
   .grain {
     animation: none !important;
     transition: none !important;

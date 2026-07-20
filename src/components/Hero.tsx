@@ -384,8 +384,9 @@ export default function Hero() {
 
         {/* Scroll prompt — visible from first paint, hides on scroll, returns
             after 3 s of stillness, dismissed permanently past 70 % of the
-            hero. The capsule (circle + arrow + label) drifts downward on a
-            continuous loop so the motion itself reads as "scroll like this".
+            hero. Just a hairline arrow: the old circle-and-label capsule was
+            more apparatus than the idea needed. A short nudge loop carries the
+            "scroll like this" cue instead of a long drift.
             Also a real link: clicking it jumps past the hero to the work grid,
             so the nudge doubles as a working control rather than pure decoration.
             Pointer events + tab focus are disabled while it's faded out so the
@@ -393,75 +394,35 @@ export default function Hero() {
         <motion.a
           href="#work"
           aria-label="Scroll to work"
-          data-cursor="hover"
           tabIndex={showScrollPrompt ? 0 : -1}
           initial={{ opacity: 1 }}
           animate={{ opacity: showScrollPrompt ? 1 : 0 }}
           transition={{ duration: 0.3, ease: EASE }}
-          className={`absolute hidden md:flex right-10 top-[24%] flex-col items-center will-change-transform font-mono text-[11px] uppercase tracking-[0.2em] text-ink/70 ${
+          className={`absolute hidden md:flex right-10 bottom-14 items-center justify-center text-ink/60 transition-colors hover:text-accent ${
             showScrollPrompt ? "pointer-events-auto" : "pointer-events-none"
           }`}
         >
           {reducedMotion ? (
-            // Static fallback — no drift, no fade cycle. Circle stays put
-            // so the visual idea (capsule with arrow + label) is intact.
-            <div className="relative flex h-[78px] w-[78px] flex-col items-center justify-center gap-1.5">
-              <span
-                aria-hidden
-                className="absolute inset-0 rounded-full border border-ink/25 bg-ink/[0.04]"
-              />
-              <span aria-hidden className="relative text-[14px] leading-none">↓</span>
-              <span className="relative">Scroll</span>
-            </div>
+            <ScrollArrow />
           ) : (
-            <motion.div
-              className="relative flex h-[78px] w-[78px] flex-col items-center justify-center gap-1.5"
-              animate={{ y: [0, 0, 110, 110] }}
+            <motion.span
+              className="block will-change-transform"
+              animate={{ y: [0, 7, 0] }}
               transition={{
-                // 2.4 s cycle: ~0.4 s settle, ~1.5 s drift, ~0.4 s release.
-                duration: 2.4,
+                duration: 1.8,
                 repeat: Infinity,
                 ease: [0.4, 0, 0.6, 1],
-                times: [0, 0.18, 0.82, 1],
               }}
             >
-              {/* Circle bg — fades in slightly after the text so it reads
-                  as appearing behind the label, not wrapping it from
-                  the start. Holds during the drift, fades out at bottom. */}
-              <motion.span
-                aria-hidden
-                className="absolute inset-0 rounded-full border border-ink/30 bg-ink/[0.04]"
-                animate={{ opacity: [0, 0, 1, 1, 0] }}
-                transition={{
-                  duration: 2.4,
-                  repeat: Infinity,
-                  ease: "linear",
-                  times: [0, 0.08, 0.22, 0.82, 1],
-                }}
-              />
-              {/* Arrow + label — share a single fade so they always
-                  appear/disappear together. Drift comes from the parent. */}
-              <motion.div
-                className="relative flex flex-col items-center gap-1.5"
-                animate={{ opacity: [0, 1, 1, 0] }}
-                transition={{
-                  duration: 2.4,
-                  repeat: Infinity,
-                  ease: "linear",
-                  times: [0, 0.1, 0.82, 1],
-                }}
-              >
-                <span aria-hidden className="text-[14px] leading-none">↓</span>
-                <span>Scroll</span>
-              </motion.div>
-            </motion.div>
+              <ScrollArrow />
+            </motion.span>
           )}
         </motion.a>
 
         {/* Bottom stack */}
         <motion.div
           style={{ opacity: titleOpacity, x: titleX }}
-          className="absolute inset-x-6 md:inset-x-10 bottom-5 sm:bottom-8 md:bottom-14 flex flex-col gap-4 sm:gap-5 md:gap-8 will-change-transform"
+          className="absolute inset-x-6 md:inset-x-10 bottom-5 sm:bottom-8 md:bottom-14 flex flex-col gap-3 sm:gap-4 md:gap-5 will-change-transform"
         >
           <h1
             // Solid ink, no mix-blend-multiply. Blending the heading against
@@ -486,8 +447,8 @@ export default function Hero() {
               transform here made the subtitle drift and fade at roughly double
               the heading's rate, which read as the text "moving at different
               times". */}
-          <div className="flex flex-col gap-5 md:gap-7">
-            <p className="text-[0.95rem] sm:text-base md:text-xl leading-snug max-w-xl text-ink/90">
+          <div className="flex flex-col gap-3.5 md:gap-5">
+            <p className="text-[0.95rem] sm:text-base md:text-lg leading-snug max-w-xl text-ink/90">
               {SUB}
             </p>
 
@@ -502,6 +463,30 @@ export default function Hero() {
   );
 }
 
+/**
+ * Hairline down-arrow for the scroll prompt. Drawn rather than set as a "↓"
+ * glyph so the stroke weight matches the brand's hairline rules instead of
+ * inheriting whatever the type face gives us. Inherits colour via currentColor.
+ */
+function ScrollArrow() {
+  return (
+    <svg
+      aria-hidden
+      width="20"
+      height="30"
+      viewBox="0 0 20 30"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="square"
+      strokeLinejoin="miter"
+    >
+      <path d="M10 1 V27" />
+      <path d="M2 19 L10 27 L18 19" />
+    </svg>
+  );
+}
+
 function HeroButton({
   href,
   label,
@@ -512,14 +497,14 @@ function HeroButton({
   variant?: "solid" | "outline";
 }) {
   const base =
-    "hero-btn-lift relative inline-flex items-center gap-2 px-5 md:px-6 py-3 rounded-full font-sans font-semibold tracking-tight text-base md:text-lg transition-colors transition-transform duration-300";
+    "hero-btn-lift relative inline-flex items-center gap-2 px-4 md:px-5 py-2.5 rounded-full font-sans font-semibold tracking-tight text-sm md:text-base transition-colors transition-transform duration-300";
   const skin =
     variant === "solid"
       ? "border border-ink bg-ink text-paper hover:border-accent hover:bg-accent"
       : "border border-ink text-ink hover:border-accent hover:text-accent";
 
   return (
-    <a href={href} data-cursor="hover" className={`${base} ${skin}`}>
+    <a href={href} className={`${base} ${skin}`}>
       <span className="relative z-10 tabular-nums">{label}</span>
       <span className="relative z-10">→</span>
     </a>

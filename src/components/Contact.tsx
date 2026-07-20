@@ -47,8 +47,6 @@ export default function Contact() {
       <a
         href={`mailto:${CONTACT_EMAIL}`}
         aria-label={`Email ${CONTACT_EMAIL}`}
-        data-cursor="view"
-        data-cursor-label="EMAIL"
         className="group mt-6 block md:mt-8"
       >
         <motion.h2
@@ -68,7 +66,6 @@ export default function Contact() {
       <div className="mt-8 flex flex-col gap-6 md:mt-10">
         <a
           href={`mailto:${CONTACT_EMAIL}`}
-          data-cursor="hover"
           className="w-fit text-lg transition-colors hover:text-accent md:text-xl"
         >
           {CONTACT_EMAIL}

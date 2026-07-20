@@ -132,11 +132,10 @@ export default function ProjectModal({ project, onClose }: Props) {
                 type="button"
                 data-modal-close
                 onClick={onClose}
-                data-cursor="hover"
                 aria-label={`Close ${project.title} details`}
                 // Padding + negative margin grow the hit area to ~44px
                 // (WCAG 2.5.8) without shifting the visual layout.
-                className="font-mono text-[11px] uppercase tracking-[0.2em] hover:text-accent transition-colors flex items-center gap-3 rounded-sm p-3 -m-3 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                className="font-mono text-[11px] uppercase tracking-[0.2em] hover:text-accent transition-colors flex items-center gap-3 rounded-[2px] p-3 -m-3 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
               >
                 <span className="hidden md:inline">Close</span>
                 <span aria-hidden className="relative w-5 h-5">
@@ -179,7 +178,6 @@ export default function ProjectModal({ project, onClose }: Props) {
                     More detail on request.{" "}
                     <a
                       href={`mailto:hello@tjcreate.co.uk?subject=${encodeURIComponent("RE: " + project.title)}`}
-                      data-cursor="hover"
                       className="text-ink hover:text-accent transition-colors"
                     >
                       hello@tjcreate.co.uk
@@ -280,7 +278,7 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
           className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-0 group-hover:opacity-100"
           style={{ opacity: isTouchDevice ? (dayNightIsNight ? 1 : 0) : undefined }}
         />
-        <div className="absolute bottom-3 right-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90 bg-ink/70 px-2 py-1 rounded-sm pointer-events-none">
+        <div className="absolute bottom-3 right-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90 bg-ink/70 px-2 py-1 rounded-[2px] pointer-events-none">
           {isTouchDevice ? "Day ↔ Night" : "Hover → flip"}
         </div>
       </div>

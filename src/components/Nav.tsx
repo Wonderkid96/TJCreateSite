@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { EASE } from "@/lib/motion";
-import ScrambleText from "./ScrambleText";
 
 // ─── Nav links ───────────────────────────────────────────────────────────────
 
@@ -78,7 +77,7 @@ export default function Nav() {
           className="hidden md:flex items-center gap-8 font-mono font-bold text-[11px] uppercase tracking-[0.2em]"
         >
           {LINKS.map((l) => (
-            <a key={l.href} href={l.href} data-cursor="hover" className="relative group">
+            <a key={l.href} href={l.href} className="relative group">
               <span className="group-hover:text-accent transition-colors">{l.label}</span>
             </a>
           ))}
@@ -92,8 +91,7 @@ export default function Nav() {
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls="mobile-nav-panel"
-            data-cursor="hover"
-            className="relative w-9 h-9 -mr-1 flex items-center justify-center rounded-sm focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="relative w-9 h-9 -mr-1 flex items-center justify-center rounded-[2px] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
             <span
@@ -146,33 +144,19 @@ export default function Nav() {
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
-// Brand accent palette the wordmark flickers through on hover.
-const LOGO_COLORS = ["#E6352A", "#C8DB45", "#C4A9D0"];
-
 /**
  * TJCREATE wordmark — the full name in brand black, with only the trailing
- * period in accent red (the brand's accent-period pattern). At rest it reads
- * clean; on hover both halves scramble, cycling through symbols and the
- * accent colours (no name expansion).
+ * period in accent red (the brand's accent-period pattern).
  */
 function LogoMark({ onClick }: { onClick?: () => void }) {
-  const [hovered, setHovered] = useState(false);
   return (
     <a
       href="#top"
-      data-cursor="hover"
       aria-label="TJCREATE · Home"
       className="inline-flex items-baseline font-display text-[1.15rem] leading-none tracking-[-0.02em] whitespace-nowrap md:text-[1.4rem]"
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
-      <span className="text-ink">
-        <ScrambleText text="TJ" active={hovered} colors={LOGO_COLORS} duration={420} />
-      </span>
-      <span className="text-ink">
-        <ScrambleText text="CREATE" active={hovered} colors={LOGO_COLORS} duration={520} />
-      </span>
+      <span className="text-ink">TJCREATE</span>
       <span aria-hidden className="ml-[0.05em] text-accent">
         .
       </span>

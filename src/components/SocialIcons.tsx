@@ -83,7 +83,6 @@ export function SocialLinks({
     <div className={`flex items-center gap-5 ${className}`}>
       <a
         href={INSTAGRAM_URL}
-        data-cursor="hover"
         aria-label="Toby Johnson on Instagram"
         className={`transition-colors group inline-flex ${base}`}
         target="_blank"
@@ -93,7 +92,6 @@ export function SocialLinks({
       </a>
       <a
         href={LINKEDIN_URL}
-        data-cursor="hover"
         aria-label="Toby Johnson on LinkedIn"
         className={`transition-colors group inline-flex ${base}`}
         target="_blank"
@@ -103,7 +101,6 @@ export function SocialLinks({
       </a>
       <a
         href={BEHANCE_URL}
-        data-cursor="hover"
         aria-label="Toby Johnson on Behance"
         className={`transition-colors group inline-flex ${base}`}
         target="_blank"

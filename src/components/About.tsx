@@ -8,9 +8,9 @@ import { SocialLinks } from "./SocialIcons";
 
 const BIO_LEAD = "I'm Toby Johnson, a graphic and motion designer building ";
 const BIO_ACCENT = "strategic visuals";
-const BIO_TAIL = " for the music, culture and brand industries.";
+const BIO_TAIL = " for brands, artists and the teams behind them.";
 const BIO_SECONDARY =
-  "Artwork, posters, motion, 3D, socials, release campaigns, tour assets. I pull the pieces together so the whole thing feels intentional, not stitched together at the end.";
+  "Artwork, posters, motion, 3D, social and full campaigns. I pull the pieces together so the whole thing feels intentional, not stitched together at the end.";
 
 // Pin the palette dark so the overlaid copy stays readable in either theme,
 // matching how Services/Contact lock their own dark backgrounds.

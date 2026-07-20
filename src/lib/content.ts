@@ -405,7 +405,7 @@ export const SERVICES = [
   {
     title: "Graphic Design",
     blurb:
-      "Working alongside industry teams in creating engaging and cohesive visuals that empower brands, products, campaigns and events. With experience in print, packaging, social media and more, I'm prepared to fulfil the brief.",
+      "Identity, print and campaign artwork for brands, products and events. Posters, packaging, editorial and social, made to stay consistent wherever they land, from a shop shelf to a feed.",
     items: [
       "Visual identity",
       "Editorial + print",
@@ -416,7 +416,7 @@ export const SERVICES = [
   {
     title: "Motion Graphics",
     blurb:
-      "Working with brands and teams to turn an idea or a brief into motion that carries a campaign from concept to launch. With experience in title sequences, promos, broadcast graphics and short-form social, I'm ready to run with the brief.",
+      "Motion built to carry a campaign from launch through to the last social cut. Title sequences, promos, lyric videos and short-form, animated in After Effects.",
     items: [
       "Title sequences",
       "Lyric videos",
@@ -427,7 +427,7 @@ export const SERVICES = [
   {
     title: "3D Design",
     blurb:
-      "Working in Blender and Substance Painter to build renders, type and full scenes that give brands and products a presence flat artwork can't reach. With experience in product renders, 3D type, scene design and campaign visuals, I'm ready to shape the brief.",
+      "Flat to 3D. With experience in packaging, product showcases, scene design, modelling, animation and sculpting, I can bring your product into 3D space and make it pop.",
     items: [
       "Product renders",
       "Type / scene design",

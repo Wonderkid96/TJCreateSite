@@ -1,17 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import {
-  motion,
-  useMotionValue,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { memo, useEffect, useRef, useState } from "react";
 import type { Project } from "@/lib/content";
 import { useMediaQuery } from "@/lib/use-media-query";
-import ScrambleText from "./ScrambleText";
 import {
   FALLING_FRAME_COUNT,
   FALLING_FRAME_HEIGHT,
@@ -39,7 +32,6 @@ function ProjectTile({
   const hoverVideoRef = useRef<HTMLVideoElement>(null);
   const hoverVideoEndedRef = useRef(false);
   const hoverVideoReverseRaf = useRef(0);
-  const [hovered, setHovered] = useState(false);
   // Hydration-safe: false on the server and the first client render, real
   // value after — the render branches below (hover-video, parallax insets)
   // must match server HTML or React throws #418 on touch devices.
@@ -48,14 +40,6 @@ function ProjectTile({
   // static frames render instead.
   const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [dayNightIsNight, setDayNightIsNight] = useState(false);
-
-  // Cursor tilt
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const sx = useSpring(mx, { damping: 20, stiffness: 150 });
-  const sy = useSpring(my, { damping: 20, stiffness: 150 });
-  const rX = useTransform(sy, [-0.5, 0.5], [4, -4]);
-  const rY = useTransform(sx, [-0.5, 0.5], [-4, 4]);
 
   // Scroll parallax for inner media. Disabled on touch devices: with 15
   // tiles each running their own scroll-progress tracker, mobile native
@@ -209,17 +193,7 @@ function ProjectTile({
     return () => cancelAnimationFrame(hoverVideoReverseRaf.current);
   }, []);
 
-  const onMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const el = ref.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    mx.set((e.clientX - r.left) / r.width - 0.5);
-    my.set((e.clientY - r.top) / r.height - 0.5);
-  };
   const onLeave = () => {
-    mx.set(0);
-    my.set(0);
-    setHovered(false);
     // Hover-video: behaviour depends on progress through the video.
     // < 50% → reverse back to start.
     // ≥ 50% → continue playing to the end and hold the last frame.
@@ -259,7 +233,6 @@ function ProjectTile({
     }
   };
   const onEnter = () => {
-    setHovered(true);
     // Hover-video: cancel any ongoing reverse, play forward from the start
     const hv = hoverVideoRef.current;
     if (hv) {
@@ -271,15 +244,6 @@ function ProjectTile({
   };
 
   const kind = project.kind ?? "image";
-  const cursorLabel = project.externalUrl
-    ? "YOUTUBE ↗"
-    : kind === "video" || kind === "hover-video"
-      ? "PLAY"
-      : kind === "falling"
-        ? "WATCH"
-        : kind === "day-night"
-          ? "FLIP"
-          : "VIEW";
 
   return (
     <button
@@ -287,10 +251,9 @@ function ProjectTile({
       type="button"
       onClick={onOpen}
       onMouseEnter={onEnter}
-      onMouseMove={onMove}
       onMouseLeave={onLeave}
       // Keyboard parity: focus mirrors hover so tab users get the same
-      // visual feedback (tilt state + hover-video) as mouse users.
+      // visual feedback (hover-video) as mouse users.
       onFocus={onEnter}
       onBlur={onLeave}
       // The "YOUTUBE ↗" cue is cursor-only, so tell screen reader users a
@@ -301,27 +264,17 @@ function ProjectTile({
           ? `${project.title} (opens on YouTube in a new tab)`
           : undefined
       }
-      data-cursor="view"
-      data-cursor-label={cursorLabel}
       className="hover-tile group relative block w-full h-full text-left"
       // Pin --paper/--ink locally so overlay text stays readable on both
       // light and dark themes (tiles always sit over darkened imagery).
       style={
         {
-          perspective: "1000px",
           "--paper": "#fffdf8",
           "--ink": "#0a0a0a",
         } as React.CSSProperties
       }
     >
-      <motion.div
-        style={
-          enableParallax
-            ? { rotateX: rX, rotateY: rY, transformStyle: "preserve-3d" }
-            : undefined
-        }
-        className="relative h-full w-full overflow-hidden rounded-2xl"
-      >
+      <div className="relative h-full w-full overflow-hidden rounded-[2px]">
         <div
           className="hover-tile-media absolute inset-0 transition-transform duration-[900ms] ease-[var(--ease)]"
           style={{ background: project.bg ?? "#0a0a0a" }}
@@ -451,10 +404,10 @@ function ProjectTile({
             {project.category} · {project.client}
           </div>
           <h3 className="font-display text-xl md:text-2xl lg:text-3xl leading-[1.05] tracking-tight">
-            <ScrambleText text={project.title} active={hovered} lockWidth />
+            {project.title}
           </h3>
         </div>
-      </motion.div>
+      </div>
     </button>
   );
 }

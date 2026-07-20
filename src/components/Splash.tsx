@@ -173,10 +173,12 @@ export default function Splash() {
 
           <div className="flex flex-col items-center gap-8 px-6 w-full max-w-[300px]">
             <div className="w-full flex flex-col items-center gap-4">
-              <div className="font-sans font-bold text-ink text-2xl leading-none tracking-[-0.01em] inline-flex items-baseline">
+              {/* Wordmark matches the nav: display face at 400 (never bolded)
+                  with the brand's -0.02em wordmark tracking. */}
+              <div className="font-display text-ink text-2xl leading-none tracking-[-0.02em] inline-flex items-baseline">
                 TJCREATE<span className="text-accent ml-[0.05em]">.</span>
               </div>
-              {/* Gradient progress bar */}
+              {/* Progress bar — solid brand red. */}
               <div
                 role="progressbar"
                 aria-label="Loading site"
@@ -192,8 +194,7 @@ export default function Splash() {
                     transform: `scaleX(${progress})`,
                     transformOrigin: "left",
                     transition: "transform 220ms var(--ease)",
-                    background:
-                      "linear-gradient(90deg, #E6352A 0%, #C8DB45 50%, #C4A9D0 100%)",
+                    background: "var(--accent)",
                   }}
                 />
               </div>

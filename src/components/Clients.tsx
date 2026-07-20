@@ -27,7 +27,9 @@ const useMounted = () =>
 
 // Brand red panel with pure-white type and logos. --paper is pinned white so
 // both the title (text-paper) and the masked logos (background var(--paper))
-// render white regardless of theme.
+// render white regardless of theme. The darkened-tone treatment used on the
+// Services red panel was tried here and reverted: it reads fine on solid
+// headings but goes muddy on the thin logo marks.
 const RED_VARS = {
   "--paper": "#ffffff",
   "--line": "rgba(255, 255, 255, 0.2)",
@@ -49,9 +51,8 @@ const ITEM_VARIANTS = {
 };
 
 /**
- * Brand-red client panel. Logos sit as white marks on the red background (via
- * CSS mask, so a single SVG colours either way) and flicker through the
- * non-red accents on hover.
+ * Brand-red client panel. Logos sit as white marks on the red background
+ * (via CSS mask, so a single SVG colours either way).
  */
 export default function Clients() {
   const labelRef = useRef<HTMLDivElement>(null);
@@ -152,10 +153,9 @@ function LogoCell({ name, logo, url, onHover }: LogoCellProps) {
     onMouseMove: (e: React.MouseEvent) => onHover(name, e),
     onMouseLeave: () => onHover(null),
   };
-  // Hover behaviour (shake + enlarge + colour flicker) is CSS-driven via the
-  // .logo-cell / .logo-scale / .logo-mark hooks (see globals.css), so it stays
-  // declarative and honours prefers-reduced-motion. The .logo-scale wrapper
-  // owns the enlarge; the .logo-mark owns the shake + flicker.
+  // Hover behaviour is a quiet enlarge, CSS-driven via the .logo-cell /
+  // .logo-scale hooks (see globals.css), so it stays declarative and honours
+  // prefers-reduced-motion.
   const inner = (
     <span className="logo-scale inline-flex items-center justify-center">
       {logo ? (
@@ -191,7 +191,6 @@ function LogoCell({ name, logo, url, onHover }: LogoCellProps) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`${name} (opens in new tab)`}
-        data-cursor="hover"
         className="logo-cell flex h-full w-full items-center justify-center"
         {...hoverProps}
       >

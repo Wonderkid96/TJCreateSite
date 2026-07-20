@@ -26,7 +26,6 @@ export default function NotFound() {
       <div className="flex flex-wrap justify-center gap-3">
         <Link
           href="/"
-          data-cursor="hover"
           className="hero-btn-lift relative inline-flex items-center gap-2 px-5 md:px-6 py-3 rounded-full font-sans font-semibold tracking-tight text-base md:text-lg border border-ink bg-ink text-paper hover:border-accent hover:bg-accent transition-colors transition-transform duration-300"
         >
           <span className="tabular-nums">Home.</span>
@@ -34,7 +33,6 @@ export default function NotFound() {
         </Link>
         <Link
           href="/#work"
-          data-cursor="hover"
           className="hero-btn-lift relative inline-flex items-center gap-2 px-5 md:px-6 py-3 rounded-full font-sans font-semibold tracking-tight text-base md:text-lg border border-ink text-ink hover:border-accent hover:text-accent transition-colors transition-transform duration-300"
         >
           <span className="tabular-nums">See work.</span>

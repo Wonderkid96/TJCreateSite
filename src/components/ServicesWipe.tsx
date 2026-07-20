@@ -32,8 +32,8 @@ type PanelTheme = { bg: string; fg: string; accent: string };
 // on Motion. Text is a deep, darkened tone of each panel's own colour rather
 // than flat ink/paper — dark olive on lime, dark maroon on red, dark plum on
 // lilac. Shades picked dark enough to stay legible against their background.
-// The accent period stays the brand red on the tints, paper on the red panel
-// (a red period would vanish there).
+// The title full stop matches the heading tone (a dot that flips red/white
+// between panels read as odd); accent drives the item bullet dots instead.
 const THEMES: PanelTheme[] = [
   { bg: "#c8db45", fg: "#37430c", accent: "#e6352a" }, // Lime — Graphic
   { bg: "#e6352a", fg: "#1c0605", accent: "#fffdf8" }, // Red — Motion
@@ -196,8 +196,7 @@ function PanelFace({
           className="font-display uppercase text-[clamp(2.2rem,7vw,5.5rem)] leading-[0.9] tracking-tight"
           style={{ minHeight: TITLE_SLOT }}
         >
-          {service.title}
-          <span style={{ color: theme.accent }}>.</span>
+          {service.title}.
         </h3>
         <p
           className="mt-6 max-w-xl text-lg leading-relaxed"

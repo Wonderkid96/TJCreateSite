@@ -147,7 +147,7 @@ export default function VideoSection() {
         {/* Mobile: the portrait cut is full-bleed, filling the whole section
             edge to edge (covers, dynamic to any phone). Desktop: padded,
             rounded frame on the red surround. */}
-        <div className="relative h-full w-full overflow-hidden bg-ink md:rounded-2xl">
+        <div className="relative h-full w-full overflow-hidden bg-ink md:rounded-[2px]">
           <video
             ref={videoRef}
             src={src}
@@ -169,7 +169,6 @@ export default function VideoSection() {
           <button
             type="button"
             onClick={togglePlayback}
-            data-cursor="hover"
             aria-label={isPlaying ? "Pause showreel" : "Play showreel"}
             className="absolute bottom-4 right-4 z-10 rounded-full border border-paper/25 bg-ink/70 px-5 py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper transition-colors hover:border-paper/60 md:bottom-6 md:right-6"
           >

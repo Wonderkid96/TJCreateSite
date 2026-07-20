@@ -187,7 +187,6 @@ function LogoSlot({ item, isPaused }: { item: LogoItem; isPaused: boolean }) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`${item.name} (opens in new tab)`}
-        data-cursor="hover"
         className={baseClass}
         onMouseEnter={onEnter}
         onMouseLeave={onLeave}

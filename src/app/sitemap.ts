@@ -12,7 +12,9 @@ const BASE = "https://www.tjcreate.co.uk";
  * noise and start ignoring it, which costs the signal exactly when there IS a
  * real update worth recrawling.
  */
-const CONTENT_LAST_UPDATED = "2026-07-14";
+// 2026-07-20: service blurbs rewritten, About positioning broadened off
+// music-only, display face changed, social card replaced.
+const CONTENT_LAST_UPDATED = "2026-07-20";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   // Single-page site — Google ignores URL fragments when indexing, so there

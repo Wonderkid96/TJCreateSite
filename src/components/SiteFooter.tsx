@@ -15,6 +15,11 @@ export default function SiteFooter() {
   return (
     <section
       aria-label="Footer"
+      // Opted out of the scroll-reveal system. The observer's root is inset
+      // from the bottom by up to 200px, and this section is ~150px tall at the
+      // very end of the document, so it could never cross the trigger line and
+      // sat at opacity 0 permanently. Small print does not need a reveal.
+      data-no-reveal
       style={
         {
           "--paper": "#fffdf8",

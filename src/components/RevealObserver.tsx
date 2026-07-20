@@ -5,9 +5,19 @@ import { useLayoutEffect } from "react";
 export default function RevealObserver() {
   useLayoutEffect(() => {
     // Auto-apply reveals to every content section except the hero (which has
-    // its own motion choreography).
+    // its own motion choreography) and anything opted out with
+    // `data-no-reveal`.
+    //
+    // The opt-out exists because the observer's root is shrunk from the bottom
+    // by `bottomInsetPx` (up to 200px). An element that sits at the very end of
+    // the document and is shorter than that inset can never cross the trigger
+    // line — there is no further scroll available to lift it up — so it would
+    // stay at opacity 0 forever. The footer hit exactly this: 150px tall at the
+    // document bottom against a 168px inset.
     const sections = Array.from(
-      document.querySelectorAll<HTMLElement>("main section:not(#top)")
+      document.querySelectorAll<HTMLElement>(
+        "main section:not(#top):not([data-no-reveal])"
+      )
     );
     for (const section of sections) {
       if (!section.dataset.reveal) section.dataset.reveal = "section";

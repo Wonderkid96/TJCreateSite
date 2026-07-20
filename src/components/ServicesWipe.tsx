@@ -27,17 +27,19 @@ import { EASE } from "@/lib/motion";
 
 type PanelTheme = { bg: string; fg: string; accent: string };
 
-// One brand colour per discipline. Lime → Red → Lilac: each edge contrasts
-// (the effect lives on the reveal line), with the signature red centre-stage
-// on Motion. Text is a deep, darkened tone of each panel's own colour rather
-// than flat ink/paper — dark olive on lime, dark maroon on red, dark plum on
-// lilac. Shades picked dark enough to stay legible against their background.
-// The title full stop matches the heading tone (a dot that flips red/white
-// between panels read as odd); accent drives the item bullet dots instead.
+// Monochrome sequence: paper → ink → paper. The panels MUST alternate — the
+// wipe effect lives on the reveal line, so three panels of the same colour
+// would make each transition invisible. Alternating gives every reveal the
+// hardest possible edge.
+//
+// Everything on a panel (title, full stop, blurb, eyebrow, item dots) takes
+// the same tone; `accent` is the fg value so the bullet dots stay monochrome
+// rather than reintroducing colour. The title full stop is part of the
+// heading text, so it inherits fg too.
 const THEMES: PanelTheme[] = [
-  { bg: "#c8db45", fg: "#37430c", accent: "#e6352a" }, // Lime — Graphic
-  { bg: "#e6352a", fg: "#1c0605", accent: "#fffdf8" }, // Red — Motion
-  { bg: "#c4a9d0", fg: "#362747", accent: "#e6352a" }, // Lilac — 3D
+  { bg: "#fffdf8", fg: "#0a0a0a", accent: "#0a0a0a" }, // Paper — Graphic
+  { bg: "#0a0a0a", fg: "#fffdf8", accent: "#fffdf8" }, // Ink   — Motion
+  { bg: "#fffdf8", fg: "#0a0a0a", accent: "#0a0a0a" }, // Paper — 3D
 ];
 
 // Runway height per panel, in svh. Taller means each panel holds fully on

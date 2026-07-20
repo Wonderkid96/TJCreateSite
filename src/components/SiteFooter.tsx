@@ -23,7 +23,11 @@ export default function SiteFooter() {
       }
       className="relative bg-ink px-6 py-8 text-paper md:px-10 md:py-10"
     >
-      <div className="flex flex-col gap-5 border-t border-paper/15 pt-6 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/50 sm:flex-row sm:items-start sm:justify-between">
+      {/* Contrast deliberately not pushed lower than this. An earlier pass had
+          the footer at 10px / 45-60% opacity white on pure black, directly
+          under a full-height black panel — it was present but read as though
+          the page simply ended. Simplified, not invisible. */}
+      <div className="flex flex-col gap-5 border-t border-paper/25 pt-6 font-mono text-[11px] uppercase tracking-[0.2em] text-paper/70 sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-md space-y-3">
           <LegalNote label="Terms & Conditions">
             <li>
@@ -60,7 +64,7 @@ export default function SiteFooter() {
           </LegalNote>
         </div>
 
-        <div className="shrink-0 text-paper/45">© Toby Johnson, 2026</div>
+        <div className="shrink-0 text-paper/70">© Toby Johnson, 2026</div>
       </div>
     </section>
   );
@@ -76,16 +80,16 @@ function LegalNote({
 }) {
   return (
     <details className="group">
-      <summary className="flex w-fit cursor-pointer list-none items-center gap-2 text-paper/60 transition-colors hover:text-paper [&::-webkit-details-marker]:hidden">
+      <summary className="flex w-fit cursor-pointer list-none items-center gap-2 text-paper/85 transition-colors hover:text-paper [&::-webkit-details-marker]:hidden">
         {label}
         <span
           aria-hidden
-          className="text-paper/40 transition-transform duration-300 group-open:rotate-45"
+          className="text-paper/60 transition-transform duration-300 group-open:rotate-45"
         >
           +
         </span>
       </summary>
-      <ul className="mt-3 max-w-md list-none space-y-2 border-l border-paper/15 pl-4 text-[11px] normal-case leading-relaxed tracking-normal text-paper/70">
+      <ul className="mt-3 max-w-md list-none space-y-2 border-l border-paper/15 pl-4 text-[11px] normal-case leading-relaxed tracking-normal text-paper/80">
         {children}
       </ul>
     </details>

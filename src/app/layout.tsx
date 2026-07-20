@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Schibsted_Grotesk, IBM_Plex_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
 import "./globals.css";
@@ -16,6 +17,17 @@ import { ThemeProvider, NO_FLASH_SNIPPET } from "@/components/ThemeProvider";
 // self-hosting the file, so this is loaded from Typekit's CDN rather than
 // bundled. The family name and axis values live in globals.css.
 const TYPEKIT_CSS = "https://use.typekit.net/bhj7dgq.css";
+
+// Fallback display face — Special Gothic Expanded One, the previous display
+// font, kept self-hosted so a Typekit outage degrades to a wide grotesque
+// rather than Arial Narrow. preload:false so it is only fetched if the
+// browser actually needs it (i.e. when Peridot fails to load).
+const displayFallback = localFont({
+  src: "./fonts/SpecialGothicExpandedOne-Regular.woff2",
+  variable: "--font-display-fallback",
+  display: "swap",
+  preload: false,
+});
 
 // Body / UI face — Schibsted Grotesk. Characterful grotesque, variable
 // 400-900. Replaced Space Grotesk (July 2026) to move the site away from
@@ -215,7 +227,7 @@ export default function RootLayout({
   return (
     <html
       lang="en-GB"
-      className={`${sans.variable} ${mono.variable}`}
+      className={`${displayFallback.variable} ${sans.variable} ${mono.variable}`}
       suppressHydrationWarning
     >
       <head>

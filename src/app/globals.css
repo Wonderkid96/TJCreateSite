@@ -96,20 +96,25 @@ html.lenis body {
 }
 
 .font-display {
-  font-family: var(--font-display), "Arial Narrow", system-ui, sans-serif;
-  /* font-weight is set alongside the axis value so the Arial Narrow fallback
-     still renders heavy if the kit is slow or unavailable. */
+  font-family: var(--font-display), var(--font-display-fallback),
+    "Arial Narrow", system-ui, sans-serif;
   font-weight: 950;
   font-variation-settings: var(--display-variation);
+  /* Special Gothic (the fallback) only ships a 400 weight — letting the
+     browser fake 950 on it smears the face. Peridot has a real 950 on its
+     weight axis, so disabling synthesis costs it nothing. */
+  font-synthesis-weight: none;
 }
 
 /* Standard section-heading scale — single source for SectionTitle and the
    Selected Work header so the display type stays in sync. (Hero and Contact
    intentionally run their own, larger scales.) */
 .section-heading {
-  font-family: var(--font-display), "Arial Narrow", system-ui, sans-serif;
+  font-family: var(--font-display), var(--font-display-fallback),
+    "Arial Narrow", system-ui, sans-serif;
   font-weight: 950;
   font-variation-settings: var(--display-variation);
+  font-synthesis-weight: none;
   text-transform: uppercase;
   font-size: clamp(2rem, 6vw, 5rem);
   line-height: 0.9;

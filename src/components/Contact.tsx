@@ -70,6 +70,25 @@ export default function Contact() {
         >
           {CONTACT_EMAIL}
         </a>
+
+        {/* CV — a quiet link for people already interested, deliberately not
+            in the nav so it doesn't compete with the work. Opens in a new tab
+            so it never navigates anyone off the site. */}
+        <a
+          href="/toby-johnson-cv.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex w-fit items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-paper/70 transition-colors hover:text-accent"
+        >
+          CV
+          <span
+            aria-hidden
+            className="transition-transform duration-300 group-hover:translate-x-1"
+          >
+            →
+          </span>
+        </a>
+
         <SocialLinks size={22} tone="paper" />
       </div>
     </section>

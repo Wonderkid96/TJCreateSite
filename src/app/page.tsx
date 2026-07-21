@@ -41,7 +41,7 @@ export default function Home() {
         <SectionPanel className="bg-ink">
           <About />
         </SectionPanel>
-        <SectionPanel className="bg-accent">
+        <SectionPanel className="bg-ink">
           <Clients />
         </SectionPanel>
         <SectionPanel className="bg-ink" last>

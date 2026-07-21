@@ -25,12 +25,11 @@ const useMounted = () =>
     () => false
   );
 
-// Brand red panel with pure-white type and logos. --paper is pinned white so
-// both the title (text-paper) and the masked logos (background var(--paper))
-// render white regardless of theme. The darkened-tone treatment used on the
-// Services red panel was tried here and reverted: it reads fine on solid
-// headings but goes muddy on the thin logo marks.
-const RED_VARS = {
+// Black panel with pure-white type and logos. --paper is pinned white so both
+// the title (text-paper) and the masked logos (background var(--paper)) render
+// white regardless of theme. Pure #ffffff rather than the brand's off-white
+// paper: the logo marks are thin and benefit from maximum contrast on black.
+const PANEL_VARS = {
   "--paper": "#ffffff",
   "--line": "rgba(255, 255, 255, 0.2)",
 } as React.CSSProperties;
@@ -51,7 +50,7 @@ const ITEM_VARIANTS = {
 };
 
 /**
- * Brand-red client panel. Logos sit as white marks on the red background
+ * Black client panel. Logos sit as white marks on the black background
  * (via CSS mask, so a single SVG colours either way).
  */
 export default function Clients() {
@@ -89,8 +88,8 @@ export default function Clients() {
     <section
       id="clients"
       aria-label="Selected clients"
-      style={RED_VARS}
-      className="relative flex min-h-screen flex-col justify-center bg-accent px-6 py-16 text-paper md:px-10 md:py-20"
+      style={PANEL_VARS}
+      className="relative flex min-h-screen flex-col justify-center bg-ink px-6 py-16 text-paper md:px-10 md:py-20"
     >
       <div className="mb-12 text-center md:mb-16">
         <SectionTitle>Clients</SectionTitle>

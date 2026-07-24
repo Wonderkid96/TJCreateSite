@@ -137,7 +137,7 @@ export const PROJECTS: Project[] = [
     tags: ["Motion", "Lyric Video"],
     blurb:
       "Lyric video for Common Request's Liar Liar. Built around the look of a terminal print-out, with the lyrics threaded through continuous scrolling code. The code isn't filler. It echoes the words and themes of the track, so phrases keep surfacing as the video plays. Heavy motion: glitch, overlays, displacements. After Effects.",
-    video: "/work/imported/motion/liar-liar-apple-motion.mp4",
+    video: "/work/imported/motion/liar-liar-visualiser-short.mp4",
     videoPoster: "/work/imported/posters-video/liar-liar-apple-motion.avif",
     alt: "Liar Liar lyric video for Common Request with terminal print-out aesthetic, motion graphics by Toby Johnson",
     kind: "video",

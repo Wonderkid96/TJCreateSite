@@ -76,7 +76,7 @@ export default function LiveSection() {
         {/* Context copy */}
         <div>
           <h2 className="font-display uppercase text-[clamp(1.6rem,4vw,2.8rem)] leading-[1.02] tracking-tight">
-            I also <span className="text-accent">sing.</span>
+            My <span className="text-accent">Music.</span>
           </h2>
           <p className="mt-5 max-w-md text-base leading-relaxed text-paper/80">
             {PERFORMANCE.blurb}

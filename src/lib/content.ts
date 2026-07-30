@@ -3,7 +3,7 @@ export type Project = {
   title: string;
   client: string;
   year: string;
-  category: "Graphic" | "Motion" | "3D" | "Identity" | "Print";
+  category: "Graphic" | "Motion" | "3D" | "Identity" | "Print" | "Music";
   tags: string[];
   blurb: string;
   image?: string;
@@ -301,17 +301,42 @@ export const PROJECTS: Project[] = [
 // source PNGs so they scale crisp at any size. URLs open in a new tab.
 // Ordered most recognisable first — array order is the display order in the
 // Clients grid (rows of 4 on desktop), so the biggest names lead.
+// Ordered by profile: recognisable companies first, then music-industry
+// organisations, labels, agencies and studios, then individual artists and
+// bands at the end.
 export const CLIENTS_WITH_LOGOS = [
+  // Companies / brands
   {
     name: "Mojang Studios",
     logo: "/work/imported/logos/mojang-studios.svg",
     url: "https://www.minecraft.net/en-us/mojang-studios",
   },
   {
-    name: "Courtney Barnett",
-    logo: "/work/imported/logos/courtney-barnett.svg",
-    url: "https://courtneybarnett.com.au",
+    name: "RevenueCat",
+    logo: "/work/imported/logos/revenuecat.svg",
+    url: "https://www.revenuecat.com",
   },
+  {
+    name: "Replit",
+    logo: "/work/imported/logos/replit.svg",
+    url: "https://replit.com",
+  },
+  {
+    name: "JetBrains",
+    logo: "/work/imported/logos/jetbrains.svg",
+    url: "https://www.jetbrains.com",
+  },
+  {
+    name: "Gigantic",
+    logo: "/work/imported/logos/gigantic.svg",
+    url: "https://www.gigantic.com",
+  },
+  {
+    name: "Instrumental",
+    logo: "/work/imported/logos/instrumental.svg",
+    url: "https://instrumental.info",
+  },
+  // Music organisations, labels, agencies, venues, studios
   {
     name: "Marathon Artists",
     logo: "/work/imported/logos/marathon.svg",
@@ -333,9 +358,45 @@ export const CLIENTS_WITH_LOGOS = [
     url: "https://jazzrefreshed.com",
   },
   {
-    name: "Gigantic",
-    logo: "/work/imported/logos/gigantic.svg",
-    url: "https://www.gigantic.com",
+    name: "Women in Jazz",
+    logo: "/work/imported/logos/women-in-jazz.svg",
+    url: "https://www.womeninjazz.co.uk",
+  },
+  {
+    name: "New Soil",
+    logo: "/work/imported/logos/new-soil.svg",
+    url: "https://newsoil.co",
+  },
+  {
+    name: "Moves Recordings",
+    logo: "/work/imported/logos/moves.svg",
+    url: "https://moves.ltd",
+  },
+  {
+    name: "Bridge the Gap",
+    logo: "/work/imported/logos/bridge-the-gap.svg",
+    url: "https://www.bridgethegapmanagement.com",
+  },
+  {
+    name: "Pace Artists",
+    logo: "/work/imported/logos/pace.svg",
+    url: "https://www.paceartists.com",
+  },
+  {
+    name: "Made by Analogue",
+    logo: "/work/imported/logos/analogue-leeds.svg",
+    url: "https://madebyanalogue.co.uk/",
+  },
+  {
+    name: "Optima Design",
+    logo: "/work/imported/logos/optima.svg",
+    url: "https://www.optimadesign.co.uk",
+  },
+  // Artists / musicians
+  {
+    name: "Courtney Barnett",
+    logo: "/work/imported/logos/courtney-barnett.svg",
+    url: "https://courtneybarnett.com.au",
   },
   {
     name: "Corto.Alto",
@@ -353,49 +414,9 @@ export const CLIENTS_WITH_LOGOS = [
     url: "https://www.hotwaxband.com",
   },
   {
-    name: "Women in Jazz",
-    logo: "/work/imported/logos/women-in-jazz.svg",
-    url: "https://www.womeninjazz.co.uk",
-  },
-  {
-    name: "New Soil",
-    logo: "/work/imported/logos/new-soil.svg",
-    url: "https://newsoil.co",
-  },
-  {
-    name: "Bridge the Gap",
-    logo: "/work/imported/logos/bridge-the-gap.svg",
-    url: "https://www.bridgethegapmanagement.com",
-  },
-  {
-    name: "Pace Artists",
-    logo: "/work/imported/logos/pace.svg",
-    url: "https://www.paceartists.com",
-  },
-  {
-    name: "Moves Recordings",
-    logo: "/work/imported/logos/moves.svg",
-    url: "https://moves.ltd",
-  },
-  {
-    name: "Instrumental",
-    logo: "/work/imported/logos/instrumental.svg",
-    url: "https://instrumental.info",
-  },
-  {
-    name: "Made by Analogue",
-    logo: "/work/imported/logos/analogue-leeds.svg",
-    url: "https://madebyanalogue.co.uk/",
-  },
-  {
     name: "Richard Walters",
     logo: "/work/imported/logos/richard-walters.svg",
     url: "https://richardwalters.bandcamp.com",
-  },
-  {
-    name: "Optima Design",
-    logo: "/work/imported/logos/optima.svg",
-    url: "https://www.optimadesign.co.uk",
   },
 ];
 

@@ -63,14 +63,32 @@ const CONCURRENCY = 6;
 const loadQueue: number[] = [];
 let inFlight = 0;
 
+// The frame indices we actually load this session. Full set on desktop; a
+// strided subset on mobile so decoded-image memory stays sane — each decoded
+// 726×699 frame is ~2MB of RGBA, so all 82 held at once is ~160MB, enough to
+// cause memory-pressure jank (and tab reloads) on a phone. Missing indices
+// degrade gracefully via nearestLoaded. Populated once in preloadFallingFrames.
+const plannedIndices: number[] = [];
+let plannedCount = FALLING_FRAME_COUNT;
+
+// Mobile / coarse-pointer devices load every 2nd frame. Same query Hero uses
+// to pick its mobile variants, so the two stay consistent.
+function isMobileFrameSet(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia("(max-width: 767px), (pointer: coarse)").matches
+  );
+}
+
 function markOne() {
   loadedCount += 1;
 
-  // Check scroll-ready: do we have a frame at every STRIDE position?
+  // Check scroll-ready: do we have a frame at every STRIDE position of the
+  // planned set?
   if (!isScrollReady) {
-    let scrollOk = true;
-    for (let i = 0; i < FALLING_FRAME_COUNT; i += SCROLL_READY_STRIDE) {
-      if (!images[i]) { scrollOk = false; break; }
+    let scrollOk = plannedIndices.length > 0;
+    for (let k = 0; k < plannedIndices.length; k += SCROLL_READY_STRIDE) {
+      if (!images[plannedIndices[k]]) { scrollOk = false; break; }
     }
     if (scrollOk) {
       isScrollReady = true;
@@ -79,7 +97,7 @@ function markOne() {
     }
   }
 
-  if (loadedCount >= FALLING_FRAME_COUNT && !isReady) {
+  if (loadedCount >= plannedCount && !isReady) {
     isReady = true;
     // Also fire scroll-ready callbacks in case stride check never passed
     // (shouldn't happen, but belt-and-braces).
@@ -153,8 +171,20 @@ export function preloadFallingFrames(onReady?: () => void) {
   if (preloadStarted) return;
   preloadStarted = true;
 
-  // Fill queue in order: 0, 1, 2, … 81.
-  for (let i = 0; i < FALLING_FRAME_COUNT; i++) {
+  // Build the planned set: every frame on desktop, every 2nd on mobile.
+  // Always include the final frame so the end of the fall isn't a held frame.
+  const stride = isMobileFrameSet() ? 2 : 1;
+  for (let i = 0; i < FALLING_FRAME_COUNT; i += stride) {
+    plannedIndices.push(i);
+  }
+  const lastIdx = FALLING_FRAME_COUNT - 1;
+  if (plannedIndices[plannedIndices.length - 1] !== lastIdx) {
+    plannedIndices.push(lastIdx);
+  }
+  plannedCount = plannedIndices.length;
+
+  // Queue in order so early frames (seen first while scrolling) arrive first.
+  for (const i of plannedIndices) {
     loadQueue.push(i);
   }
   pumpQueue();
@@ -179,7 +209,7 @@ export function onScrollReady(cb: () => void) {
 }
 
 export function fallingFramesProgress(): number {
-  return loadedCount / FALLING_FRAME_COUNT;
+  return plannedCount ? loadedCount / plannedCount : 0;
 }
 
 /**

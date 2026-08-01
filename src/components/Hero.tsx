@@ -52,16 +52,23 @@ export default function Hero() {
     preloadFallingFrames();
   }, []);
 
-  // rAF draw loop — paints the current target frame to canvas.
+  // rAF draw loop — paints the current target frame to canvas. Runs ONLY
+  // while the hero is on-screen and the tab is visible. Below the fold the
+  // canvas is invisible, so a permanently-running loop there is pure
+  // main-thread waste that reads as scroll jank (and a laggy fixed header)
+  // across the rest of the page.
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const section = ref.current;
+    if (!canvas || !section) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
+
     let raf = 0;
     let lastDrawn = -1;
+    let running = false;
+    let onScreen = false;
 
     const loop = () => {
       raf = requestAnimationFrame(loop);
@@ -79,11 +86,46 @@ export default function Hero() {
       if (idx === lastDrawn) return;
       lastDrawn = idx;
 
+      // Mobile skips the CSS mask/drop-shadow, so high-quality resampling
+      // buys nothing there — keep the per-frame draw cheap.
+      ctx.imageSmoothingQuality = isMobileRef.current ? "low" : "high";
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+
+    const start = () => {
+      if (running) return;
+      running = true;
+      lastDrawn = -1; // force a repaint of the current frame on resume
+      raf = requestAnimationFrame(loop);
+    };
+    const stop = () => {
+      running = false;
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+    };
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry.isIntersecting;
+        if (onScreen && !document.hidden) start();
+        else stop();
+      },
+      { threshold: 0 },
+    );
+    io.observe(section);
+
+    const onVisibility = () => {
+      if (document.hidden) stop();
+      else if (onScreen) start();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      stop();
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, []);
 
   // Scroll progress (0 → 1 across the hero's sticky scroll range).

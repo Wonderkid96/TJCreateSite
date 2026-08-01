@@ -344,7 +344,10 @@ export default function Hero() {
           "--paper": "#fffdf8",
         } as React.CSSProperties
       }
-      className="relative w-full h-[260vh] sm:h-[280vh] md:h-[300vh] lg:h-[320vh] bg-[#c9d8e2]"
+      // Mobile hero is deliberately shorter than desktop: the fall reads in
+      // far less scroll on a phone, and the extra length just felt slack.
+      // Desktop (md/lg) keeps its longer, more cinematic range.
+      className="relative w-full h-[190vh] sm:h-[215vh] md:h-[300vh] lg:h-[320vh] bg-[#c9d8e2]"
     >
       <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-[#c9d8e2] isolate">
         {/* Sky. Rendered as a Next.js Image with priority so the browser
@@ -384,17 +387,9 @@ export default function Hero() {
             width: `${cloudWidthVw}vw`,
             height: `calc(${cloudWidthVw}vw / ${CLOUD_ASPECT})`,
           }}
-          className="absolute top-0 will-change-transform opacity-95 mix-blend-screen"
+          className="absolute top-0 will-change-transform opacity-95 cloud-blend"
         >
-          <div
-            className="h-full w-full"
-            style={{
-              backgroundImage: "url(/work/imported/bg/cloud-long.webp)",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center top",
-            }}
-          />
+          <div className="h-full w-full cloud-bg bg-top" />
         </motion.div>
 
         {/* Falling man */}

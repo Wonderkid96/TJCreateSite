@@ -9,6 +9,7 @@ import RevealObserver from "@/components/RevealObserver";
 import ScrollProgress from "@/components/ScrollProgress";
 import BackToTop from "@/components/BackToTop";
 import Nav from "@/components/Nav";
+import ContactFab from "@/components/ContactFab";
 import Splash from "@/components/Splash";
 import { ThemeProvider, NO_FLASH_SNIPPET } from "@/components/ThemeProvider";
 
@@ -259,6 +260,7 @@ export default function RootLayout({
           <div className="grain" aria-hidden />
           <Nav />
           {children}
+          <ContactFab />
           <BackToTop />
           <SpeedInsights />
         </ThemeProvider>

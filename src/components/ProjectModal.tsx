@@ -398,11 +398,7 @@ function FallingModalMedia() {
         className="object-cover"
       />
       <div
-        className="absolute inset-0 opacity-60 mix-blend-screen"
-        style={{
-          backgroundImage: "url(/work/imported/bg/cloud-long.webp)",
-          backgroundSize: "cover",
-        }}
+        className="cloud-bg cloud-blend absolute inset-0 opacity-60"
       />
       <div className="absolute inset-0 flex items-center justify-center">
         <canvas

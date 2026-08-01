@@ -237,6 +237,33 @@ html.lenis body {
   letter-spacing: -0.04em;
 }
 
+/* Cloud layers — the hero backdrop and the falling-on-sky tile/modal covers.
+   Desktop keys the full-res cloud in with screen blend over the sky. Mobile was
+   the site's heaviest paint: a 26MP background decoded on a phone (~106MB in
+   memory) plus a per-frame mix-blend-screen across the whole element. There it
+   swaps to a small alpha-baked cloud — luminance pre-composited into the alpha
+   channel, which for a greyscale cloud is mathematically identical to the screen
+   blend — and draws it normally. Same look, a fraction of the cost. The media
+   condition mirrors Hero's isMobile query, and the swap is pure CSS so mobile
+   never downloads or decodes the full-res image. Each call site keeps its own
+   opacity and background-position. */
+.cloud-blend {
+  mix-blend-mode: screen;
+}
+.cloud-bg {
+  background-image: url(/work/imported/bg/cloud-long.webp);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+@media (max-width: 767px), (pointer: coarse) {
+  .cloud-blend {
+    mix-blend-mode: normal;
+  }
+  .cloud-bg {
+    background-image: url(/work/imported/bg/cloud-mobile.webp);
+  }
+}
+
 /* Desktop/fine-pointer only: subtle button lift on hover. */
 @media (hover: hover) and (pointer: fine) {
   .hero-btn-lift:hover {

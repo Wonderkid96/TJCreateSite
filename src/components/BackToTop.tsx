@@ -41,7 +41,10 @@ export default function BackToTop() {
         pointerEvents: visible ? "auto" : "none",
       }}
       transition={{ duration: 0.35, ease: EASE }}
-      className="fixed z-[85] bottom-5 right-5 md:bottom-7 md:right-7 h-11 w-11 rounded-full bg-accent text-white shadow-[0_8px_28px_rgba(10,10,10,0.2)] transition-[filter] duration-300 hover:brightness-110"
+      // Bottom-left on mobile so it never overlaps the contact FAB (which
+      // owns the bottom-right there); back to bottom-right on desktop, where
+      // there is no FAB.
+      className="fixed z-[85] bottom-5 left-5 md:bottom-7 md:left-auto md:right-7 h-11 w-11 rounded-full bg-accent text-white shadow-[0_8px_28px_rgba(10,10,10,0.2)] transition-[filter] duration-300 hover:brightness-110"
     >
       <span aria-hidden className="text-base leading-none">
         ↑

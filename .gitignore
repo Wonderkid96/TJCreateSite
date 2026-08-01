@@ -65,6 +65,9 @@ public/work/imported/portraits/*.jpg
 /test-results/
 /playwright-report/
 /playwright/.cache/
+# Playwright MCP output — writing this into the watched tree triggers a Next
+# dev-server Fast Refresh loop, so it must never be tracked or watched.
+/.playwright-mcp/
 
 # ── Brand reference docs (kept locally, never committed) ──────────
 # No leading slash = matches at any depth.

@@ -503,12 +503,7 @@ function FallingOnSky() {
         className="object-cover object-center scale-110"
       />
       <div
-        className="cloud-drift absolute inset-0 opacity-60 mix-blend-screen"
-        style={{
-          backgroundImage: "url(/work/imported/bg/cloud-long.webp)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+        className="cloud-drift cloud-bg cloud-blend bg-center absolute inset-0 opacity-60"
       />
       <div className="absolute inset-0 flex items-center justify-center">
         <canvas

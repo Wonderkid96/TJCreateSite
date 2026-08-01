@@ -12,6 +12,12 @@ export type Project = {
   imageHover?: string; // used for "day-night" hover swap
   video?: string;
   videoPoster?: string;
+  /**
+   * For an "image" tile that still has a motion piece behind it: the tile
+   * shows the still, but opening the modal plays this video. Lets a clean
+   * hero still front the grid without losing the animation on click.
+   */
+  modalVideo?: string;
   kind?: "image" | "video" | "falling" | "day-night" | "hover-video"; // "falling" = falling video composited over sky; "hover-video" = plays on hover, snaps back on leave
   /** If set, the modal shows this YouTube video (muted autoplay) instead of the tile media. */
   previewYouTubeId?: string;
@@ -174,10 +180,10 @@ export const PROJECTS: Project[] = [
     tags: ["Motion", "3D", "Product"],
     blurb:
       "Product animation for Pulse Audio's over-ear headphones. Sculpted, textured, lit and animated in Blender, graded in Premiere. A slow rotating cycle that lets the form and materials carry the piece. Clean lighting, no tricks.",
-    video: "/work/imported/motion/headphone-animation.mp4",
-    videoPoster: "/work/imported/posters-video/headphone-animation.avif",
-    alt: "Pulse Audio over-ear headphones product animation rendered in Blender, 3D motion design by Toby Johnson",
-    kind: "video",
+    image: "/work/imported/projects/headphone-render.avif",
+    modalVideo: "/work/imported/motion/headphone-animation.mp4",
+    alt: "Pulse Audio wireless earbuds falling with charging case, 3D product render by Toby Johnson",
+    kind: "image",
     bg: "#0a0a0a",
   },
   {

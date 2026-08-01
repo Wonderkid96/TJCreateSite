@@ -87,12 +87,12 @@ export default function Clients() {
   return (
     <section
       id="clients"
-      aria-label="Selected clients"
+      aria-label="Brands I've worked with"
       style={PANEL_VARS}
       className="relative flex min-h-screen flex-col justify-center bg-ink px-6 py-16 text-paper md:px-10 md:py-20"
     >
       <div className="mb-12 text-center md:mb-16">
-        <SectionTitle>Clients</SectionTitle>
+        <SectionTitle>Worked with</SectionTitle>
       </div>
 
       <motion.ul

@@ -232,6 +232,24 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
     return () => window.clearInterval(id);
   }, [isTouchDevice, kind]);
 
+  // An "image" tile can still carry a motion piece: the grid shows the still,
+  // but the modal plays this video. Takes precedence over the static image.
+  if (project.modalVideo) {
+    return (
+      <video
+        src={project.modalVideo}
+        poster={project.image}
+        preload="none"
+        autoPlay={!prefersReducedMotion}
+        muted
+        loop
+        playsInline
+        controls
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+    );
+  }
+
   // YouTube preview overrides all other media in the modal
   if (project.previewYouTubeId) {
     return (

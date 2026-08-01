@@ -24,6 +24,12 @@ export type Project = {
    * Defaults to cover.
    */
   modalFit?: "contain";
+  /**
+   * CSS object-position for the square grid tile crop, e.g. "60% 50%".
+   * Steers which part of a non-square image survives the centre crop.
+   * Defaults to centre ("50% 50%") when omitted.
+   */
+  focal?: string;
   /** Video plays forward → reverse → forward (no loop reset jump). */
   pingPong?: boolean;
 };
@@ -277,6 +283,9 @@ export const PROJECTS: Project[] = [
     alt: "Original Nintendo Game Boy floating over colourful retro shapes, 3D product render by Toby Johnson",
     kind: "image",
     modalFit: "contain",
+    // Console sits right of centre in the 16:9 render — pull the square
+    // grid crop right so it lands centred in the tile.
+    focal: "60% 50%",
     bg: "#12181f",
   },
   {

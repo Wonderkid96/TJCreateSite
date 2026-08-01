@@ -302,6 +302,7 @@ function ProjectTile({
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
+                style={{ objectPosition: project.focal }}
                 priority={index < 2}
               />
             )}
@@ -314,7 +315,7 @@ function ProjectTile({
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-100 group-hover:opacity-0"
-                  style={{ opacity: isTouchDevice ? (dayNightIsNight ? 0 : 1) : undefined }}
+                  style={{ objectPosition: project.focal, opacity: isTouchDevice ? (dayNightIsNight ? 0 : 1) : undefined }}
                 />
                 <Image
                   src={project.imageHover}
@@ -322,7 +323,7 @@ function ProjectTile({
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-0 group-hover:opacity-100"
-                  style={{ opacity: isTouchDevice ? (dayNightIsNight ? 1 : 0) : undefined }}
+                  style={{ objectPosition: project.focal, opacity: isTouchDevice ? (dayNightIsNight ? 1 : 0) : undefined }}
                 />
               </>
             )}
@@ -347,6 +348,7 @@ function ProjectTile({
                   el.play().catch(() => {});
                 }}
                 className="absolute inset-0 h-full w-full object-cover"
+                style={{ objectPosition: project.focal }}
               />
             )}
 
@@ -360,6 +362,7 @@ function ProjectTile({
                     fill
                     sizes="100vw"
                     className="object-cover"
+                    style={{ objectPosition: project.focal }}
                   />
                 )}
                 {/* Desktop: video element — preloads and shows frame 0 at idle */}
@@ -380,6 +383,7 @@ function ProjectTile({
                       hoverVideoEndedRef.current = true;
                     }}
                     className="absolute inset-0 h-full w-full object-cover"
+                    style={{ objectPosition: project.focal }}
                   />
                 )}
               </>

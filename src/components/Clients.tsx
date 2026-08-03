@@ -93,6 +93,10 @@ export default function Clients() {
     >
       <div className="mb-12 text-center md:mb-16">
         <SectionTitle>Worked with</SectionTitle>
+        <p className="mx-auto mt-4 max-w-md text-sm text-paper/60 md:text-base">
+          Selected clients and collaborators across music, culture, brand and
+          product.
+        </p>
       </div>
 
       <motion.ul

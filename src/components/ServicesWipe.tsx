@@ -206,20 +206,29 @@ function PanelFace({
         >
           {service.blurb}
         </p>
-      </div>
 
-      {/* Items — locked to the bottom. */}
-      <ul className="absolute inset-x-8 bottom-8 flex flex-wrap gap-x-8 gap-y-2 font-mono text-[11px] uppercase tracking-[0.2em] md:inset-x-14 md:bottom-14 md:text-xs">
-        {service.items.map((it) => (
-          <li key={it} className="flex items-center gap-3">
-            <span
-              className="inline-block h-1 w-1 shrink-0 rounded-full"
-              style={{ backgroundColor: theme.accent }}
-            />
-            {it}
-          </li>
-        ))}
-      </ul>
+        {/* Capabilities — sits directly under the description, not pinned
+            to the panel's foot. */}
+        <div className="mt-8">
+          <div
+            className="mb-3 font-mono text-[11px] uppercase tracking-[0.25em]"
+            style={{ opacity: 0.7 }}
+          >
+            Capabilities
+          </div>
+          <ul className="flex max-w-xl flex-wrap gap-x-8 gap-y-2 font-mono text-[11px] uppercase tracking-[0.2em] md:text-xs">
+            {service.items.map((it) => (
+              <li key={it} className="flex items-center gap-3">
+                <span
+                  className="inline-block h-1 w-1 shrink-0 rounded-full"
+                  style={{ backgroundColor: theme.accent }}
+                />
+                {it}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }

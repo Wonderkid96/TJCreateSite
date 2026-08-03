@@ -59,17 +59,28 @@ export default function Nav() {
     wasOpenRef.current = open;
   }, [open]);
 
+  // Transparent + mix-blend-difference whenever the menu is closed, so the white
+  // wordmark/links render as the inverse of whatever footage is behind them and
+  // stay legible on any frame. A solid paper bar only while the mobile panel
+  // (paper-backed) is open, where a blended dropdown would be unreadable.
+  const overReel = !open;
+
   return (
     <header
       aria-label="Site header"
-      // Slides away once the hero scrolls out of view, but the open mobile
-      // panel always forces the header visible (derived, not setState).
-      className={`fixed inset-x-0 top-0 z-50 bg-paper border-b border-line transition-transform duration-300 ease-[var(--ease)] will-change-transform ${
-        hidden && !open ? "-translate-y-full" : "translate-y-0"
-      }`}
+      // Slides away once the hero scrolls out of view, but the open mobile panel
+      // always forces the header visible (derived, not setState). The blend must
+      // live on the header itself — its parent is the document root, so it
+      // composites against the footage beneath; on an inner wrapper the z-indexed
+      // header would isolate it and there'd be nothing to invert.
+      className={`fixed inset-x-0 top-0 z-50 border-b transition-[transform,background-color,color,border-color] duration-300 ease-[var(--ease)] will-change-transform ${
+        overReel
+          ? "bg-transparent text-paper border-transparent mix-blend-difference"
+          : "bg-paper text-ink border-line"
+      } ${hidden && !open ? "-translate-y-full" : "translate-y-0"}`}
     >
       <div className="relative flex items-center justify-between px-6 md:px-10 py-4">
-        <LogoMark onClick={() => setOpen(false)} />
+        <LogoMark onClick={() => setOpen(false)} overReel={overReel} />
 
         {/* Desktop nav — pinned to the right */}
         <nav
@@ -96,13 +107,13 @@ export default function Nav() {
             <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
             <span
               aria-hidden
-              className={`absolute left-1/2 top-1/2 -translate-x-1/2 w-5 h-px bg-ink transition-transform duration-300 ${
+              className={`absolute left-1/2 top-1/2 -translate-x-1/2 w-5 h-px bg-current transition-transform duration-300 ${
                 open ? "rotate-45" : "-translate-y-[5px]"
               }`}
             />
             <span
               aria-hidden
-              className={`absolute left-1/2 top-1/2 -translate-x-1/2 w-5 h-px bg-ink transition-transform duration-300 ${
+              className={`absolute left-1/2 top-1/2 -translate-x-1/2 w-5 h-px bg-current transition-transform duration-300 ${
                 open ? "-rotate-45" : "translate-y-[5px]"
               }`}
             />
@@ -148,7 +159,13 @@ export default function Nav() {
  * TJCREATE wordmark — the full name in brand black, with only the trailing
  * period in accent red (the brand's accent-period pattern).
  */
-function LogoMark({ onClick }: { onClick?: () => void }) {
+function LogoMark({
+  onClick,
+  overReel = false,
+}: {
+  onClick?: () => void;
+  overReel?: boolean;
+}) {
   return (
     <a
       href="#top"
@@ -156,8 +173,11 @@ function LogoMark({ onClick }: { onClick?: () => void }) {
       className="inline-flex items-baseline font-display text-[1.15rem] leading-none tracking-[-0.02em] whitespace-nowrap md:text-[1.4rem]"
       onClick={onClick}
     >
-      <span className="text-ink">TJCREATE</span>
-      <span aria-hidden className="ml-[0.05em] text-accent">
+      {/* Over the reel the wordmark inherits the header's currentColor and the
+          full stop drops to it too, so the whole mark inverts uniformly under
+          the difference blend; on the solid bar it returns to ink + accent. */}
+      <span className={overReel ? "" : "text-ink"}>TJCREATE</span>
+      <span aria-hidden className={`ml-[0.05em] ${overReel ? "" : "text-accent"}`}>
         .
       </span>
     </a>

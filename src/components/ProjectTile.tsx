@@ -40,6 +40,11 @@ function ProjectTile({
   // static frames render instead.
   const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [dayNightIsNight, setDayNightIsNight] = useState(false);
+  // hover-video: true whenever the static poster still should be showing
+  // (never hovered yet, or fully rewound back to it). Flips false the
+  // moment playback starts, and back to true once the leave-rewind
+  // reaches the start — so the tile always settles back on the thumbnail.
+  const [hoverVideoIdle, setHoverVideoIdle] = useState(true);
 
   // Scroll parallax for inner media. Disabled on touch devices: with 15
   // tiles each running their own scroll-progress tracker, mobile native
@@ -194,24 +199,18 @@ function ProjectTile({
   }, []);
 
   const onLeave = () => {
-    // Hover-video: behaviour depends on progress through the video.
-    // < 50% → reverse back to start.
-    // ≥ 50% → continue playing to the end and hold the last frame.
+    // Hover-video: always rewind back to the start (and the poster still
+    // takes back over) regardless of how far playback got — the tile
+    // should never settle on a mid- or end-of-clip frame.
     const hv = hoverVideoRef.current;
     if (hv) {
       cancelAnimationFrame(hoverVideoReverseRaf.current);
-      const progress = hv.duration > 0 ? hv.currentTime / hv.duration : 0;
-
-      if (progress >= 0.5) {
-        // Past halfway — let it finish naturally; onEnded holds the last frame
-        return;
-      }
-
-      // Under halfway — reverse back to start
       hv.pause();
       hoverVideoEndedRef.current = false;
+
       if (hv.currentTime <= 0.02) {
         hv.currentTime = 0;
+        setHoverVideoIdle(true);
         return;
       }
       const REVERSE_SPEED = 0.7;
@@ -224,6 +223,7 @@ function ProjectTile({
         const next = hv.currentTime - REVERSE_SPEED * delta;
         if (next <= 0) {
           hv.currentTime = 0;
+          setHoverVideoIdle(true);
           return;
         }
         hv.currentTime = next;
@@ -238,6 +238,7 @@ function ProjectTile({
     if (hv) {
       cancelAnimationFrame(hoverVideoReverseRaf.current);
       hoverVideoEndedRef.current = false;
+      setHoverVideoIdle(false);
       hv.currentTime = 0;
       hv.play().catch(() => {});
     }
@@ -354,18 +355,24 @@ function ProjectTile({
 
             {kind === "hover-video" && project.video && (
               <>
-                {/* Mobile: static image — video never loads so we need a visible fallback */}
-                {isTouchDevice && project.videoPoster && (
+                {/* Poster still — the resting thumbnail on every device.
+                    On desktop it crossfades out on hover and back in once
+                    the leave-rewind reaches the start; on touch it's the
+                    only thing rendered, since the video below never mounts. */}
+                {project.videoPoster && (
                   <Image
                     src={project.videoPoster}
                     alt={project.alt ?? project.title}
                     fill
-                    sizes="100vw"
-                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className={`object-cover transition-opacity duration-300 ease-[var(--ease)] ${
+                      isTouchDevice || hoverVideoIdle ? "opacity-100" : "opacity-0"
+                    }`}
                     style={{ objectPosition: project.focal }}
+                    priority={index < 2}
                   />
                 )}
-                {/* Desktop: video element — preloads and shows frame 0 at idle */}
+                {/* Desktop: video element, hidden until hover starts it. */}
                 {!isTouchDevice && (
                   <video
                     ref={hoverVideoRef}
@@ -373,16 +380,14 @@ function ProjectTile({
                     muted
                     playsInline
                     preload="auto"
-                    onLoadedMetadata={(e) => {
-                      // Seek to frame 0 so the browser renders the first video frame
-                      // instead of a blank/black surface before first hover
-                      e.currentTarget.currentTime = 0.001;
-                    }}
                     onEnded={() => {
-                      // Hold the last frame — do NOT reset. Reverse animation on leave.
+                      // Hold the last frame if still hovered — onLeave always
+                      // rewinds back to the poster once the cursor leaves.
                       hoverVideoEndedRef.current = true;
                     }}
-                    className="absolute inset-0 h-full w-full object-cover"
+                    className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ease-[var(--ease)] ${
+                      hoverVideoIdle ? "opacity-0" : "opacity-100"
+                    }`}
                     style={{ objectPosition: project.focal }}
                   />
                 )}

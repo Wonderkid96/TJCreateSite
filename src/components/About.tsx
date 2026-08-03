@@ -6,11 +6,14 @@ import { SocialLinks } from "./SocialIcons";
 
 // ─── Copy ────────────────────────────────────────────────────────────────────
 
-const BIO_LEAD = "I'm Toby Johnson, a graphic and motion designer building ";
-const BIO_ACCENT = "strategic visuals";
-const BIO_TAIL = " for brands, artists and the teams behind them.";
-const BIO_SECONDARY =
-  "Artwork, posters, motion, 3D, social and full campaigns. I pull the pieces together so the whole thing feels intentional, not stitched together at the end.";
+const BIO_LEAD = "I'm Toby Johnson, a multidisciplinary designer working across ";
+const BIO_ACCENT = "graphic design, motion and 3D";
+const BIO_TAIL = " for brands, artists and agencies.";
+const BIO_SECONDARY = [
+  "I've worked independently across design and motion for over seven years, starting in music and increasingly working across brand, product and agency projects.",
+  "A lot of my work crosses disciplines. An identity might need to become a campaign, a piece of artwork might need to move, or a product might need to be built in 3D before it can go anywhere. Being able to work across those stages means the same visual idea can carry through the whole job rather than feeling stitched together at the end.",
+  "I can work from an existing creative direction, slot into an agency team, or take something from an early idea through to finished assets.",
+];
 
 // Pin the palette dark so the overlaid copy stays readable in either theme,
 // matching how Services/Contact lock their own dark backgrounds.
@@ -60,9 +63,11 @@ export default function About() {
           {BIO_TAIL}
         </h2>
 
-        <p className="mt-7 max-w-md text-base leading-relaxed text-paper/80 md:text-lg">
-          {BIO_SECONDARY}
-        </p>
+        <div className="mt-7 flex max-w-lg flex-col gap-4 text-base leading-relaxed text-paper/80 md:text-lg">
+          {BIO_SECONDARY.map((para) => (
+            <p key={para}>{para}</p>
+          ))}
+        </div>
 
         <SocialLinks size={22} tone="paper" className="mt-8" />
       </div>

@@ -18,12 +18,17 @@ const PERFORMANCE: Project = {
   category: "Music",
   tags: ["Live", "Vocal"],
   blurb:
-    "Before the design work I was a signed recording artist with Mahogany Recordings (2018–2022). This is a live session, One Mississippi into Boutique Taberna, filmed in an abandoned warehouse. Three solo EPs, 22M+ streams, a European tour supporting Jack Savoretti and Dotan.",
+    "Before moving fully into design, I spent several years as a recording artist signed to Mahogany Recordings (2018–2022): three solo EPs, over 22 million streams, and a European tour supporting Jack Savoretti and Dotan. This is a live session, One Mississippi into Boutique Taberna, filmed in an abandoned warehouse. That background still feeds into how I work now, particularly around music, campaigns and building a visual world around an idea rather than treating every asset separately.",
   image: "/work/imported/live/one-mississippi-mahogany.jpg",
   alt: "Toby Johnson performing One Mississippi live for a Mahogany Session in an abandoned warehouse",
   previewYouTubeId: "r9tFqEYP7yo",
   bg: "#0a0a0a",
 };
+
+// Spotify embed src (the `https://open.spotify.com/embed/...` URL from Share →
+// Embed). Toby Johnson's artist page, dark theme.
+const SPOTIFY_EMBED_URL =
+  "https://open.spotify.com/embed/artist/6aWiYkCceJsc6lorPBdvIg?utm_source=generator&theme=0";
 
 export default function LiveSection() {
   const [open, setOpen] = useState(false);
@@ -32,25 +37,31 @@ export default function LiveSection() {
     <section
       id="live"
       aria-label="Toby Johnson live music"
-      className="bg-ink text-paper px-6 py-24 md:px-10 md:py-28"
+      className="bg-ink text-paper px-6 py-24 md:px-10 md:py-36"
     >
-      <div className="mb-8 font-mono text-[11px] uppercase tracking-[0.25em] text-paper/65">
-        Off the clock
+      <div className="max-w-2xl">
+        <h2 className="font-display uppercase text-[clamp(1.6rem,4vw,2.8rem)] leading-[1.02] tracking-tight">
+          My <span className="text-accent">Music.</span>
+        </h2>
+        <p className="mt-5 max-w-md text-base leading-relaxed text-paper/80">
+          {PERFORMANCE.blurb}
+        </p>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-center md:gap-14">
-        {/* Poster tile — 16:9, click to open the performance in the showcase modal */}
+      {/* Split: the live video on one side, the Spotify embed on the other. */}
+      <div className="mt-10 grid gap-6 md:mt-12 md:grid-cols-2 md:items-stretch md:gap-8">
+        {/* Video — click to open the performance in the showcase modal */}
         <button
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Play One Mississippi, live Mahogany Session"
-          className="group relative block aspect-video w-full overflow-hidden rounded-[2px] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+          className="group relative block h-full min-h-[320px] w-full overflow-hidden rounded-[10px] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent md:min-h-[420px]"
         >
           <Image
             src={PERFORMANCE.image!}
             alt={PERFORMANCE.alt ?? PERFORMANCE.title}
             fill
-            sizes="(max-width: 768px) 100vw, 60vw"
+            sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover transition-transform duration-[900ms] ease-[var(--ease)] group-hover:scale-[1.03]"
           />
           {/* Legibility wash + hover deepen */}
@@ -64,23 +75,33 @@ export default function LiveSection() {
             <span className="ml-1 h-0 w-0 border-y-[11px] border-l-[18px] border-y-transparent border-l-paper md:border-y-[13px] md:border-l-[22px]" />
           </span>
 
-          {/* Corner labels */}
-          <span className="absolute left-4 top-4 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90">
-            Live · Mahogany Session
-          </span>
+          {/* Title only — the mono kicker label was removed. */}
           <span className="absolute bottom-4 left-4 font-display text-xl uppercase leading-none tracking-tight md:text-2xl">
             {PERFORMANCE.title}
           </span>
         </button>
 
-        {/* Context copy */}
-        <div>
-          <h2 className="font-display uppercase text-[clamp(1.6rem,4vw,2.8rem)] leading-[1.02] tracking-tight">
-            My <span className="text-accent">Music.</span>
-          </h2>
-          <p className="mt-5 max-w-md text-base leading-relaxed text-paper/80">
-            {PERFORMANCE.blurb}
-          </p>
+        {/* Spotify embed */}
+        <div className="relative min-h-[320px] overflow-hidden rounded-[10px] bg-paper/5 md:min-h-[420px]">
+          {SPOTIFY_EMBED_URL ? (
+            <iframe
+              src={SPOTIFY_EMBED_URL}
+              title="Toby Johnson on Spotify"
+              loading="lazy"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              className="absolute inset-0 h-full w-full border-0"
+            />
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center">
+              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/50">
+                Spotify embed
+              </span>
+              <span className="max-w-xs text-sm text-paper/40">
+                Add the embed URL from Spotify (Share → Embed) to
+                SPOTIFY_EMBED_URL.
+              </span>
+            </div>
+          )}
         </div>
       </div>
 

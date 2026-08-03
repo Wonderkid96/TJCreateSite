@@ -62,8 +62,14 @@ export default function Contact() {
         </motion.h2>
       </a>
 
+      <p className="mt-6 max-w-md text-base leading-relaxed text-paper/75 md:mt-8 md:text-lg">
+        If you&apos;ve got a project, campaign or idea that could use graphic
+        design, motion or 3D, get in touch. I&apos;m available for direct
+        client work, agency projects and freelance support.
+      </p>
+
       {/* Email + socials — no labels or divider, so it reads as one section. */}
-      <div className="mt-8 flex flex-col gap-6 md:mt-10">
+      <div className="mt-6 flex flex-col gap-6">
         <a
           href={`mailto:${CONTACT_EMAIL}`}
           className="w-fit text-lg transition-colors hover:text-accent md:text-xl"

@@ -264,15 +264,18 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
   }
 
   if (kind === "image" && project.image) {
+    // Only steer the crop with `focal` when actually cropping (cover). With
+    // "contain" the full frame is already visible — an off-centre position
+    // would just shift it lopsided inside its own letterbox for no reason.
+    const isContain = project.modalFit === "contain";
     return (
       <Image
         src={project.image}
         alt={project.alt ?? project.title}
         fill
         sizes="(max-width: 768px) 100vw, 66vw"
-        className={
-          project.modalFit === "contain" ? "object-contain" : "object-cover"
-        }
+        className={isContain ? "object-contain" : "object-cover"}
+        style={{ objectPosition: isContain ? undefined : project.focal }}
       />
     );
   }
@@ -320,6 +323,14 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
   }
 
   if (kind === "hover-video") {
+    // Same fit/crop rules as the plain "image" kind — a product render on a
+    // matching flat background (modalFit: "contain") needs the full frame
+    // letterboxed rather than cropped, same as Health Plus/Huel/Game Boy.
+    // `focal` only steers a cover crop; with contain the full frame already
+    // shows, so an off-centre position would just shift it lopsided.
+    const isContain = project.modalFit === "contain";
+    const fitClass = isContain ? "object-contain" : "object-cover";
+    const focalPosition = isContain ? undefined : project.focal;
     return (
       <>
         {/* Poster always visible — no black flash waiting for video */}
@@ -329,7 +340,8 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
             alt={project.alt ?? project.title}
             fill
             sizes="(max-width: 768px) 100vw, 66vw"
-            className="object-cover"
+            className={fitClass}
+            style={{ objectPosition: focalPosition }}
             priority
           />
         )}
@@ -341,7 +353,8 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
             loop
             playsInline
             preload="auto"
-            className="absolute inset-0 h-full w-full object-cover"
+            className={`absolute inset-0 h-full w-full ${fitClass}`}
+            style={{ objectPosition: focalPosition }}
           />
         )}
       </>

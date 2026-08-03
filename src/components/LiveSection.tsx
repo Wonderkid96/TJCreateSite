@@ -39,11 +39,11 @@ export default function LiveSection() {
       aria-label="Toby Johnson live music"
       className="bg-ink text-paper px-6 py-24 md:px-10 md:py-36"
     >
-      <div className="max-w-2xl">
+      <div>
         <h2 className="font-display uppercase text-[clamp(1.6rem,4vw,2.8rem)] leading-[1.02] tracking-tight">
           My <span className="text-accent">Music.</span>
         </h2>
-        <p className="mt-5 max-w-md text-base leading-relaxed text-paper/80">
+        <p className="mt-5 text-base leading-relaxed text-paper/80 md:text-lg">
           {PERFORMANCE.blurb}
         </p>
       </div>

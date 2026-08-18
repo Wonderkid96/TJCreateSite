@@ -3,28 +3,22 @@
 import { motion, AnimatePresence } from "motion/react";
 import { EASE } from "@/lib/motion";
 import { useEffect, useState } from "react";
-import {
-  fallingFramesProgress,
-  fallingFramesReady,
-  fallingFramesScrollReady,
-  preloadFallingFrames,
-} from "@/lib/falling-frames";
 
 const SESSION_KEY = "tjcreate.splashSeen";
-// Minimum time the splash stays visible even if everything's already cached
-// — a cold flash would feel janky. Also gives fonts a beat to settle.
-const MIN_SHOW_MS = 650;
-// Hard ceiling: if frames never finish preloading (network blip, R2 outage,
-// whatever), dismiss the splash anyway so the site stays usable. The falling
-// animation will catch up as frames arrive — it already draws whatever's
-// been decoded so far and skips frames that haven't.
-const MAX_SHOW_MS = 3500;
+// Fixed, self-contained duration. This used to block on the falling-man frame
+// preload (fallingFramesReady / fallingFramesScrollReady) with a 3.5s ceiling,
+// which scroll-locked every first-time visitor for 650ms-3500ms waiting on a
+// decorative asset that belongs to one below-the-fold tile. FallingOnSky kicks
+// off that preload itself on mount and already degrades gracefully while
+// frames arrive, so there is nothing here worth waiting for.
+const SHOW_MS = 900;
 
 /**
- * First-visit loading gate. Shows a gradient progress bar tied to the
- * falling-man frame preload (the heaviest asset set on the page), locks
- * scroll until ready, then fades out. Skipped entirely on subsequent
- * navigations within the same session.
+ * First-visit brand moment. Holds for a fixed short beat, then fades out.
+ * Deliberately NOT a real loading gate: it does not wait on any asset, so the
+ * time to interactive is predictable rather than network-dependent. Skipped
+ * entirely on subsequent navigations within the same session, and for
+ * prefers-reduced-motion.
  */
 export default function Splash() {
   // Start with `null` so SSR renders nothing — we decide on the client
@@ -67,8 +61,7 @@ export default function Splash() {
     body.style.overflow = "hidden";
 
     const mountedAt = performance.now();
-    const minEndsAt = mountedAt + MIN_SHOW_MS;
-    const hardDeadline = mountedAt + MAX_SHOW_MS;
+    const endsAt = mountedAt + SHOW_MS;
     let raf = 0;
     let finished = false;
     let hideTimeout = 0;
@@ -91,30 +84,19 @@ export default function Splash() {
 
     const tick = () => {
       raf = requestAnimationFrame(tick);
-      const p = fallingFramesProgress();
+      const now = performance.now();
+      // Progress is the elapsed fraction of SHOW_MS, not asset progress. The
+      // bar is a brand flourish; tying it to a real download is what made
+      // dismissal unpredictable.
+      const p = Math.min(1, (now - mountedAt) / SHOW_MS);
       const pct = Math.round(p * 100);
       if (pct !== lastPct) {
         lastPct = pct;
         setProgress(p);
       }
-      const now = performance.now();
-      // Normal path: enough frames for smooth scroll viewing + min display
-      // time satisfied. On fast connections fallingFramesReady() (all 82)
-      // fires first; on slower mobile connections fallingFramesScrollReady()
-      // (every 3rd frame) lets the splash dismiss sooner so the user isn't
-      // staring at a loader while remaining frames fill in behind the scenes.
-      if ((fallingFramesReady() || fallingFramesScrollReady()) && now >= minEndsAt) {
-        finish();
-        return;
-      }
-      // Failsafe: if we've been sitting here too long, dismiss anyway.
-      // Blocking the whole page indefinitely on a network hiccup would
-      // be worse than letting the animation catch up silently later.
-      if (now >= hardDeadline) finish();
+      if (now >= endsAt) finish();
     };
 
-    // Start preload + progress tracking.
-    preloadFallingFrames();
     raf = requestAnimationFrame(tick);
 
     return () => {

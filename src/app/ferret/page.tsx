@@ -3,6 +3,12 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Ferret",
+  // Root layout sets alternates.canonical to the homepage. Metadata merges
+  // shallowly across segments, so without this the page would inherit that
+  // and wrongly canonicalise to https://www.tjcreate.co.uk/.
+  alternates: {
+    canonical: "https://www.tjcreate.co.uk/ferret",
+  },
   robots: {
     index: false,
     follow: false,
@@ -31,7 +37,7 @@ export default function FerretPage() {
           </p>
           <a
             href="mailto:hello@tjcreate.co.uk"
-            className="inline-block text-accent hover:text-accent/80 transition-colors underline"
+            className="inline-block text-accent-link hover:text-accent-link/80 transition-colors underline"
           >
             hello@tjcreate.co.uk
           </a>
@@ -40,7 +46,7 @@ export default function FerretPage() {
         <div className="pt-8 border-t border-line">
           <Link
             href="/ferret/privacy"
-            className="text-accent hover:text-accent/80 transition-colors underline"
+            className="text-accent-link hover:text-accent-link/80 transition-colors underline"
           >
             Privacy Policy
           </Link>

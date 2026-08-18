@@ -6,6 +6,12 @@
   --ink-soft: #1a1a1a;
   --muted: #6b645a;
   --accent: #e6352a;
+  /* Brand accent is 4.21:1 on --paper, which fails WCAG AA (4.5:1) for
+     normal-size text. Elsewhere accent sits on a locally-pinned dark
+     background where it passes, but standalone light-background text links
+     need a darker variant. 4.63:1 on --paper, visually close to the brand
+     red, and --accent itself is untouched. */
+  --accent-link: #dc2e23;
   --lime: #c8db45;
   --lilac: #c4a9d0;
   --line: rgba(10, 10, 10, 0.12);
@@ -30,6 +36,10 @@
   --ink-soft: #e8e4d9;
   --muted: #8a8378;
   --line: rgba(255, 253, 248, 0.14);
+  /* --accent-link is tuned for --paper being light (#dc2e23 fails AA on the
+     dark --paper: 4.20:1). --accent itself already passes AA on dark
+     (4.63:1), so text links fall back to it here. */
+  --accent-link: var(--accent);
 }
 
 html,
@@ -44,6 +54,7 @@ body {
   --color-ink-soft: var(--ink-soft);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-link: var(--accent-link);
   --color-lime: var(--lime);
   --color-lilac: var(--lilac);
   --color-line: var(--line);

@@ -3,6 +3,12 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Ferret Privacy Policy",
+  // Root layout sets alternates.canonical to the homepage. Metadata merges
+  // shallowly across segments, so without this the page would inherit that
+  // and wrongly canonicalise to https://www.tjcreate.co.uk/.
+  alternates: {
+    canonical: "https://www.tjcreate.co.uk/ferret/privacy",
+  },
   robots: {
     index: false,
     follow: false,
@@ -23,7 +29,7 @@ export default function PrivacyPage() {
             Ferret is operated by Toby Johnson (trading as TJCreate), Lincoln, United Kingdom
             (&quot;we&quot;, &quot;us&quot;). This policy explains what data Ferret collects, why, and your rights
             under UK GDPR. If you have any questions, contact us at{" "}
-            <a href="mailto:hello@tjcreate.co.uk" className="text-accent hover:text-accent/80">
+            <a href="mailto:hello@tjcreate.co.uk" className="text-accent-link hover:text-accent-link/80">
               hello@tjcreate.co.uk
             </a>
             .
@@ -137,7 +143,7 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-bold">5. Your rights</h2>
             <p>
               Under UK GDPR you have the right to access, correct, delete, or port your data, to object to or restrict processing, and to withdraw consent. To exercise any of these, email{" "}
-              <a href="mailto:hello@tjcreate.co.uk" className="text-accent hover:text-accent/80">
+              <a href="mailto:hello@tjcreate.co.uk" className="text-accent-link hover:text-accent-link/80">
                 hello@tjcreate.co.uk
               </a>
               .
@@ -147,7 +153,7 @@ export default function PrivacyPage() {
             </p>
             <p>
               You also have the right to complain to the UK Information Commissioner&apos;s Office ({" "}
-              <a href="https://ico.org.uk" className="text-accent hover:text-accent/80">
+              <a href="https://ico.org.uk" className="text-accent-link hover:text-accent-link/80">
                 ico.org.uk
               </a>
               ).
@@ -179,14 +185,14 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-bold">9. Contact</h2>
             <p>
               Toby Johnson (TJCreate), Lincoln, United Kingdom —{" "}
-              <a href="mailto:hello@tjcreate.co.uk" className="text-accent hover:text-accent/80">
+              <a href="mailto:hello@tjcreate.co.uk" className="text-accent-link hover:text-accent-link/80">
                 hello@tjcreate.co.uk
               </a>
             </p>
           </div>
 
           <div className="pt-8 border-t border-line">
-            <Link href="/ferret" className="text-accent hover:text-accent/80 transition-colors underline">
+            <Link href="/ferret" className="text-accent-link hover:text-accent-link/80 transition-colors underline">
               Back to Ferret
             </Link>
           </div>

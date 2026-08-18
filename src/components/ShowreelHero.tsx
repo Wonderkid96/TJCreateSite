@@ -97,7 +97,7 @@ export default function ShowreelHero() {
       // bottom scrim to hold legibility. bg-ink is just the pre-load ground.
       className="relative h-svh min-h-[560px] w-full overflow-hidden bg-ink text-paper"
     >
-      <h1 className="sr-only">Toby Johnson — graphic design, motion and 3D</h1>
+      <h1 className="sr-only">Toby Johnson, freelance graphic and motion designer in Lincoln</h1>
 
       {/* Blurred backdrop: only needed below md, where object-contain leaves
           the frame's sides bare. Mounted conditionally so desktop never

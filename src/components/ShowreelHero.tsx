@@ -90,13 +90,21 @@ export default function ShowreelHero() {
   };
 
   return (
-    <section
-      id="top"
-      // Full-bleed reel: the whole hero IS the footage. No plate, no band, no
-      // gradient slab — the statement is overlaid on the video with only a
-      // bottom scrim to hold legibility. bg-ink is just the pre-load ground.
-      className="relative h-svh min-h-[560px] w-full overflow-hidden bg-ink text-paper"
-    >
+    // Pin-and-reveal: this outer box is 2 viewports tall so the hero (sticky,
+    // pinned to top:0 inside it) holds still for a full extra scroll before
+    // WorkGallery's opaque section rises up and covers it from the bottom.
+    // svh (not vh) on both this and the inner section, so mobile's collapsing
+    // URL bar can't cause a jump — svh is already the smallest/safe value.
+    // Requires nothing from Lenis: sticky is native-scroll-driven, and touch
+    // devices already run native scroll (see SmoothScroll.tsx).
+    <div className="relative h-[200svh]">
+      <section
+        id="top"
+        // Full-bleed reel: the whole hero IS the footage. No plate, no band, no
+        // gradient slab — the statement is overlaid on the video with only a
+        // bottom scrim to hold legibility. bg-ink is just the pre-load ground.
+        className="sticky top-0 z-0 h-svh min-h-[560px] w-full overflow-hidden bg-ink text-paper"
+      >
       <h1 className="sr-only">Toby Johnson, freelance graphic and motion designer in Lincoln</h1>
 
       {/* Blurred backdrop: only needed below md, where object-contain leaves
@@ -166,7 +174,8 @@ export default function ShowreelHero() {
       >
         {isPlaying ? "Pause" : "Play"}
       </button>
-    </section>
+      </section>
+    </div>
   );
 }
 

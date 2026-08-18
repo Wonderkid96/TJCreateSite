@@ -29,7 +29,10 @@ export default function WorkGallery() {
       <section
         id="work"
         aria-label="Selected work"
-        className="relative bg-paper py-24 md:py-32"
+        // z-10: explicit, so this opaque section reliably paints over the
+        // pinned hero (ShowreelHero) as it rises into view on scroll, rather
+        // than depending on default DOM-order stacking.
+        className="relative z-10 bg-paper py-24 md:py-32"
       >
         <div className="px-6 md:px-10 mb-8 md:mb-12">
           <h2 className="section-heading">Selected work</h2>

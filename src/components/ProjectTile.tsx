@@ -30,7 +30,10 @@ function ProjectTile({
   const mediaRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hoverVideoRef = useRef<HTMLVideoElement>(null);
-  const hoverVideoEndedRef = useRef(false);
+  // True while the cursor/focus is on the tile. Read by the video's
+  // onCanPlay so a clip that was still buffering on first hover starts
+  // as soon as it has data, instead of silently staying on the poster.
+  const hoverVideoActiveRef = useRef(false);
   const hoverVideoReverseRaf = useRef(0);
   // Hydration-safe: false on the server and the first client render, real
   // value after — the render branches below (hover-video, parallax insets)
@@ -198,6 +201,36 @@ function ProjectTile({
     return () => cancelAnimationFrame(hoverVideoReverseRaf.current);
   }, []);
 
+  // Hover-video tiles render with preload="none" so an off-screen tile
+  // costs nothing. Promote to "metadata" once the tile is close to the
+  // viewport: that fetches the moov atom and first frames, so the first
+  // hover starts near-instantly without having pulled the whole clip.
+  // Same promotion pattern the kind === "video" branch above uses.
+  useEffect(() => {
+    if (isTouchDevice || project.kind !== "hover-video") return;
+    const v = hoverVideoRef.current;
+    if (!v) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          if (v.preload === "none") {
+            v.preload = "metadata";
+            try { v.load(); } catch {}
+          }
+          // One-shot: once promoted there is nothing left to watch for.
+          io.disconnect();
+        }
+      },
+      // Generous bottom margin so the promotion lands before the tile
+      // is actually on screen.
+      { threshold: 0, rootMargin: "0px 0px 400px 0px" }
+    );
+    io.observe(v);
+    return () => io.disconnect();
+  }, [isTouchDevice, project.kind]);
+
   const onLeave = () => {
     // Hover-video: always rewind back to the start (and the poster still
     // takes back over) regardless of how far playback got — the tile
@@ -205,8 +238,8 @@ function ProjectTile({
     const hv = hoverVideoRef.current;
     if (hv) {
       cancelAnimationFrame(hoverVideoReverseRaf.current);
+      hoverVideoActiveRef.current = false;
       hv.pause();
-      hoverVideoEndedRef.current = false;
 
       if (hv.currentTime <= 0.02) {
         hv.currentTime = 0;
@@ -237,7 +270,14 @@ function ProjectTile({
     const hv = hoverVideoRef.current;
     if (hv) {
       cancelAnimationFrame(hoverVideoReverseRaf.current);
-      hoverVideoEndedRef.current = false;
+      hoverVideoActiveRef.current = true;
+      // First hover on a still-deferred clip: promote to full buffering.
+      // The poster stays up until playback actually starts, so the wait
+      // is invisible, and onCanPlay below starts it once data arrives.
+      if (hv.preload !== "auto") {
+        hv.preload = "auto";
+        try { hv.load(); } catch {}
+      }
       setHoverVideoIdle(false);
       hv.currentTime = 0;
       hv.play().catch(() => {});
@@ -379,11 +419,19 @@ function ProjectTile({
                     src={project.video}
                     muted
                     playsInline
-                    preload="auto"
-                    onEnded={() => {
-                      // Hold the last frame if still hovered — onLeave always
-                      // rewinds back to the poster once the cursor leaves.
-                      hoverVideoEndedRef.current = true;
+                    // Deferred: with 8 hover-video tiles on the page,
+                    // preload="auto" pulled ~12.5MB down on every desktop
+                    // visit whether or not the tile was ever scrolled to,
+                    // competing with the hero video for bandwidth. The
+                    // observer effect above promotes this to "metadata"
+                    // as the tile nears the viewport, and onEnter promotes
+                    // it to "auto" on first hover.
+                    preload="none"
+                    onCanPlay={() => {
+                      // Buffering finished after the hover already started.
+                      const hv = hoverVideoRef.current;
+                      if (!hv || !hoverVideoActiveRef.current || !hv.paused) return;
+                      hv.play().catch(() => {});
                     }}
                     className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ease-[var(--ease)] ${
                       hoverVideoIdle ? "opacity-0" : "opacity-100"
@@ -517,6 +565,7 @@ function FallingOnSky() {
       <div className="absolute inset-0 flex items-center justify-center">
         <canvas
           ref={canvasRef}
+          aria-hidden="true"
           width={FALLING_FRAME_WIDTH}
           height={FALLING_FRAME_HEIGHT}
           className="h-[55%] w-auto object-contain"

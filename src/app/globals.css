@@ -262,7 +262,7 @@ html.lenis body {
   mix-blend-mode: screen;
 }
 .cloud-bg {
-  background-image: url(/work/imported/bg/cloud-long.webp);
+  background-image: url(/work/imported/bg/cloud-long.avif);
   background-size: cover;
   background-repeat: no-repeat;
 }

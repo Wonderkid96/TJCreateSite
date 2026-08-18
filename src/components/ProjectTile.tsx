@@ -477,9 +477,34 @@ export default memo(ProjectTile);
 
 function FallingOnSky() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // Gates both the frame-sequence preload and the cloud background-image —
+  // both are fetch-triggering and both belong to one below-the-fold tile,
+  // so one observer promotes both together instead of running two.
+  const [tileNear, setTileNear] = useState(false);
 
+  // The 82-frame sequence is 743KB across 42 requests (mobile stride) even
+  // with fetchPriority "low" on every frame — low priority still consumes
+  // real connection slots and bandwidth. cloud-bg (globals.css) is another
+  // 67-270KB CSS background-image with no lazy mechanism at all — browsers
+  // fetch a matched background-image as soon as the element exists in the
+  // DOM, regardless of scroll position. Neither should start until this
+  // tile (one of 15 in the grid) is actually near the viewport.
   useEffect(() => {
-    preloadFallingFrames();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          preloadFallingFrames();
+          setTileNear(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0, rootMargin: "800px 0px" }
+    );
+    io.observe(canvas);
+    return () => io.disconnect();
   }, []);
 
   // Ping-pong canvas draw loop — gated by IntersectionObserver so we only
@@ -560,7 +585,9 @@ function FallingOnSky() {
         className="object-cover object-center scale-110"
       />
       <div
-        className="cloud-drift cloud-bg cloud-blend bg-center absolute inset-0 opacity-60"
+        className={`cloud-drift bg-center absolute inset-0 opacity-60 ${
+          tileNear ? "cloud-bg cloud-blend" : ""
+        }`}
       />
       <div className="absolute inset-0 flex items-center justify-center">
         <canvas

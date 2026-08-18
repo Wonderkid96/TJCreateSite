@@ -233,7 +233,33 @@ export default function RootLayout({
             handshakes — this face paints the nav and every heading. */}
         <link rel="preconnect" href="https://use.typekit.net" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://p.typekit.net" crossOrigin="anonymous" />
-        <link rel="stylesheet" href={TYPEKIT_CSS} />
+        {/* Loaded non-blocking: measured 2.75s to fetch on a throttled mobile
+            connection, and as a plain <link rel="stylesheet"> that blocks
+            first paint until it resolves. The script below creates the link
+            itself with media="print" (fetches immediately via the preconnect
+            above, but a print-media stylesheet doesn't block screen
+            rendering), then flips it to "all" once loaded — the classic
+            loadCSS technique. Injected via a script rather than a static
+            <link> + a separate onload script: Next's beforeInteractive
+            scripts are always hoisted into <head> regardless of source
+            order (see next/script docs), so a companion script can't safely
+            assume the <link> already exists by the time it runs. The face
+            itself can't be self-hosted (Adobe licence), so this is the
+            largest safe win available for it. noscript covers the no-JS
+            fallback, where the print-media trick has no way to flip. */}
+        <Script id="typekit-loadcss" strategy="beforeInteractive">
+          {`(function(){
+            var l = document.createElement("link");
+            l.rel = "stylesheet";
+            l.href = "${TYPEKIT_CSS}";
+            l.media = "print";
+            l.onload = function () { l.media = "all"; };
+            document.head.appendChild(l);
+          })();`}
+        </Script>
+        <noscript>
+          <link rel="stylesheet" href={TYPEKIT_CSS} />
+        </noscript>
         {/* Apply saved theme before paint to avoid a flash of the wrong colours. */}
         <Script id="theme-no-flash" strategy="beforeInteractive">
           {NO_FLASH_SNIPPET}

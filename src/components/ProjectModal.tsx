@@ -22,6 +22,9 @@ type Props = {
 export default function ProjectModal({ project, onClose }: Props) {
   const mounted = typeof document !== "undefined";
   const dialogRef = useRef<HTMLDivElement>(null);
+  // Portal target's own top-level node — used to tell it apart from its
+  // siblings in document.body when marking the rest of the page inert.
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   // Focus trap + return-focus: when the modal opens, remember whatever was
   // focused (the tile button), move focus to the close control, cycle Tab
@@ -68,6 +71,24 @@ export default function ProjectModal({ project, onClose }: Props) {
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
 
+    // The dialog renders through a portal straight into <body>, so its
+    // siblings there (Nav, main, ContactFab, BackToTop, ...) are exactly what
+    // a screen reader's virtual cursor could still browse into behind the
+    // overlay. `inert` removes them from the accessibility tree and the tab
+    // order without touching layout. Derived from the DOM rather than a
+    // hardcoded component list, and only elements we inert ourselves are
+    // recorded, so cleanup never strips an `inert` set for another reason.
+    const overlay = overlayRef.current;
+    const inertedSiblings: HTMLElement[] = [];
+    if (overlay) {
+      Array.from(document.body.children).forEach((el) => {
+        if (el !== overlay && el instanceof HTMLElement && !el.hasAttribute("inert")) {
+          el.setAttribute("inert", "");
+          inertedSiblings.push(el);
+        }
+      });
+    }
+
     // Initial focus: the close button is the natural first target.
     const focusFrame = requestAnimationFrame(() => {
       const closeBtn = dialog?.querySelector<HTMLElement>("[data-modal-close]");
@@ -78,6 +99,7 @@ export default function ProjectModal({ project, onClose }: Props) {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
       cancelAnimationFrame(focusFrame);
+      inertedSiblings.forEach((el) => el.removeAttribute("inert"));
       previouslyFocused?.focus?.();
     };
   }, [project, onClose]);
@@ -92,6 +114,7 @@ export default function ProjectModal({ project, onClose }: Props) {
     <AnimatePresence>
       {project && (
         <motion.div
+          ref={overlayRef}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

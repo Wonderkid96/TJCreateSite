@@ -34,6 +34,11 @@ export default function BackToTop() {
       type="button"
       onClick={goTop}
       aria-label="Back to top"
+      // Invisible below the 700px threshold, so pull it out of the tab order
+      // and the accessibility tree too — otherwise keyboard/AT users land on
+      // a control they can't see. Matches ContactFab's show/hide pattern.
+      tabIndex={visible ? 0 : -1}
+      aria-hidden={!visible}
       initial={false}
       animate={{
         opacity: visible ? 1 : 0,

@@ -100,8 +100,11 @@ export default function Nav() {
             ref={hamburgerRef}
             type="button"
             onClick={() => setOpen((v) => !v)}
+            // No aria-controls: the panel below is unmounted (not just
+            // hidden) while closed, via AnimatePresence, so the id it would
+            // reference doesn't exist in that state — an invalid ARIA
+            // reference. aria-expanded alone is sufficient here.
             aria-expanded={open}
-            aria-controls="mobile-nav-panel"
             className="relative w-9 h-9 -mr-1 flex items-center justify-center rounded-[2px] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>

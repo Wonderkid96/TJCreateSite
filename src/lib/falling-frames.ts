@@ -71,7 +71,7 @@ let inFlight = 0;
 const plannedIndices: number[] = [];
 let plannedCount = FALLING_FRAME_COUNT;
 
-// Mobile / coarse-pointer devices load every 2nd frame. Same query Hero uses
+// Mobile / coarse-pointer devices load every 2nd frame. Same query ProjectTile uses
 // to pick its mobile variants, so the two stay consistent.
 function isMobileFrameSet(): boolean {
   return (

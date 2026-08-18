@@ -5,7 +5,7 @@ import { useSyncExternalStore } from "react";
 // Media-query subscription via useSyncExternalStore: SSR and the first
 // hydration render use the `false` fallback, then the real value resolves on
 // the client — no setState-in-effect, no hydration mismatch (React #418).
-// Same pattern as VideoSection's useIsMobile/useReducedMotion.
+// Same pattern as ShowreelHero's reduced-motion / touch checks.
 
 // Subscribe functions are cached per query so useSyncExternalStore sees a
 // stable reference and doesn't resubscribe every render.

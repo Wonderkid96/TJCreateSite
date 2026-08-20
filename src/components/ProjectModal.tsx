@@ -6,6 +6,7 @@ import { EASE } from "@/lib/motion";
 import { memo, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Project } from "@/lib/content";
+import { useMounted } from "@/lib/use-mounted";
 import {
   FALLING_FRAME_COUNT,
   FALLING_FRAME_HEIGHT,
@@ -20,7 +21,9 @@ type Props = {
 };
 
 export default function ProjectModal({ project, onClose }: Props) {
-  const mounted = typeof document !== "undefined";
+  // Portal only after mount so SSR and the client's first render match —
+  // same pattern as Clients.tsx (avoids a hydration mismatch).
+  const mounted = useMounted();
   const dialogRef = useRef<HTMLDivElement>(null);
   // Portal target's own top-level node — used to tell it apart from its
   // siblings in document.body when marking the rest of the page inert.
@@ -104,7 +107,7 @@ export default function ProjectModal({ project, onClose }: Props) {
     };
   }, [project, onClose]);
 
-  // Ancestor transforms (framer-motion, parallax, ThemeProvider, etc.)
+  // Ancestor transforms (framer-motion, parallax, etc.)
   // create new containing blocks that break `position: fixed`, making the
   // overlay inherit the full-page height of its parent instead of the
   // viewport. Rendering into document.body via portal dodges that entirely.
@@ -158,7 +161,7 @@ export default function ProjectModal({ project, onClose }: Props) {
                 aria-label={`Close ${project.title} details`}
                 // Padding + negative margin grow the hit area to ~44px
                 // (WCAG 2.5.8) without shifting the visual layout.
-                className="font-mono text-[11px] uppercase tracking-[0.2em] hover:text-accent transition-colors flex items-center gap-3 rounded-[2px] p-3 -m-3 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                className="font-mono text-[11px] uppercase tracking-[0.2em] hover:text-accent-link transition-colors flex items-center gap-3 rounded-[2px] p-3 -m-3 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
               >
                 <span className="hidden md:inline">Close</span>
                 <span aria-hidden className="relative w-5 h-5">
@@ -174,14 +177,23 @@ export default function ProjectModal({ project, onClose }: Props) {
             <div className="min-h-0 flex-1 p-5 md:p-8">
               <div className="flex h-full flex-col gap-5 md:flex-row md:gap-8">
                 <div
-                  className="relative min-h-0 flex-1 overflow-hidden rounded-[2px] md:flex-[1.7]"
+                  // Stable hook for the visual test suite (visual.spec.ts) —
+                  // class-based selectors here have gone stale before.
+                  data-modal-media
+                  // min-h-[45%] (mobile only): with the column layout, a long
+                  // overview would otherwise squeeze the media to a sliver —
+                  // the aside's copy scrolls within the remainder instead.
+                  className="relative min-h-[45%] flex-1 overflow-hidden rounded-[2px] md:min-h-0 md:flex-[1.7]"
                   style={{ background: project.bg ?? "#0a0a0a" }}
                 >
                   <ModalMedia project={project} />
                 </div>
 
                 <aside className="flex min-h-0 flex-col gap-5 overflow-hidden md:w-[clamp(17rem,30%,23rem)] md:shrink-0">
-                  <div className="min-h-0 overflow-hidden">
+                  {/* Scrollable on mobile so the full blurb stays reachable
+                      once the media takes its guaranteed share; desktop keeps
+                      the no-internal-scroll fit. */}
+                  <div className="min-h-0 overflow-y-auto md:overflow-hidden">
                     <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
                       Overview
                     </div>
@@ -201,7 +213,7 @@ export default function ProjectModal({ project, onClose }: Props) {
                     More detail on request.{" "}
                     <a
                       href={`mailto:hello@tjcreate.co.uk?subject=${encodeURIComponent("RE: " + project.title)}`}
-                      className="text-ink hover:text-accent transition-colors"
+                      className="text-ink hover:text-accent-link transition-colors"
                     >
                       hello@tjcreate.co.uk
                     </a>

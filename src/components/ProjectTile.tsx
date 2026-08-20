@@ -266,6 +266,9 @@ function ProjectTile({
     }
   };
   const onEnter = () => {
+    // Same WCAG 2.3.3 gate as every other autoplay path in this file: with
+    // reduced motion on, hover/focus keeps the static poster.
+    if (prefersReducedMotion) return;
     // Hover-video: cancel any ongoing reverse, play forward from the start
     const hv = hoverVideoRef.current;
     if (hv) {

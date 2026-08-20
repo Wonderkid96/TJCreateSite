@@ -89,7 +89,7 @@ export default function Nav() {
         >
           {LINKS.map((l) => (
             <a key={l.href} href={l.href} className="relative group">
-              <span className="group-hover:text-accent transition-colors">{l.label}</span>
+              <span className="group-hover:text-accent-link transition-colors">{l.label}</span>
             </a>
           ))}
         </nav>

@@ -1,16 +1,22 @@
 "use client";
 
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import type { Project } from "@/lib/content";
-import ProjectModal from "./ProjectModal";
+
+// Deferred like WorkGallery's copy: click-only UI, so the chunk stays out of
+// the initial bundle. Both call sites share the same async chunk.
+const ProjectModal = dynamic(() => import("./ProjectModal"), { ssr: false });
 
 // The most-viewed live visual: One Mississippi / Boutique Taberna, filmed for
 // Mahogany in an abandoned warehouse (2019). Kept out of the PROJECTS array on
 // purpose so it never appears in the Selected Work grid — it's a personal
 // facet, surfaced only here. Reuses ProjectModal so it inherits the showcase
 // modal's behaviour (portal, focus trap, Escape, muted autoplay with controls).
-const PERFORMANCE: Project = {
+// `satisfies` keeps the literal's own types (image is known-present here),
+// so no non-null assertion is needed at the <Image src> below.
+const PERFORMANCE = {
   slug: "live-one-mississippi",
   title: "One Mississippi",
   client: "Mahogany",
@@ -23,7 +29,7 @@ const PERFORMANCE: Project = {
   alt: "Toby Johnson performing One Mississippi live for a Mahogany Session in an abandoned warehouse",
   previewYouTubeId: "r9tFqEYP7yo",
   bg: "#0a0a0a",
-};
+} satisfies Project;
 
 // Spotify embed src (the `https://open.spotify.com/embed/...` URL from Share →
 // Embed). Toby Johnson's artist page, dark theme.
@@ -32,6 +38,13 @@ const SPOTIFY_EMBED_URL =
 
 export default function LiveSection() {
   const [open, setOpen] = useState(false);
+  // Latches true on first open so the dynamic modal chunk only downloads
+  // then, but the component stays mounted for AnimatePresence's exit.
+  const [modalWanted, setModalWanted] = useState(false);
+  const openModal = () => {
+    setModalWanted(true);
+    setOpen(true);
+  };
 
   return (
     <section
@@ -53,12 +66,12 @@ export default function LiveSection() {
         {/* Video — click to open the performance in the showcase modal */}
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={openModal}
           aria-label="Play One Mississippi, live Mahogany Session"
           className="group relative block h-full min-h-[320px] w-full overflow-hidden rounded-[10px] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent md:min-h-[420px]"
         >
           <Image
-            src={PERFORMANCE.image!}
+            src={PERFORMANCE.image}
             alt={PERFORMANCE.alt ?? PERFORMANCE.title}
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
@@ -105,10 +118,12 @@ export default function LiveSection() {
         </div>
       </div>
 
-      <ProjectModal
-        project={open ? PERFORMANCE : null}
-        onClose={() => setOpen(false)}
-      />
+      {modalWanted && (
+        <ProjectModal
+          project={open ? PERFORMANCE : null}
+          onClose={() => setOpen(false)}
+        />
+      )}
     </section>
   );
 }

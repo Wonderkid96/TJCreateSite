@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, useSyncExternalStore } from "react";
+import { useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "motion/react";
 import { EASE } from "@/lib/motion";
 import { CLIENTS_WITH_LOGOS } from "@/lib/content";
+import { useMounted } from "@/lib/use-mounted";
 import SectionTitle from "./SectionTitle";
 
 // Gap between the cursor and the floating client-name label.
@@ -15,15 +16,6 @@ const LABEL_GAP_PX = 22;
 const canHover = () =>
   typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches;
 
-// Client-mount detection without setState-in-effect: false during SSR + the
-// first hydration render, true thereafter. Hydration-safe and warning-free.
-const noopSubscribe = () => () => {};
-const useMounted = () =>
-  useSyncExternalStore(
-    noopSubscribe,
-    () => true,
-    () => false
-  );
 
 // Black panel with pure-white type and logos. --paper is pinned white so both
 // the title (text-paper) and the masked logos (background var(--paper)) render
@@ -204,6 +196,10 @@ function LogoCell({ name, logo, url, onHover }: LogoCellProps) {
 
   return (
     <div
+      // role="img" guarantees the aria-label computes as the accessible name —
+      // a bare div (role generic) doesn't reliably expose it, and the logo
+      // span inside is aria-hidden, so some AT would otherwise read nothing.
+      role="img"
       className="logo-cell flex h-full w-full items-center justify-center"
       aria-label={name}
       {...hoverProps}

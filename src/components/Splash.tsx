@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "motion/react";
 import { EASE } from "@/lib/motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const SESSION_KEY = "tjcreate.splashSeen";
 // Fixed, self-contained duration. This used to block on the falling-man frame
@@ -25,6 +25,23 @@ export default function Splash() {
   // whether to show the splash based on sessionStorage.
   const [visible, setVisible] = useState<boolean | null>(null);
   const [progress, setProgress] = useState(0);
+  const skipRef = useRef<HTMLButtonElement>(null);
+
+  // Focus containment while the opaque splash covers the page: without it a
+  // keyboard user can Tab onto Nav/hero controls that are invisible beneath
+  // the overlay (WCAG 2.4.11 Focus Not Obscured). The Skip button is the only
+  // focusable control here, so trapping is just "keep focus on Skip".
+  useEffect(() => {
+    if (!visible) return;
+    skipRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      e.preventDefault();
+      skipRef.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [visible]);
 
   useEffect(() => {
     let alreadySeen = false;
@@ -129,16 +146,20 @@ export default function Splash() {
       {visible && (
         <motion.div
           key="splash"
+          role="dialog"
+          aria-modal="true"
+          aria-label="TJCreate intro"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.45, ease: EASE }}
           // Sits above everything including the nav (z-50) and back-to-top
-          // (z-85), but below the theme's no-flash script.
+          // (z-85).
           className="fixed inset-0 z-[120] flex items-center justify-center bg-paper"
         >
           {/* Skip / close button — belt-and-braces escape hatch so the
               splash can never trap the user even if the preload hangs. */}
           <button
+            ref={skipRef}
             type="button"
             onClick={dismiss}
             aria-label="Skip intro"

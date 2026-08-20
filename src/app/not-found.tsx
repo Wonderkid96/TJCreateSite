@@ -33,7 +33,7 @@ export default function NotFound() {
         </Link>
         <Link
           href="/#work"
-          className="hero-btn-lift relative inline-flex items-center gap-2 px-5 md:px-6 py-3 rounded-full font-sans font-semibold tracking-tight text-base md:text-lg border border-ink text-ink hover:border-accent hover:text-accent transition-colors transition-transform duration-300"
+          className="hero-btn-lift relative inline-flex items-center gap-2 px-5 md:px-6 py-3 rounded-full font-sans font-semibold tracking-tight text-base md:text-lg border border-ink text-ink hover:border-accent hover:text-accent-link transition-colors transition-transform duration-300"
         >
           <span className="tabular-nums">See work.</span>
           <span>→</span>

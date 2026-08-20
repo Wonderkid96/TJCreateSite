@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { EASE } from "@/lib/motion";
+import { PAST_HERO_SCROLL_Y, useScrolledPast } from "@/lib/use-scrolled-past";
 import { useEffect, useState } from "react";
 
 // Single source for the address — matches Contact.tsx.
@@ -22,15 +23,8 @@ const CONTACT_EMAIL = "hello@tjcreate.co.uk";
  * BackToTop moves to the bottom-left on mobile so the two never overlap.
  */
 export default function ContactFab() {
-  const [pastHero, setPastHero] = useState(false);
+  const pastHero = useScrolledPast(PAST_HERO_SCROLL_Y);
   const [atContact, setAtContact] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setPastHero(window.scrollY > 700);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     const contact = document.getElementById("contact");

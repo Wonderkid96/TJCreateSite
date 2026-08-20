@@ -11,7 +11,6 @@ import BackToTop from "@/components/BackToTop";
 import Nav from "@/components/Nav";
 import ContactFab from "@/components/ContactFab";
 import Splash from "@/components/Splash";
-import { ThemeProvider, NO_FLASH_SNIPPET } from "@/components/ThemeProvider";
 
 // Header / display face — Peridot PE Variable (Extended Heavy), served from
 // the Adobe Fonts web project `bhj7dgq`. Adobe's licence does not permit
@@ -225,7 +224,6 @@ export default function RootLayout({
     <html
       lang="en-GB"
       className={`${displayFallback.variable} ${sans.variable} ${mono.variable}`}
-      suppressHydrationWarning
     >
       <head>
         {/* Display face from Adobe Fonts. Preconnect first so the stylesheet
@@ -260,10 +258,6 @@ export default function RootLayout({
         <noscript>
           <link rel="stylesheet" href={TYPEKIT_CSS} />
         </noscript>
-        {/* Apply saved theme before paint to avoid a flash of the wrong colours. */}
-        <Script id="theme-no-flash" strategy="beforeInteractive">
-          {NO_FLASH_SNIPPET}
-        </Script>
         {/* Structured data — a plain <script>, deliberately NOT next/script.
             next/script serialises even beforeInteractive tags into its loader
             queue (self.__next_s.push([...])), so the JSON-LD only becomes a
@@ -278,18 +272,16 @@ export default function RootLayout({
       </head>
       <body className="bg-paper text-ink">
         <a href="#work" className="skip-link">Skip to work</a>
-        <ThemeProvider>
-          <Splash />
-          <SmoothScroll />
-          <RevealObserver />
-          <ScrollProgress />
-          <div className="grain" aria-hidden />
-          <Nav />
-          {children}
-          <ContactFab />
-          <BackToTop />
-          <SpeedInsights />
-        </ThemeProvider>
+        <Splash />
+        <SmoothScroll />
+        <RevealObserver />
+        <ScrollProgress />
+        <div className="grain" aria-hidden />
+        <Nav />
+        {children}
+        <ContactFab />
+        <BackToTop />
+        <SpeedInsights />
       </body>
     </html>
   );

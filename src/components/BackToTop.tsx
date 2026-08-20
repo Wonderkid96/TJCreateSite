@@ -2,27 +2,15 @@
 
 import { motion } from "motion/react";
 import { EASE } from "@/lib/motion";
-import { useEffect, useState } from "react";
-
-type LenisLite = {
-  scrollTo: (target: number | string, opts?: { duration?: number }) => void;
-};
+import { getLenis } from "@/lib/lenis";
+import { PAST_HERO_SCROLL_Y, useScrolledPast } from "@/lib/use-scrolled-past";
 
 export default function BackToTop() {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => {
-      setVisible(window.scrollY > 700);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const visible = useScrolledPast(PAST_HERO_SCROLL_Y);
 
   const goTop = () => {
-    const lenis = (window as unknown as { __lenis?: LenisLite }).__lenis;
-    if (lenis?.scrollTo) {
+    const lenis = getLenis();
+    if (lenis) {
       lenis.scrollTo(0, { duration: 1.05 });
       return;
     }

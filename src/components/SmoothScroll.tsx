@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Lenis from "lenis";
+import { setLenis } from "@/lib/lenis";
 
 export default function SmoothScroll() {
   useEffect(() => {
@@ -12,7 +13,7 @@ export default function SmoothScroll() {
     // immediately and the eased momentum doesn't kick in mid-scroll.
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (useNativeScroll || prefersReduced) {
-      (window as unknown as { __lenis?: Lenis }).__lenis = undefined;
+      setLenis(undefined);
       return;
     }
 
@@ -26,7 +27,7 @@ export default function SmoothScroll() {
       wheelMultiplier: 1,
       touchMultiplier: 1,
     });
-    (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
+    setLenis(lenis);
 
     let rafId = 0;
     const raf = (time: number) => {

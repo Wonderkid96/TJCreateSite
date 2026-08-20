@@ -17,6 +17,9 @@ const SECTIONS: Section[] = [
 // Requests + console messages we know about and don't want to fail on.
 const ALLOWED_MISSING = [
   "/og-image.jpg", // OG card not yet generated, referenced in meta
+  // Only exists on Vercel deployments — 404s when the suite runs against a
+  // local `next start` via PLAYWRIGHT_BASE_URL.
+  "/_vercel/speed-insights/script.js",
 ];
 const IGNORED_CONSOLE = [
   "hydrat", // dev-only hydration warnings suppressed in layout already
@@ -26,6 +29,10 @@ const IGNORED_CONSOLE = [
   // Next 16 currently logs this when reconciling head scripts in dev.
   // It does not affect runtime behaviour or production output.
   "Encountered a script tag while rendering React component",
+  // Local `next start` runs have no Vercel edge, so the Speed Insights
+  // script 404s (and Chromium adds a strict-MIME refusal for the same URL).
+  "speed-insights",
+  "Failed to load resource",
 ];
 
 test.beforeAll(() => {
@@ -258,8 +265,7 @@ test("project modals — every kind renders media at non-zero size", async ({
     await tile.click();
     await page.waitForTimeout(1200);
 
-    const mediaWrap = page.locator('[role="dialog"] [class*=\'col-span-8\']').first();
-    // Alternate selector if the class-based one fails in a given browser
+    const mediaWrap = page.locator('[role="dialog"] [data-modal-media]').first();
     const rect = await mediaWrap.evaluate((el) => {
       const r = el.getBoundingClientRect();
       const hasVisibleMedia = !!el.querySelector(

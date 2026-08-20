@@ -46,6 +46,11 @@ next-env.d.ts
 # local tooling
 /.claude/
 
+# local working files that don't belong in the site repo
+/_local/
+/output/
+/tmp/
+
 # editor settings (personal, shouldn't be shared)
 .vscode/
 .idea/

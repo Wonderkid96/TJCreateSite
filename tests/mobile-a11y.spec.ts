@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Mobile a11y + interaction fixes (audit/ecc-pass branch)", () => {
+test.describe("Mobile a11y + interaction", () => {
   test("ProjectModal has proper ARIA attributes + focus trap", async ({ page }, testInfo) => {
     if (page.viewportSize()!.width >= 768) {
       testInfo.skip();
@@ -8,7 +8,12 @@ test.describe("Mobile a11y + interaction fixes (audit/ecc-pass branch)", () => {
     }
     await page.goto("/", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(2000);
-    await page.getByRole("button", { name: /skip intro/i }).click().catch(() => {});
+    // Splash auto-dismisses after ~1.2s; without a bounded timeout this click
+    // would retry until the whole test times out when the button is gone.
+    await page
+      .getByRole("button", { name: /skip intro/i })
+      .click({ timeout: 2000 })
+      .catch(() => {});
     await page.waitForTimeout(800);
 
     const tile = page.locator("#work button").first();
@@ -59,12 +64,10 @@ test.describe("Mobile a11y + interaction fixes (audit/ecc-pass branch)", () => {
     }
   });
 
-  test.fixme("Nav hamburger returns focus on Escape close", async ({ page }, testInfo) => {
-    // BUG: Focus return on Escape not working. Escape closes the menu but
-    // focus is lost, likely staying on document.body or a nav link.
-    // Issue: Nav.tsx line 48 calls hamburgerRef.current?.focus() but ref may
-    // not be bound at close time due to state timing. Need to track focus
-    // in useEffect dep array or use useCallback for the handler.
+  test("Nav hamburger returns focus on Escape close", async ({ page }, testInfo) => {
+    // Nav.tsx returns focus via an effect watching `open` -> false (the
+    // wasOpenRef pattern), so the focus call lands after React's commit and
+    // the AnimatePresence exit.
     if (page.viewportSize()!.width >= 768) {
       testInfo.skip();
       return;
@@ -80,13 +83,11 @@ test.describe("Mobile a11y + interaction fixes (audit/ecc-pass branch)", () => {
     await page.keyboard.press("Escape");
     await page.waitForTimeout(500);
 
-    // Focus should return to hamburger
+    // Focus should return to the hamburger — the only button carrying
+    // aria-expanded. (It has no aria-label; its name comes from sr-only text.)
     const focusedElement = await page.evaluate(() => {
-      const active = document.activeElement as HTMLElement;
-      const hamburger = Array.from(document.querySelectorAll("button")).find((b) =>
-        b.getAttribute("aria-label")?.includes("open menu"),
-      );
-      return hamburger === active;
+      const active = document.activeElement;
+      return active instanceof HTMLElement && active.hasAttribute("aria-expanded");
     });
 
     expect(focusedElement).toBe(true);

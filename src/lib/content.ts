@@ -92,7 +92,7 @@ export const PROJECTS: Project[] = [
     category: "Motion",
     tags: ["Motion", "Release"],
     blurb:
-      "Release animation for my single Your Cries, self-released in 2022. The plan was a music video of a body falling gracefully through the sky. With no budget for that, I leaned a chair back in the studio, filmed myself falling off it, and rotoscoped the footage in After Effects. That single take carried the whole release: the still became the artwork, the rotoscoped loop became the Spotify Canvas and Apple Motion artwork, and it now runs as the hero of this site. Built for nothing, and still doing the work.",
+      "Release animation for my single Your Cries, self-released in 2022. The plan was a music video of a body falling gracefully through the sky. With no budget for that, I leaned a chair back in the studio, filmed myself falling off it, and rotoscoped the footage in After Effects. That single take carried the whole release: the still became the artwork, the rotoscoped loop became the Spotify Canvas and the Apple Music animated cover art, and it now runs as the hero of this site. Built for nothing, and still doing the work.",
     alt: "Rotoscoped figure falling through a cloudy blue sky, release animation for Your Cries by Toby Johnson",
     kind: "falling",
     bg: "#0a0a0a",
@@ -240,7 +240,7 @@ export const PROJECTS: Project[] = [
     category: "Motion",
     tags: ["Motion", "Release"],
     blurb:
-      "Release animation for Joshua Baraka's Recess, a seven-track mixtape featuring collaborations with KiDi and Bensoul. Torn paper assembles in 3D space to build the original artwork, animated in After Effects. Rustic and handmade in feel, despite being entirely digital. Used as the Spotify and Apple Music Canvas and rolled out across the release campaign.",
+      "Release animation for Joshua Baraka's Recess, a seven-track mixtape featuring collaborations with KiDi and Bensoul. Torn paper assembles in 3D space to build the original artwork, animated in After Effects. Rustic and handmade in feel, despite being entirely digital. Used as the Spotify Canvas and the Apple Music animated cover art, and rolled out across the release campaign.",
     video: "/work/imported/motion/baraka-loop.mp4",
     videoPoster: "/work/imported/posters-video/baraka-loop.avif",
     alt: "Release animation for Joshua Baraka's Recess mixtape, torn paper assembling in 3D, motion design by Toby Johnson",
@@ -303,7 +303,7 @@ export const PROJECTS: Project[] = [
     category: "Motion",
     tags: ["Lyric Video", "Motion"],
     blurb:
-      "Lyric video for Joshua Baraka's Wrong Places. A lighter rotates slowly through the frame with lyrics fading over it, sculpted and animated in Blender with finishing in After Effects. The looping cut ran as the Spotify and Apple Music Canvas and as the campaign's main social asset. Full video on YouTube.",
+      "Lyric video for Joshua Baraka's Wrong Places. A lighter rotates slowly through the frame with lyrics fading over it, sculpted and animated in Blender with finishing in After Effects. The looping cut ran as the Spotify Canvas and the Apple Music animated cover art, and as the campaign's main social asset. Full video on YouTube.",
     video: "/work/imported/motion/jb-wrong-places-loop.mp4",
     videoPoster: "/work/imported/posters-video/jb-wrong-places-vinyl.avif",
     alt: "Lyric video for Joshua Baraka's Wrong Places with a rotating lighter, motion design by Toby Johnson",
@@ -351,6 +351,18 @@ export const CLIENTS_WITH_LOGOS = [
     name: "Instrumental",
     logo: "/work/imported/logos/instrumental.svg",
     url: "https://instrumental.info",
+  },
+  // LyriSync is a TJCreate product, not a commission. Placed here on Toby's
+  // explicit instruction (2026-08-24) after the alternative — the "Also built"
+  // strip below, which is where its description and schema live — was flagged.
+  // Kept last in this group so the recognisable client names lead the wall.
+  // PNG rather than SVG because the lockup's wordmark is set in Unbounded and
+  // was only ever exported as raster; the panel masks it to flat white like
+  // every other mark, so the source's colour never shows.
+  {
+    name: "LyriSync",
+    logo: "/work/products/lyrisync-lockup.png",
+    url: "https://lyrisync.com",
   },
   // Music organisations, labels, agencies, venues, studios
   {
@@ -437,6 +449,48 @@ export const CLIENTS_WITH_LOGOS = [
 ];
 
 export const CLIENTS = CLIENTS_WITH_LOGOS.map((c) => c.name);
+
+/**
+ * Products built under TJCreate rather than for a client. Kept out of
+ * CLIENTS_WITH_LOGOS on purpose: the logo wall is commissioned work, and
+ * sliding an own-brand product in among Mojang and JetBrains would quietly
+ * overstate it. These render in their own quieter strip (BuiltBy.tsx).
+ *
+ * `url` points at the apex domain, not www: www.lyrisync.com 308-redirects to
+ * lyrisync.com, which is also its declared canonical, so linking to www would
+ * spend the link on a redirect hop.
+ *
+ * Copy note: LyriSync's own site is barred from publishing accuracy figures
+ * (licence-restricted benchmark corpus), so this describes what the tool does
+ * and never how well it does it.
+ */
+export const OWN_PRODUCTS = [
+  {
+    name: "LyriSync",
+    // Deliberately NOT under work/imported/logos/: .gitignore excludes
+    // *.png there (that folder is a local drop-in for design exports), so a
+    // lockup left in it would never be committed and would 404 in production.
+    logo: "/work/products/lyrisync-lockup.png",
+    logoWidth: 405,
+    logoHeight: 73,
+    url: "https://lyrisync.com",
+    linkLabel: "lyrisync.com",
+    blurb:
+      "LyriSync times your own lyrics against your own track, then sends them into After Effects as real text layers. It also exports SRT, WebVTT, LRC and ASS karaoke. Built out of my own lyric video work, because timing lyrics by hand is the slowest part of the job.",
+    /**
+     * Longer description, collapsed behind a native <details>. It renders in
+     * the served HTML and is only hidden with CSS, which is the distinction
+     * that matters: Google indexes expand/collapse content it can see in the
+     * markup, but not text a click has to fetch. So this must stay a server
+     * component with no JS-gated content.
+     */
+    detailsLabel: "What it does",
+    details: [
+      "I spent years making lyric videos, and the slow part was always getting each word to land on the right frame. LyriSync does that bit: upload the track, paste in your own lyrics, and it returns word-level and line-level timings.",
+      "It exports an After Effects importer that builds real, editable text layers rather than a flattened graphic, plus SRT, WebVTT, LRC, ASS karaoke, TTML, JSON and CSV. Built for lyric video editors, motion designers, and anyone doing subtitle or karaoke work.",
+    ],
+  },
+];
 
 export const SERVICES = [
   {

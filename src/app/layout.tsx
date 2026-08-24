@@ -9,8 +9,6 @@ import RevealObserver from "@/components/RevealObserver";
 import ScrollProgress from "@/components/ScrollProgress";
 import BackToTop from "@/components/BackToTop";
 import Nav from "@/components/Nav";
-import ContactFab from "@/components/ContactFab";
-import Splash from "@/components/Splash";
 
 // Header / display face — Peridot PE Variable (Extended Heavy), served from
 // the Adobe Fonts web project `bhj7dgq`. Adobe's licence does not permit
@@ -197,10 +195,31 @@ const structuredData = {
         addressCountry: "GB",
       },
       serviceType: ["Graphic Design", "Motion Design", "3D Design"],
+      // Own products, not clients. Declaring ownership here is what ties the
+      // tjcreate.co.uk entity to lyrisync.com in the knowledge graph, so the
+      // link in the "Also built" strip reads as a first-party relationship
+      // rather than an unexplained outbound link.
+      owns: [{ "@id": "https://lyrisync.com/#lyrisync" }],
       sameAs: [
         "https://www.linkedin.com/in/tobyjohnsoncreate/",
         "https://www.instagram.com/tj.create",
       ],
+    },
+    {
+      // LyriSync — a TJCreate product, described here rather than in
+      // CLIENTS_WITH_LOGOS because it is not commissioned work. No accuracy
+      // or performance claims: LyriSync's benchmark corpus is licence
+      // restricted and its figures are not publishable.
+      "@type": "SoftwareApplication",
+      "@id": "https://lyrisync.com/#lyrisync",
+      name: "LyriSync",
+      url: "https://lyrisync.com",
+      applicationCategory: "MultimediaApplication",
+      operatingSystem: "Web",
+      description:
+        "Times your own lyrics against your own track and sends them into After Effects as real text layers. Also exports SRT, WebVTT, LRC and ASS karaoke.",
+      author: { "@id": `${SITE_URL}/#toby` },
+      publisher: { "@id": `${SITE_URL}/#tjcreate` },
     },
     {
       "@type": "WebSite",
@@ -272,14 +291,12 @@ export default function RootLayout({
       </head>
       <body className="bg-paper text-ink">
         <a href="#work" className="skip-link">Skip to work</a>
-        <Splash />
         <SmoothScroll />
         <RevealObserver />
         <ScrollProgress />
         <div className="grain" aria-hidden />
         <Nav />
         {children}
-        <ContactFab />
         <BackToTop />
         <SpeedInsights />
       </body>

@@ -2,8 +2,8 @@ import ShowreelHero from "@/components/ShowreelHero";
 import WorkGallery from "@/components/WorkGallery";
 import ServicesWipe from "@/components/ServicesWipe";
 import About from "@/components/About";
-import LiveSection from "@/components/LiveSection";
 import Clients from "@/components/Clients";
+import BuiltBy from "@/components/BuiltBy";
 import Contact from "@/components/Contact";
 import SiteFooter from "@/components/SiteFooter";
 import SectionPanel from "@/components/SectionPanel";
@@ -14,8 +14,8 @@ import SectionPanel from "@/components/SectionPanel";
  *   2. Selected Work — proof (three-column grid)
  *   3. Services      — what I do (full-screen wipe sequence)
  *   4. About         — who I am             ┐ stacked full-bleed
- *   5. Live          — my music (+ Spotify)  │ sections
- *   6. Clients       — who I've worked with  │
+ *   5. Clients       — who I've worked with  │ sections
+ *   6. Built by      — own products (LyriSync)│
  *   7. Contact       — get in touch          ┘
  *   8. Footer
  */
@@ -40,10 +40,10 @@ export default function Home() {
           <About />
         </SectionPanel>
         <SectionPanel className="bg-ink">
-          <LiveSection />
+          <Clients />
         </SectionPanel>
         <SectionPanel className="bg-ink">
-          <Clients />
+          <BuiltBy />
         </SectionPanel>
         <SectionPanel className="bg-ink" last>
           <Contact />

@@ -162,7 +162,11 @@ export default function ShowreelHero() {
         type="button"
         onClick={togglePlayback}
         aria-label={isPlaying ? "Pause showreel" : "Play showreel"}
-        className="absolute right-4 top-24 z-10 rounded-full border border-paper/25 bg-ink/60 px-5 py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper backdrop-blur transition-colors hover:border-paper/60 md:right-6"
+        // Quiet by default: this is a required control (WCAG 2.2.2), not a
+        // feature worth advertising, so it sits back until hovered/focused
+        // rather than reading as a second CTA in the top-right of the reel.
+        // Still ≥24px on its shortest side (WCAG 2.5.8 target size).
+        className="absolute right-4 top-24 z-10 rounded-full border border-paper/15 bg-ink/50 px-3.5 py-2 font-mono text-[9px] uppercase tracking-[0.2em] text-paper/60 backdrop-blur transition-colors hover:border-paper/50 hover:text-paper focus-visible:border-paper/50 focus-visible:text-paper md:right-6"
       >
         {isPlaying ? "Pause" : "Play"}
       </button>

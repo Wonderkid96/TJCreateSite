@@ -196,8 +196,8 @@ export function fallingFramesReady(): boolean {
 
 /**
  * True once enough evenly-spaced frames have loaded for a smooth
- * scroll-driven animation. The splash screen uses this to dismiss
- * earlier on mobile rather than waiting for all 82 frames.
+ * scroll-driven animation. Currently unread: its only caller was the splash
+ * screen (removed 2026-08-24), which had already stopped blocking on it.
  */
 export function fallingFramesScrollReady(): boolean {
   return isScrollReady;

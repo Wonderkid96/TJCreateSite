@@ -474,7 +474,13 @@ export const OWN_PRODUCTS = [
     logoWidth: 405,
     logoHeight: 73,
     url: "https://lyrisync.com",
-    linkLabel: "lyrisync.com",
+    /* Anchor text, not a label. It read "lyrisync.com" until 2026-08-24: a
+       bare domain describes the destination to nobody and carries none of
+       the terms that page is trying to rank for. This is the one outbound
+       link to LyriSync from an established domain, so it is worth spending
+       on words rather than on a URL. Fits the 672px (max-w-2xl) column at
+       10px mono with 0.2em tracking, so it stays on one line. */
+    linkLabel: "Sync lyrics for After Effects",
     blurb:
       "LyriSync times your own lyrics against your own track, then sends them into After Effects as real text layers. It also exports SRT, WebVTT, LRC and ASS karaoke. Built out of my own lyric video work, because timing lyrics by hand is the slowest part of the job.",
     /**

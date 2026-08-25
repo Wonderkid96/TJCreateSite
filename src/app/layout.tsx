@@ -194,7 +194,19 @@ const structuredData = {
         postalCode: "LN1",
         addressCountry: "GB",
       },
-      serviceType: ["Graphic Design", "Motion Design", "3D Design"],
+      // Web Design and Web Development added 2026-08-25, with the hero copy
+      // that now claims "the sites and apps they live in". The repositioning
+      // updated jobTitle so the schema would not contradict the page; this is
+      // the same fix one field down, and it is where a structured-data reader
+      // looks for what the business actually offers. Kept to services with
+      // shipped, pointable work behind them.
+      serviceType: [
+        "Graphic Design",
+        "Motion Design",
+        "3D Design",
+        "Web Design",
+        "Web Development",
+      ],
       // Own products, not clients. Declaring ownership here is what ties the
       // tjcreate.co.uk entity to lyrisync.com in the knowledge graph, so the
       // link in the "Also built" strip reads as a first-party relationship

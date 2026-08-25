@@ -97,7 +97,18 @@ export default function ShowreelHero() {
       // bottom scrim to hold legibility. bg-ink is just the pre-load ground.
       className="relative h-svh min-h-[560px] w-full overflow-hidden bg-ink text-paper"
     >
-      <h1 className="sr-only">Toby Johnson, freelance graphic and motion designer in Lincoln</h1>
+      {/* The page's strongest on-page signal and the line a screen reader
+          announces, so it has to agree with the title tag. It read
+          "freelance graphic and motion designer in Lincoln" until
+          2026-08-25, which left the title claiming Creative Director while
+          the heading underneath still said motion designer -- the exact
+          motion-only framing the repositioning exists to drop. Every search
+          term is kept ("graphic", "motion", "designer", "Lincoln",
+          "freelance"); only the contradiction goes. */}
+      <h1 className="sr-only">
+        Toby Johnson, freelance creative director, graphic and motion designer
+        in Lincoln
+      </h1>
 
       {/* Blurred backdrop: only needed below md, where object-contain leaves
           the frame's sides bare. Mounted conditionally so desktop never

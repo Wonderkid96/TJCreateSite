@@ -49,12 +49,12 @@ const mono = IBM_Plex_Mono({
 const SITE_URL = "https://www.tjcreate.co.uk";
 const SITE_NAME = "TJCreate · Toby Johnson";
 const SITE_DESC =
-  "Graphic and motion designer working with brands, agencies and businesses on campaign artwork, visual identity, and motion graphics. Based in Lincoln, UK.";
+  "I direct and build from concept to delivery. Brand, campaign, motion, 3D, and the sites and apps they live in. Lincoln, UK.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Graphic & Motion Designer · Toby Johnson · TJCreate",
+    default: "Toby Johnson · Creative Director & Designer, Lincoln · TJCreate",
     template: "%s · TJCreate",
   },
   description: SITE_DESC,
@@ -92,7 +92,7 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "Graphic & Motion Designer · Toby Johnson",
+    title: "Toby Johnson · Creative Director & Designer, Lincoln",
     description: SITE_DESC,
     locale: "en_GB",
     // Images are auto-attached from src/app/opengraph-image.jpg —
@@ -101,7 +101,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Graphic & Motion Designer · Toby Johnson",
+    title: "Toby Johnson · Creative Director & Designer, Lincoln",
     description: SITE_DESC,
     // Twitter image is auto-attached from src/app/twitter-image.jpg.
   },
@@ -140,7 +140,7 @@ const structuredData = {
       alternateName: "TJCreate",
       url: SITE_URL,
       image: `${SITE_URL}/opengraph-image.jpg`,
-      jobTitle: "Graphic & Motion Designer",
+      jobTitle: "Creative Director & Designer",
       description: SITE_DESC,
       email: "hello@tjcreate.co.uk",
       worksFor: { "@id": `${SITE_URL}/#tjcreate` },

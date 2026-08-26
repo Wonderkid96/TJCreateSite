@@ -19,9 +19,10 @@ const CONTENT_LAST_UPDATED = "2026-08-24";
 export default function sitemap(): MetadataRoute.Sitemap {
   // Single-page site — Google ignores URL fragments when indexing, so there
   // is no value in listing #hash anchors. Additional top-level routes can be
-  // added here as they are built. Note: /ferret/* and /filmio/* routes are
-  // intentionally excluded from the sitemap (app support/legal pages, hidden
-  // from search via per-page meta noindex).
+  // added here as they are built. Note: /ferret/*, /filmio/*, /phony/*,
+  // /trivia-crown/* and /dustup/* routes are intentionally excluded from the
+  // sitemap (app support/legal pages, hidden from search via per-page meta
+  // noindex).
   return [
     {
       url: `${BASE}/`,

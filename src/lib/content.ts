@@ -481,6 +481,45 @@ export const OWN_PRODUCTS = [
        on words rather than on a URL. Fits the 672px (max-w-2xl) column at
        10px mono with 0.2em tracking, so it stays on one line. */
     linkLabel: "Sync lyrics for After Effects",
+    /* Deep links, added 2026-09-04, and the reason is measured rather than
+       general SEO hygiene. Until now every link here pointed at the apex
+       domain, and Search Console showed exactly one LyriSync page indexed --
+       the homepage, the one page with an external link. The other 14 sat at
+       "Discovered - currently not indexed" with Last crawled: N/A, meaning
+       Google had queued them and never spent the budget to fetch one. The
+       three format pages were worse than that: "URL is unknown to Google",
+       no referring sitemap, no referring page.
+
+       This site is a single URL with 5 inbound links, all from platforms
+       that nofollow (LinkedIn, Behance, Reddit), so it has almost no equity
+       to pass and these will not manufacture any. What they do is turn four
+       URLs from "seen in a sitemap" into "linked from an indexed page",
+       which is a different crawl queue.
+
+       Anchor text is the page's own subject, not a bare path, for the same
+       reason linkLabel stopped being "lyrisync.com" on 2026-08-24. Keep
+       these pointing at apex lyrisync.com: www 308-redirects, so a www link
+       spends the hop for nothing. Four is the ceiling -- this is the
+       smallest section on the page by design and a link list that outgrows
+       the blurb above it is the tail wagging the dog. */
+    deepLinks: [
+      {
+        label: "After Effects",
+        url: "https://lyrisync.com/after-effects",
+      },
+      {
+        label: "SRT lyrics generator",
+        url: "https://lyrisync.com/srt-lyrics-generator",
+      },
+      {
+        label: "LRC generator",
+        url: "https://lyrisync.com/lrc-generator",
+      },
+      {
+        label: "Karaoke lyrics",
+        url: "https://lyrisync.com/karaoke-lyrics-generator",
+      },
+    ],
     blurb:
       "LyriSync times your own lyrics against your own track, then sends them into After Effects as real text layers. It also exports SRT, WebVTT, LRC and ASS karaoke. Built out of my own lyric video work, because timing lyrics by hand is the slowest part of the job.",
     /**

@@ -63,6 +63,38 @@ export default function BuiltBy() {
               {product.linkLabel}
               <span aria-hidden>&rarr;</span>
             </a>
+
+            {/* Deep links into the product, one step quieter than the primary
+                link above (paper/45 against paper/80) so the section still
+                reads as a mark, a few lines and a link rather than a menu.
+                They wrap rather than scroll: four labels do not fit one line
+                in the 672px column at 10px mono with 0.2em tracking, and a
+                second line here costs nothing, where a horizontal scroll
+                would hide half of them behind a gesture.
+
+                No rel="nofollow": these are Toby's own products, disclosed as
+                such by the `owns:` relation in the page's Organization
+                schema, which is the honest way to declare the relationship.
+                Marking a self-owned link nofollow would suppress the one
+                thing it is here to do, which is give Googlebot a crawl path
+                to pages it has discovered and never fetched. */}
+            {product.deepLinks && (
+              <ul
+                aria-label={`More from ${product.name}`}
+                className="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-2 border-t border-paper/8 pt-4 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/45"
+              >
+                {product.deepLinks.map((link) => (
+                  <li key={link.url}>
+                    <a
+                      href={link.url}
+                      className="transition-colors hover:text-accent-link"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
           </li>
         ))}
       </ul>

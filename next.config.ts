@@ -11,6 +11,29 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
   },
   compress: true,
+  /* The rebuild to a single page left six URLs 404ing that Google had
+     indexed in May, which is why Search Console went from ~16 indexed pages
+     to 1. A 404 throws away whatever Google had accumulated on a URL; a
+     redirect hands it to the page that replaced it.
+
+     `permanent: true` emits 308, not 301. Google consolidates the two
+     identically; 308 additionally preserves the request method, which is
+     why Next uses it. */
+  async redirects() {
+    return [
+      { source: "/home", destination: "/", permanent: true },
+      // The about copy is a section of the one page now, not its own route.
+      { source: "/about", destination: "/#about", permanent: true },
+      /* The blog is gone and nothing replaced it, so these land on the
+         homepage. Listed individually AND caught by the wildcard: the three
+         named ones are what Search Console actually reports, and the
+         wildcard covers any other post URL still linked from somewhere we
+         cannot see. Google may treat a mass redirect of deleted content as a
+         soft 404, which is no worse than the hard 404 they serve today. */
+      { source: "/blog", destination: "/", permanent: true },
+      { source: "/blog/:slug*", destination: "/", permanent: true },
+    ];
+  },
   // Baseline security headers for a static marketing site (no auth/API).
   async headers() {
     return [

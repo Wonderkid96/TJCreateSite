@@ -300,15 +300,13 @@ function ProjectTile({
       // visual feedback (hover-video) as mouse users.
       onFocus={onEnter}
       onBlur={onLeave}
-      // The "YOUTUBE ↗" cue is cursor-only, so tell screen reader users a
-      // new tab is coming (WCAG 3.2.2). Internal tiles keep their visible
-      // text as the accessible name.
+      // Keep the action concise and announce external navigation.
       aria-label={
         project.externalUrl
           ? `${project.title} (opens on YouTube in a new tab)`
-          : undefined
+          : `View ${project.title}`
       }
-      className="hover-tile group relative block w-full h-full text-left"
+      className="portfolio-project hover-tile group relative block w-full text-left"
       // Pin --paper/--ink locally so overlay text stays readable on both
       // light and dark themes (tiles always sit over darkened imagery).
       style={
@@ -318,7 +316,7 @@ function ProjectTile({
         } as React.CSSProperties
       }
     >
-      <div className="relative h-full w-full overflow-hidden rounded-[2px]">
+      <div className="project-image relative aspect-square w-full overflow-hidden rounded-[2px]">
         <div
           className="hover-tile-media absolute inset-0 transition-transform duration-[900ms] ease-[var(--ease)]"
           style={{ background: project.bg ?? "#0a0a0a" }}
@@ -450,23 +448,14 @@ function ProjectTile({
         </div>
 
 
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/55 pointer-events-none" />
-
-        {/* Year only. The `(01)` bracket-counter that used to sit opposite is
-            retired brand-wide: it read as CAD annotation and numbered the work
-            for no reason a visitor cares about. */}
-        <div className="absolute top-5 left-6 right-6 flex items-start justify-end font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90 mix-blend-difference">
-          <span>{project.year}</span>
+      </div>
+      <div className="project-caption">
+        <div className="project-caption-top">
+          <h3 className="font-display">{project.title}</h3>
+          <span className="project-year font-mono">{project.year}</span>
         </div>
-
-        <div className="absolute bottom-6 left-6 right-6 text-paper">
-          <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/80 mb-1">
-            {project.category} · {project.client}
-          </div>
-          <h3 className="font-display text-xl md:text-2xl lg:text-3xl leading-[1.05] tracking-tight">
-            {project.title}
-          </h3>
-        </div>
+        <p className="project-client">{project.client}</p>
+        <p className="project-disciplines font-mono">{project.tags.join(" / ")}</p>
       </div>
     </button>
   );

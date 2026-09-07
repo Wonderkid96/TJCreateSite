@@ -14,8 +14,8 @@ const ProjectModal = dynamic(() => import("./ProjectModal"), { ssr: false });
 const PARALLAX = [30, 40, 55, 25, 45, 50, 20, 42, 60];
 
 /**
- * Selected work — a responsive grid (three columns on desktop, two on tablet,
- * one on mobile). Each tile is square and opens the project modal, or an
+ * Selected work pairs unobscured imagery with client and discipline captions.
+ * Each tile opens the project modal, or an
  * external link when it has one. No scroll pinning: plain vertical scroll.
  */
 export default function WorkGallery() {
@@ -41,12 +41,13 @@ export default function WorkGallery() {
         aria-label="Selected work"
         className="relative bg-paper py-24 md:py-32"
       >
-        <div className="px-6 md:px-10 mb-8 md:mb-12">
-          <h2 className="section-heading">Selected work</h2>
+        <div className="work-heading px-6 md:px-10">
+          <h2 className="section-heading">Selected work<span className="text-accent">.</span></h2>
+          <p className="work-intro">Brand, campaign, motion and 3D.</p>
         </div>
-        <div className="grid grid-cols-1 gap-6 px-6 sm:grid-cols-2 md:px-10 lg:grid-cols-3 lg:gap-8">
+        <div className="work-grid px-6 md:px-10">
           {PROJECTS.map((p, i) => (
-            <div key={p.slug} className="aspect-square">
+            <div key={p.slug} className="work-cell">
               <ProjectTile
                 project={p}
                 index={i}

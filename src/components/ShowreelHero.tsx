@@ -156,7 +156,7 @@ export default function ShowreelHero() {
       />
 
       {/* Statement overlaid on the footage, bottom-left. */}
-      <div className="absolute inset-x-0 bottom-0 px-6 pb-10 md:px-10 md:pb-14">
+      <div className="hero-introduction absolute inset-x-0 bottom-0 px-6 pb-10 md:px-10 md:pb-14">
         <p className="max-w-xl text-base leading-snug text-paper md:text-lg">
           I direct and build from concept to delivery. Brand, campaign,
           motion, 3D, and the sites and apps they live in. Lincoln based,
@@ -165,7 +165,7 @@ export default function ShowreelHero() {
 
         <div className="mt-6 flex flex-wrap gap-2.5 md:mt-7 md:gap-3">
           <HeroButton href="#work" label="View work" />
-          <HeroButton href="#contact" label="Email me" variant="outline" />
+          <HeroButton href="#contact" label="Get in touch" variant="outline" />
         </div>
       </div>
 

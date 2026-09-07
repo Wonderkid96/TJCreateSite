@@ -6,7 +6,7 @@ import { SocialLinks } from "./SocialIcons";
 
 // ─── Copy ────────────────────────────────────────────────────────────────────
 
-const BIO_LEAD = "I'm Toby Johnson, a multidisciplinary designer working across ";
+const BIO_LEAD = "A multidisciplinary designer working across ";
 const BIO_ACCENT = "graphic design, motion and 3D";
 const BIO_TAIL = " for brands, artists and agencies.";
 const BIO_SECONDARY = [
@@ -52,18 +52,21 @@ export default function About() {
       {/* Mobile: darken so the copy stays legible over the full-bleed portrait. */}
       <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/35 to-[#0a0a0a00] md:hidden" />
 
-      <div className="relative w-full px-6 py-16 md:px-10 md:py-20">
+      <div className="about-content relative w-full px-6 py-16 md:px-10 md:py-20">
         <div className="mb-8 font-mono text-[11px] uppercase tracking-[0.25em] text-paper/65">
           About
         </div>
 
-        <h2 className="font-display uppercase max-w-4xl text-[clamp(1.8rem,5vw,4.2rem)] leading-[0.98] tracking-tight">
-          {BIO_LEAD}
-          <span className="text-accent">{BIO_ACCENT}</span>
-          {BIO_TAIL}
+        <h2 className="section-heading">
+          I&apos;m Toby<span className="text-accent">.</span>
         </h2>
+        <p className="about-lead">
+          {BIO_LEAD}
+          <span>{BIO_ACCENT}</span>
+          {BIO_TAIL}
+        </p>
 
-        <div className="mt-7 flex max-w-lg flex-col gap-4 text-base leading-relaxed text-paper/80 md:text-lg">
+        <div className="about-body mt-7 flex max-w-lg flex-col gap-4 text-base leading-relaxed text-paper/80 md:text-lg">
           {BIO_SECONDARY.map((para) => (
             <p key={para}>{para}</p>
           ))}

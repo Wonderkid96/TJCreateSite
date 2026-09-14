@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { EASE } from "@/lib/motion";
 
@@ -9,6 +10,7 @@ import { EASE } from "@/lib/motion";
 const LINKS = [
   { label: "Work",     href: "#work"     },
   { label: "Services", href: "#services" },
+  { label: "Packages", href: "#packages" },
   { label: "About",    href: "#about"    },
   { label: "Contact",  href: "#contact"  },
 ];
@@ -17,24 +19,25 @@ const LINKS = [
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
-  // Header slides out of view on scroll-down, returns on scroll-up.
-  const [hidden, setHidden] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const [heroVisible, setHeroVisible] = useState(true);
+  const sectionHref = (hash: string) => isHome ? hash : `/${hash}`;
   const hamburgerRef = useRef<HTMLButtonElement>(null);
 
-  // The header only belongs over the hero. Once the hero scrolls out of view
-  // (into the work grid / stacked deck) the header slides away, and returns
-  // when the user scrolls back up into the hero. An IntersectionObserver on
-  // the hero section drives it directly — no scroll math.
+  // Keep navigation available throughout the page, with a solid surface once
+  // the reel leaves view. Reconnect when client navigation changes the page.
   useEffect(() => {
+    if (pathname !== "/") return;
     const hero = document.getElementById("top");
     if (!hero) return;
     const io = new IntersectionObserver(
-      ([entry]) => setHidden(!entry.isIntersecting),
-      { threshold: 0 },
+      ([entry]) => setHeroVisible(entry.isIntersecting),
+      { threshold: 0, rootMargin: "-72px 0px 0px 0px" },
     );
     io.observe(hero);
     return () => io.disconnect();
-  }, []);
+  }, [pathname]);
 
   // Close the mobile panel on Escape.
   useEffect(() => {
@@ -59,36 +62,29 @@ export default function Nav() {
     wasOpenRef.current = open;
   }, [open]);
 
-  // Transparent + mix-blend-difference whenever the menu is closed, so the white
-  // wordmark/links render as the inverse of whatever footage is behind them and
-  // stay legible on any frame. A solid paper bar only while the mobile panel
-  // (paper-backed) is open, where a blended dropdown would be unreadable.
-  const overReel = !open;
+  // Difference blending belongs only over the reel; paper keeps links legible
+  // across work, services and standalone project pages.
+  const overReel = isHome && heroVisible && !open;
 
   return (
     <header
       aria-label="Site header"
-      // Slides away once the hero scrolls out of view, but the open mobile panel
-      // always forces the header visible (derived, not setState). The blend must
-      // live on the header itself — its parent is the document root, so it
-      // composites against the footage beneath; on an inner wrapper the z-indexed
-      // header would isolate it and there'd be nothing to invert.
-      className={`fixed inset-x-0 top-0 z-50 border-b transition-[transform,background-color,color,border-color] duration-300 ease-[var(--ease)] will-change-transform ${
+      className={`fixed inset-x-0 top-0 z-50 border-b transition-[background-color,color,border-color] duration-300 ease-[var(--ease)] ${
         overReel
           ? "bg-transparent text-paper border-transparent mix-blend-difference"
           : "bg-paper text-ink border-line"
-      } ${hidden && !open ? "-translate-y-full" : "translate-y-0"}`}
+      }`}
     >
       <div className="relative flex items-center justify-between px-6 md:px-10 py-4">
-        <LogoMark onClick={() => setOpen(false)} overReel={overReel} />
+        <LogoMark href={sectionHref("#top")} onClick={() => setOpen(false)} overReel={overReel} />
 
         {/* Desktop nav — pinned to the right */}
         <nav
           aria-label="Primary"
-          className="hidden md:flex items-center gap-8 font-mono font-bold text-[11px] uppercase tracking-[0.2em]"
+          className="hidden md:flex items-center gap-4 lg:gap-8 font-mono font-bold text-[11px] uppercase tracking-[0.2em]"
         >
           {LINKS.map((l) => (
-            <a key={l.href} href={l.href} className="relative group">
+            <a key={l.href} href={sectionHref(l.href)} className="relative group">
               <span className="group-hover:text-accent-link transition-colors">{l.label}</span>
             </a>
           ))}
@@ -139,7 +135,7 @@ export default function Nav() {
               {LINKS.map((l) => (
                 <a
                   key={l.href}
-                  href={l.href}
+                  href={sectionHref(l.href)}
                   onClick={() => setOpen(false)}
                   className="flex items-baseline px-6 py-5 group"
                 >
@@ -163,15 +159,17 @@ export default function Nav() {
  * period in accent red (the brand's accent-period pattern).
  */
 function LogoMark({
+  href,
   onClick,
   overReel = false,
 }: {
+  href: string;
   onClick?: () => void;
   overReel?: boolean;
 }) {
   return (
     <a
-      href="#top"
+      href={href}
       aria-label="TJCREATE · Home"
       className="inline-flex items-baseline font-display text-[1.15rem] leading-none tracking-[-0.02em] whitespace-nowrap md:text-[1.4rem]"
       onClick={onClick}

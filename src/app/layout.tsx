@@ -49,12 +49,12 @@ const mono = IBM_Plex_Mono({
 const SITE_URL = "https://www.tjcreate.co.uk";
 const SITE_NAME = "TJCreate · Toby Johnson";
 const SITE_DESC =
-  "I direct and build from concept to delivery. Brand, campaign, motion, 3D, and the sites and apps they live in. Lincoln, UK.";
+  "Freelance graphic and motion designer based in Lincoln. Campaign artwork, motion graphics and 3D for brands, artists and agencies.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Toby Johnson · Creative Director & Designer, Lincoln · TJCreate",
+    default: "Toby Johnson · Graphic & Motion Designer, Lincoln · TJCreate",
     template: "%s · TJCreate",
   },
   description: SITE_DESC,
@@ -92,7 +92,7 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "Toby Johnson · Creative Director & Designer, Lincoln",
+    title: "Toby Johnson · Graphic & Motion Designer, Lincoln",
     description: SITE_DESC,
     locale: "en_GB",
     // Images are auto-attached from src/app/opengraph-image.jpg —
@@ -101,7 +101,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Toby Johnson · Creative Director & Designer, Lincoln",
+    title: "Toby Johnson · Graphic & Motion Designer, Lincoln",
     description: SITE_DESC,
     // Twitter image is auto-attached from src/app/twitter-image.jpg.
   },
@@ -118,7 +118,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#fffdf8",
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -140,7 +140,7 @@ const structuredData = {
       alternateName: "TJCreate",
       url: SITE_URL,
       image: `${SITE_URL}/opengraph-image.jpg`,
-      jobTitle: "Creative Director & Designer",
+      jobTitle: "Graphic & Motion Designer",
       description: SITE_DESC,
       email: "hello@tjcreate.co.uk",
       worksFor: { "@id": `${SITE_URL}/#tjcreate` },
@@ -194,18 +194,11 @@ const structuredData = {
         postalCode: "LN1",
         addressCountry: "GB",
       },
-      // Web Design and Web Development added 2026-08-25, with the hero copy
-      // that now claims "the sites and apps they live in". The repositioning
-      // updated jobTitle so the schema would not contradict the page; this is
-      // the same fix one field down, and it is where a structured-data reader
-      // looks for what the business actually offers. Kept to services with
-      // shipped, pointable work behind them.
+      // Client-facing design disciplines; product authorship is described separately.
       serviceType: [
         "Graphic Design",
         "Motion Design",
         "3D Design",
-        "Web Design",
-        "Web Development",
       ],
       // Own products, not clients. Declaring ownership here is what ties the
       // tjcreate.co.uk entity to lyrisync.com in the knowledge graph, so the

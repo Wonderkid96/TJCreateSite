@@ -121,7 +121,7 @@ test("home page — smoke + visual", async ({ page }, testInfo) => {
     expect(present, `[${project}] section #${section.id} missing`).not.toBeNull();
   }
 
-  // --- Assertion 3: hero visual renders (paper-cream bg, not unstyled) -----
+  // --- Assertion 3: hero visual renders (white paper bg, not unstyled) -----
   const bodyBg = await page.evaluate(() =>
     getComputedStyle(document.body).backgroundColor,
   );
@@ -165,7 +165,7 @@ test("mobile: real tap on a work tile opens the modal (no overlay blocking)", as
   await page.waitForTimeout(4200);
   await dismissSplashIfVisible(page);
 
-  const firstTile = page.locator("#work button").first();
+  const firstTile = page.locator("#work button.portfolio-project").first();
   await firstTile.scrollIntoViewIfNeeded();
 
   // Important: verify NOTHING is covering the tile at click time.
@@ -252,11 +252,12 @@ test("project modals — every kind renders media at non-zero size", async ({
   // Walk the DOM for every clickable project tile. Skip tiles whose click
   // opens an external URL (externalUrl in content.ts) — those use
   // window.open and would navigate or popup-block the test.
-  const tileCount = await page.locator("#work button").count();
+  await page.getByRole("button", { name: "All work", exact: true }).click();
+  const tileCount = await page.locator("#work button.portfolio-project").count();
   const failures: string[] = [];
 
   for (let i = 0; i < tileCount; i++) {
-    const tile = page.locator("#work button").nth(i);
+    const tile = page.locator("#work button.portfolio-project").nth(i);
     const label = (await tile.textContent()) ?? `tile ${i}`;
     // `Wrong Places` has externalUrl set and opens YouTube — skip.
     if (/wrong places/i.test(label)) continue;

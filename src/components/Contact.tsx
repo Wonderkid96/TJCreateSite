@@ -19,7 +19,7 @@ export default function Contact() {
       aria-label="Contact — say hello"
       style={
         {
-          "--paper": "#fffdf8",
+          "--paper": "#ffffff",
           "--ink": "#0a0a0a",
         } as React.CSSProperties
       }
@@ -62,8 +62,9 @@ export default function Contact() {
 
       <p className="mt-6 max-w-md text-base leading-relaxed text-paper/75 md:mt-8 md:text-lg">
         If you&apos;ve got a project, campaign or idea that could use graphic
-        design, motion or 3D, get in touch. I&apos;m available for direct
-        client work, agency projects and freelance support.
+        design, motion or 3D, get in touch. I take on direct client work and
+        agency projects, and retained monthly work for teams that need
+        consistent capacity.
       </p>
 
       {/* Direct contact details sit below the invitation. */}

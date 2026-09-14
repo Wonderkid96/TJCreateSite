@@ -10,15 +10,14 @@ const BIO_LEAD = "A multidisciplinary designer working across ";
 const BIO_ACCENT = "graphic design, motion and 3D";
 const BIO_TAIL = " for brands, artists and agencies.";
 const BIO_SECONDARY = [
-  "I've worked independently across design and motion for over seven years, starting in music and increasingly working across brand, product and agency projects.",
-  "A lot of my work crosses disciplines. An identity might need to become a campaign, a piece of artwork might need to move, or a product might need to be built in 3D before it can go anywhere. Being able to work across those stages means the same visual idea can carry through the whole job rather than feeling stitched together at the end.",
-  "I can work from an existing creative direction, slot into an agency team, or take something from an early idea through to finished assets.",
+  "I started in music, creating artwork and motion for artists and labels, including two years working with Marathon Music Group. My work now spans campaign visuals, social content and 3D for brands and agency teams.",
+  "I can work from an existing creative direction, join an agency team, or take a project from the first idea through to finished assets.",
 ];
 
 // Pin the palette dark so the overlaid copy stays readable in either theme,
 // matching how Services/Contact lock their own dark backgrounds.
 const DARK_VARS = {
-  "--paper": "#fffdf8",
+  "--paper": "#ffffff",
   "--ink": "#0a0a0a",
 } as CSSProperties;
 
@@ -50,7 +49,7 @@ export default function About() {
         <div className="absolute inset-y-0 -left-2 right-0 hidden bg-gradient-to-r from-ink via-ink/40 to-[#0a0a0a00] md:block" />
       </div>
       {/* Mobile: darken so the copy stays legible over the full-bleed portrait. */}
-      <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/35 to-[#0a0a0a00] md:hidden" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/80 to-[#0a0a0a00] md:hidden" />
 
       <div className="about-content relative w-full px-6 py-16 md:px-10 md:py-20">
         <div className="mb-8 font-mono text-[11px] uppercase tracking-[0.25em] text-paper/65">

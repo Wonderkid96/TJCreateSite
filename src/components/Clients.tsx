@@ -11,6 +11,14 @@ import SectionTitle from "./SectionTitle";
 // Gap between the cursor and the floating client-name label.
 const LABEL_GAP_PX = 22;
 
+// Agency attribution is confirmed in the client record; LyriSync is owned work.
+const CREDITS: Record<string, string> = {
+  RevenueCat: "Via Klutch Studio",
+  Replit: "Via Klutch Studio",
+  JetBrains: "Via Klutch Studio",
+  LyriSync: "Own product",
+};
+
 // Fine-pointer (mouse) check — the cursor-following label is a desktop
 // affordance, so a synthetic mouse event from a tap shouldn't flash it.
 const canHover = () =>
@@ -87,7 +95,7 @@ export default function Clients() {
         <SectionTitle>Worked with</SectionTitle>
         <p className="mx-auto mt-4 max-w-md text-sm text-paper/60 md:text-base">
           Selected clients, collaborators and projects across music, culture,
-          brand and product.
+          brand and product, including work delivered through agency teams.
         </p>
       </div>
 
@@ -106,7 +114,7 @@ export default function Clients() {
             // Fixed per-breakpoint basis = 2 / 3 / 4 across. justify-center on
             // the wrap means any partial last row centres instead of leaving an
             // empty cell in the bottom-right.
-            className="flex basis-[calc(50%-1.5rem)] items-center justify-center sm:basis-[calc(33.333%-1.8rem)] lg:basis-[calc(25%-2rem)]"
+            className="flex flex-col basis-[calc(50%-1.5rem)] items-center justify-center sm:basis-[calc(33.333%-1.8rem)] lg:basis-[calc(25%-2rem)]"
           >
             <LogoCell
               name={client.name}
@@ -114,6 +122,9 @@ export default function Clients() {
               url={client.url}
               onHover={onHover}
             />
+            {CREDITS[client.name] && (
+              <span className="mt-3 font-mono text-[10px] uppercase tracking-widest text-paper/70">{CREDITS[client.name]}</span>
+            )}
           </motion.li>
         ))}
       </motion.ul>

@@ -92,7 +92,7 @@ export const PROJECTS: Project[] = [
     category: "Motion",
     tags: ["Motion", "Release"],
     blurb:
-      "Release animation for my single Your Cries, self-released in 2022. The plan was a music video of a body falling gracefully through the sky. With no budget for that, I leaned a chair back in the studio, filmed myself falling off it, and rotoscoped the footage in After Effects. That single take carried the whole release: the still became the artwork, the rotoscoped loop became the Spotify Canvas and the Apple Music animated cover art, and it now runs as the hero of this site. Built for nothing, and still doing the work.",
+      "Release animation for my single Your Cries, self-released in 2022. The plan was a music video of a body falling gracefully through the sky. With no budget for that, I leaned a chair back in the studio, filmed myself falling off it, and rotoscoped the footage in After Effects. That single take carried the whole release: the still became the artwork, the rotoscoped loop became the Spotify Canvas and the Apple Music animated cover art.",
     alt: "Rotoscoped figure falling through a cloudy blue sky, release animation for Your Cries by Toby Johnson",
     kind: "falling",
     bg: "#0a0a0a",
@@ -537,7 +537,13 @@ export const OWN_PRODUCTS = [
   },
 ];
 
-export const SERVICES = [
+export type Service = {
+  title: string;
+  blurb: string;
+  items: string[];
+};
+
+export const SERVICES: Service[] = [
   {
     title: "Graphic Design",
     blurb:
@@ -583,4 +589,10 @@ export const SERVICES = [
       "Motion integration",
     ],
   },
+  {
+    title: "Packages",
+    blurb: "Scoped support for campaign versioning, lyric videos, static artwork animation and design work.",
+    items: ["Campaign Versioning", "Lyric Videos", "Static to Motion", "Design Support"],
+  },
+
 ];

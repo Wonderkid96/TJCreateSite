@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { projectAttribution } from "@/lib/portfolio";
 import { motion, useScroll, useTransform } from "motion/react";
 import { memo, useEffect, useRef, useState } from "react";
 import type { Project } from "@/lib/content";
@@ -15,14 +16,12 @@ import {
 
 type Props = {
   project: Project;
-  index: number;
   parallaxStrength?: number;
   onOpen?: () => void;
 };
 
 function ProjectTile({
   project,
-  index,
   parallaxStrength = 40,
   onOpen,
 }: Props) {
@@ -52,8 +51,8 @@ function ProjectTile({
   // Scroll parallax for inner media. Disabled on touch devices: with 15
   // tiles each running their own scroll-progress tracker, mobile native
   // scroll + JS-driven transforms get out of sync and the parallax visibly
-  // judders. Touch users get a flat (still nicely cropped) media layer.
-  const enableParallax = !isTouchDevice;
+  // judders. Touch and reduced-motion users get a static media layer.
+  const enableParallax = !isTouchDevice && !prefersReducedMotion;
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
@@ -311,7 +310,7 @@ function ProjectTile({
       // light and dark themes (tiles always sit over darkened imagery).
       style={
         {
-          "--paper": "#fffdf8",
+          "--paper": "#ffffff",
           "--ink": "#0a0a0a",
         } as React.CSSProperties
       }
@@ -342,10 +341,9 @@ function ProjectTile({
                 src={project.image}
                 alt={project.alt ?? project.title}
                 fill
-                sizes="(max-width: 768px) 100vw, 50vw"
+                sizes="(max-width: 639px) calc(100vw - 48px), (max-width: 1023px) 50vw, 33vw"
                 className="object-cover"
                 style={{ objectPosition: project.focal }}
-                priority={index < 2}
               />
             )}
 
@@ -355,7 +353,7 @@ function ProjectTile({
                   src={project.image}
                   alt={project.alt ? `${project.alt} (day)` : `${project.title} (day)`}
                   fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="(max-width: 639px) calc(100vw - 48px), (max-width: 1023px) 50vw, 33vw"
                   className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-100 group-hover:opacity-0"
                   style={{ objectPosition: project.focal, opacity: isTouchDevice ? (dayNightIsNight ? 0 : 1) : undefined }}
                 />
@@ -363,7 +361,7 @@ function ProjectTile({
                   src={project.imageHover}
                   alt={project.alt ? `${project.alt} (night)` : `${project.title} (night)`}
                   fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="(max-width: 639px) calc(100vw - 48px), (max-width: 1023px) 50vw, 33vw"
                   className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-0 group-hover:opacity-100"
                   style={{ objectPosition: project.focal, opacity: isTouchDevice ? (dayNightIsNight ? 1 : 0) : undefined }}
                 />
@@ -405,12 +403,11 @@ function ProjectTile({
                     src={project.videoPoster}
                     alt={project.alt ?? project.title}
                     fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    sizes="(max-width: 639px) calc(100vw - 48px), (max-width: 1023px) 50vw, 33vw"
                     className={`object-cover transition-opacity duration-300 ease-[var(--ease)] ${
                       isTouchDevice || hoverVideoIdle ? "opacity-100" : "opacity-0"
                     }`}
                     style={{ objectPosition: project.focal }}
-                    priority={index < 2}
                   />
                 )}
                 {/* Desktop: video element, hidden until hover starts it. */}
@@ -454,7 +451,7 @@ function ProjectTile({
           <h3 className="font-display">{project.title}</h3>
           <span className="project-year font-mono">{project.year}</span>
         </div>
-        <p className="project-client">{project.client}</p>
+        <p className="project-client">{projectAttribution(project).value}</p>
         <p className="project-disciplines font-mono">{project.tags.join(" / ")}</p>
       </div>
     </button>
@@ -573,7 +570,7 @@ function FallingOnSky() {
         src="/work/imported/bg/sky-long.avif"
         alt=""
         fill
-        sizes="50vw"
+        sizes="(max-width: 639px) calc(100vw - 48px), (max-width: 1023px) 50vw, 33vw"
         className="object-cover object-center scale-110"
       />
       <div

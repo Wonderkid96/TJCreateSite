@@ -6,7 +6,6 @@ import { useMediaQuery } from "@/lib/use-media-query";
 const VIDEO_SRC = "/work/imported/videos/intro-section.mp4";
 const VIDEO_POSTER = "/work/imported/videos/intro-section-poster.webp";
 
-const MOBILE_QUERY = "(max-width: 767px)";
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
 /**
@@ -16,17 +15,13 @@ const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
  * both target it, inherited from the retired falling-clouds hero.
  *
  * One landscape (16:9) cut, used everywhere. Below the md breakpoint the
- * frame is portrait, so a second copy of the same clip sits behind it,
- * scaled up and blurred, filling the edges the sharp copy's object-contain
- * leaves bare — the sharp copy never gets cropped, and there's no manually
- * cut portrait edit to keep in sync. Autoplay is muted, looping and inline,
- * and is skipped for prefers-reduced-motion. The pause control is not
- * optional (WCAG 2.2.2 — anything moving over five seconds needs a stop).
+ * frame is portrait, so a blurred copy of the poster fills the edges behind
+ * the sharp, uncropped reel. Autoplay is muted, looping and inline, and is
+ * skipped for prefers-reduced-motion. The pause control is not optional
+ * (WCAG 2.2.2 — anything moving over five seconds needs a stop).
  */
 export default function ShowreelHero() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const bgVideoRef = useRef<HTMLVideoElement>(null);
-  const isMobile = useMediaQuery(MOBILE_QUERY);
   const reducedMotion = useMediaQuery(REDUCED_MOTION_QUERY);
   // null = no explicit choice yet; autoplay applies unless reduced motion.
   const [userPaused, setUserPaused] = useState<boolean | null>(null);
@@ -35,8 +30,7 @@ export default function ShowreelHero() {
   const wantsPlay = userPaused === null ? !reducedMotion : !userPaused;
 
   // Above the fold, so no lazy-promotion observer — but it still pauses once
-  // scrolled past rather than decoding video nobody can see. Drives the
-  // blurred backdrop copy in lockstep so a paused hero is fully paused.
+  // scrolled past rather than decoding video nobody can see.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -47,10 +41,8 @@ export default function ShowreelHero() {
           // Mobile browsers can still refuse a muted autoplay; the poster stays
           // up and the control is right there, so it is left paused.
           video.play().catch(() => {});
-          bgVideoRef.current?.play().catch(() => {});
         } else {
           video.pause();
-          bgVideoRef.current?.pause();
         }
       },
       { threshold: 0.2 }
@@ -60,32 +52,15 @@ export default function ShowreelHero() {
     return () => io.disconnect();
   }, [wantsPlay]);
 
-  // The backdrop copy mounts/unmounts as isMobile flips (crossing the md
-  // breakpoint on resize) — sync it to whatever the foreground copy is
-  // actually doing right now, since the IntersectionObserver above only
-  // re-fires on scroll, not on this element appearing.
-  useEffect(() => {
-    const bg = bgVideoRef.current;
-    const video = videoRef.current;
-    if (!bg || !video) return;
-    if (video.paused) {
-      bg.pause();
-    } else {
-      bg.play().catch(() => {});
-    }
-  }, [isMobile]);
-
   const togglePlayback = () => {
     const video = videoRef.current;
     if (!video) return;
     if (video.paused) {
       setUserPaused(false);
       video.play().catch(() => {});
-      bgVideoRef.current?.play().catch(() => {});
     } else {
       setUserPaused(true);
       video.pause();
-      bgVideoRef.current?.pause();
     }
   };
 
@@ -97,36 +72,15 @@ export default function ShowreelHero() {
       // bottom scrim to hold legibility. bg-ink is just the pre-load ground.
       className="relative h-svh min-h-[560px] w-full overflow-hidden bg-ink text-paper"
     >
-      {/* The page's strongest on-page signal and the line a screen reader
-          announces, so it has to agree with the title tag. It read
-          "freelance graphic and motion designer in Lincoln" until
-          2026-08-25, which left the title claiming Creative Director while
-          the heading underneath still said motion designer -- the exact
-          motion-only framing the repositioning exists to drop. Every search
-          term is kept ("graphic", "motion", "designer", "Lincoln",
-          "freelance"); only the contradiction goes. */}
-      <h1 className="sr-only">
-        Toby Johnson, freelance creative director, graphic and motion designer
-        in Lincoln
-      </h1>
+      <h1 className="sr-only">Toby Johnson, freelance graphic and motion designer in Lincoln</h1>
 
-      {/* Blurred backdrop: only needed below md, where object-contain leaves
-          the frame's sides bare. Mounted conditionally so desktop never
-          fetches a second copy of the clip. Decorative — hidden from AT and
-          silently follows the foreground copy's play state above. */}
-      {isMobile && (
-        <video
-          ref={bgVideoRef}
-          src={VIDEO_SRC}
-          muted
-          loop
-          playsInline
-          preload="none"
-          aria-hidden
-          tabIndex={-1}
-          className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl"
-        />
-      )}
+      {/* Blurred poster backdrop: fills the portrait frame without downloading
+          and decoding a second copy of the showreel. Desktop remains full-bleed. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 scale-110 bg-cover bg-center opacity-60 blur-2xl md:hidden"
+        style={{ backgroundImage: `url(${VIDEO_POSTER})` }}
+      />
 
       <video
         ref={videoRef}
@@ -158,9 +112,9 @@ export default function ShowreelHero() {
       {/* Statement overlaid on the footage, bottom-left. */}
       <div className="hero-introduction absolute inset-x-0 bottom-0 px-6 pb-10 md:px-10 md:pb-14">
         <p className="max-w-xl text-base leading-snug text-paper md:text-lg">
-          I direct and build from concept to delivery. Brand, campaign,
-          motion, 3D, and the sites and apps they live in. Lincoln based,
-          working remotely.
+          I’m Toby, a freelance graphic and motion designer based in Lincoln.
+          I work across campaign artwork, motion and 3D for brands, artists
+          and agencies.
         </p>
 
         <div className="mt-6 flex flex-wrap gap-2.5 md:mt-7 md:gap-3">

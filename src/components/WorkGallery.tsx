@@ -1,8 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useState } from "react";
 import { PROJECTS, type Project } from "@/lib/content";
+import { FEATURED_SLUGS } from "@/lib/portfolio";
 import ProjectTile from "./ProjectTile";
 
 // The modal only ever appears after a click, so its chunk (and everything it
@@ -19,6 +21,14 @@ const PARALLAX = [30, 40, 55, 25, 45, 50, 20, 42, 60];
  * external link when it has one. No scroll pinning: plain vertical scroll.
  */
 export default function WorkGallery() {
+  const [filter, setFilter] = useState("Selected");
+  const visibleProjects = filter === "Selected"
+    ? FEATURED_SLUGS.flatMap((slug) => PROJECTS.filter((project) => project.slug === slug))
+    : PROJECTS.filter((project) =>
+    filter === "All work" || (filter === "Graphic"
+      ? ["Graphic", "Identity", "Print", "Music"].includes(project.category)
+      : project.category === filter)
+  );
   const [active, setActive] = useState<Project | null>(null);
   // Latches true on first open and stays true: the dynamic modal only starts
   // downloading then, but must stay mounted afterwards so AnimatePresence can
@@ -45,12 +55,22 @@ export default function WorkGallery() {
           <h2 className="section-heading">Selected work<span className="text-accent">.</span></h2>
           <p className="work-intro">Brand, campaign, motion and 3D.</p>
         </div>
+        <div className="work-controls px-6 md:px-10">
+          <div role="group" aria-label="Filter work" className="work-filters">
+            {["Selected", "All work", "Graphic", "Motion", "3D"].map((label) => (
+              <button key={label} type="button" aria-pressed={filter === label}
+                onClick={() => setFilter(label)}>{label}</button>
+            ))}
+          </div>
+          <p role="status" aria-live="polite" className="work-count font-mono">
+            {visibleProjects.length} projects
+          </p>
+        </div>
         <div className="work-grid px-6 md:px-10">
-          {PROJECTS.map((p, i) => (
+          {visibleProjects.map((p, i) => (
             <div key={p.slug} className="work-cell">
               <ProjectTile
                 project={p}
-                index={i}
                 parallaxStrength={PARALLAX[i % PARALLAX.length]}
                 onOpen={() => open(p)}
               />
@@ -61,6 +81,9 @@ export default function WorkGallery() {
                   puts the copy in the served HTML for search engines and for
                   AT users browsing the grid. */}
               <p className="sr-only">{p.blurb}</p>
+              <Link className="project-page-link" href={`/projects/${p.slug}`} prefetch={false}>
+                View project<span className="sr-only">: {p.title}</span>
+              </Link>
             </div>
           ))}
         </div>

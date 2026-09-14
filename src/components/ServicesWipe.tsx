@@ -1,14 +1,17 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useMotionValueEvent,
   useReducedMotion,
   useScroll,
 } from "motion/react";
+import { useMediaQuery } from "@/lib/use-media-query";
 import { SERVICES } from "@/lib/content";
 import { EASE } from "@/lib/motion";
+import WorkPackages from "./WorkPackages";
+import { getLenis } from "@/lib/lenis";
 
 /**
  * Services as a wipe sequence: each discipline is a full-screen brand-colour
@@ -27,7 +30,7 @@ import { EASE } from "@/lib/motion";
 
 type PanelTheme = { bg: string; fg: string; accent: string };
 
-// Monochrome sequence: paper → ink → paper. The panels MUST alternate — the
+// Monochrome sequence: paper → ink → paper → ink. The panels MUST alternate — the
 // wipe effect lives on the reveal line, so three panels of the same colour
 // would make each transition invisible. Alternating gives every reveal the
 // hardest possible edge.
@@ -36,10 +39,14 @@ type PanelTheme = { bg: string; fg: string; accent: string };
 // the same tone; `accent` is the fg value so the bullet dots stay monochrome
 // rather than reintroducing colour. The title full stop is part of the
 // heading text, so it inherits fg too.
+// There must be one theme per service, alternating: THEMES is indexed modulo
+// its own length, so a service added without a matching theme here wraps round
+// and can land the same colour as the panel below it, killing the reveal edge.
 const THEMES: PanelTheme[] = [
-  { bg: "#fffdf8", fg: "#0a0a0a", accent: "#0a0a0a" }, // Paper — Graphic
-  { bg: "#0a0a0a", fg: "#fffdf8", accent: "#fffdf8" }, // Ink   — Motion
-  { bg: "#fffdf8", fg: "#0a0a0a", accent: "#0a0a0a" }, // Paper — 3D
+  { bg: "#ffffff", fg: "#0a0a0a", accent: "#0a0a0a" }, // Paper — Graphic
+  { bg: "#0a0a0a", fg: "#ffffff", accent: "#ffffff" }, // Ink   — Motion
+  { bg: "#ffffff", fg: "#0a0a0a", accent: "#0a0a0a" }, // Paper — 3D
+  { bg: "#0a0a0a", fg: "#ffffff", accent: "#ffffff" }, // Ink — Packages
 ];
 
 // Runway height per panel, in svh. Taller means each panel holds fully on
@@ -61,11 +68,13 @@ const REVEAL_HYSTERESIS = 0.06;
 export default function ServicesWipe() {
   const ref = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
+  const compact = useMediaQuery("(max-width: 1023px), (max-height: 760px)");
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
   });
 
+  const atPackageDestination = useRef(true);
   const total = SERVICES.length;
   // Which panels are currently called up. Panel 0 is the base, always shown;
   // the others flip as their trigger points pass. Kept as discrete booleans so
@@ -92,15 +101,73 @@ export default function ServicesWipe() {
     });
   });
 
+  // Remember proximity before a resize: the new layout can move the anchor
+  // outside the viewport before the resize callback gets to inspect it.
+  useEffect(() => {
+    let frame = 0;
+    let aligning = false;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    const align = () => {
+      if (window.location.hash !== "#packages" || !atPackageDestination.current) return;
+      cancelAnimationFrame(frame);
+      aligning = true;
+      frame = requestAnimationFrame(() => {
+        const anchor = document.getElementById("packages");
+        if (anchor) {
+          const lenis = getLenis();
+          if (lenis) {
+            lenis.resize();
+            lenis.scrollTo(anchor, { immediate: true, force: true });
+          } else {
+            anchor.scrollIntoView({ behavior: "instant", block: "start" });
+          }
+          if (!compact && !reduced) setShown(SERVICES.map(() => true));
+        }
+        width = window.innerWidth;
+        height = window.innerHeight;
+        aligning = false;
+      });
+    };
+    const trackPosition = () => {
+      if (window.location.hash !== "#packages") {
+        atPackageDestination.current = false;
+        return;
+      }
+      if (aligning || width !== window.innerWidth || height !== window.innerHeight) return;
+      const anchor = document.getElementById("packages");
+      atPackageDestination.current = !!anchor && Math.abs(anchor.getBoundingClientRect().top) < height / 2;
+    };
+    const resize = () => {
+      align();
+      width = window.innerWidth;
+      height = window.innerHeight;
+    };
+    const hashChange = () => {
+      atPackageDestination.current = window.location.hash === "#packages";
+      align();
+    };
+    align();
+    window.addEventListener("hashchange", hashChange);
+    window.addEventListener("resize", resize);
+    window.addEventListener("scroll", trackPosition, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("hashchange", hashChange);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("scroll", trackPosition);
+    };
+  }, [compact, reduced]);
+
   // Reduced motion: no pin, no clip — just the panels stacked full-height so
   // every service is reachable by plain scrolling.
-  if (reduced) {
+  if (reduced || compact) {
     return (
-      <div id="services" role="region" aria-label="Services — what I do">
+      <div ref={ref} id="services" className="services-static" role="region" aria-label="Services — what I do">
         <h2 className="sr-only">Services</h2>
         {SERVICES.map((s, i) => (
-          <div key={s.title} className="min-h-svh">
-            <PanelFace service={s} theme={THEMES[i % THEMES.length]} index={i} />
+          <div key={s.title} id={s.title === "Packages" ? "packages" : undefined} tabIndex={s.title === "Packages" ? -1 : undefined} style={s.title === "Packages" ? { scrollMarginTop: 68 } : undefined}>
+            <PanelFace service={s} theme={THEMES[i % THEMES.length]} index={i} compact />
           </div>
         ))}
       </div>
@@ -117,6 +184,13 @@ export default function ServicesWipe() {
       style={{ height: `${total * RUNWAY_PER_PANEL_VH}svh` }}
     >
       <h2 className="sr-only">Services</h2>
+      <div
+        id="packages"
+        tabIndex={-1}
+        aria-label="Packages"
+        className="pointer-events-none absolute h-px w-px"
+        style={{ top: "calc(85% - 85svh)", scrollMarginTop: 0 }}
+      />
       <div className="sticky top-0 h-svh overflow-hidden">
         {SERVICES.map((s, i) => (
           <WipePanel
@@ -146,6 +220,7 @@ function WipePanel({ service, theme, index, shown }: WipePanelProps) {
   return (
     <motion.div
       className="absolute inset-0"
+      inert={!shown}
       style={{ zIndex: index }}
       initial={false}
       animate={{ clipPath: shown ? "inset(0% 0 0 0)" : "inset(100% 0 0 0)" }}
@@ -173,18 +248,22 @@ function PanelFace({
   service,
   theme,
   index,
+  compact = false,
 }: {
   service: (typeof SERVICES)[number];
   theme: PanelTheme;
   index: number;
+  compact?: boolean;
 }) {
+
   return (
     <div
-      className="relative h-svh w-full overflow-hidden"
+      data-no-reveal={service.title === "Packages" ? true : undefined}
+      className={compact ? "service-static-panel relative w-full px-6 py-14" : "relative h-svh w-full overflow-hidden"}
       style={{ backgroundColor: theme.bg, color: theme.fg }}
     >
       {/* Eyebrow — locked to the top. */}
-      <div className="absolute inset-x-8 top-8 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.25em] md:inset-x-14 md:top-14">
+      <div className={`${compact ? "mb-10" : "absolute inset-x-8 top-24 md:inset-x-14"} flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.25em]`}>
         <span style={{ opacity: 0.7 }}>Services</span>
         <span style={{ opacity: 0.7 }}>
           {String(index + 1).padStart(2, "0")} / {String(SERVICES.length).padStart(2, "0")}
@@ -193,13 +272,14 @@ function PanelFace({
 
       {/* Title + blurb — anchored at a fixed vertical position with a
           fixed-height title slot, so both start at the same point every time. */}
-      <div className="absolute inset-x-8 md:inset-x-14" style={{ top: BLOCK_TOP }}>
+      <div className={compact ? "" : "absolute inset-x-8 md:inset-x-14"} style={{ top: compact ? undefined : BLOCK_TOP }}>
         <h3
           className="font-display uppercase text-[clamp(2.2rem,7vw,5.5rem)] leading-[0.9] tracking-tight"
-          style={{ minHeight: TITLE_SLOT }}
+          style={{ minHeight: compact ? undefined : TITLE_SLOT }}
         >
           {service.title}.
         </h3>
+        {service.title === "Packages" ? <WorkPackages compact={compact} /> : <>
         <p
           className="mt-6 max-w-xl text-lg leading-relaxed"
           style={{ opacity: 0.9 }}
@@ -207,8 +287,7 @@ function PanelFace({
           {service.blurb}
         </p>
 
-        {/* Capabilities — sits directly under the description, not pinned
-            to the panel's foot. */}
+        {/* Capabilities sit directly under the description. */}
         <div className="mt-8">
           <div
             className="mb-3 font-mono text-[11px] uppercase tracking-[0.25em]"
@@ -228,6 +307,7 @@ function PanelFace({
             ))}
           </ul>
         </div>
+        </>}
       </div>
     </div>
   );

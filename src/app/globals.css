@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #fffdf8;
+  --paper: #ffffff;
   --ink: #0a0a0a;
   --ink-soft: #1a1a1a;
   --muted: #6b645a;
@@ -16,7 +16,7 @@
   --lilac: #c4a9d0;
   --line: rgba(10, 10, 10, 0.12);
   --signal: #80ef80;
-  --spectrum: linear-gradient(90deg, #e6352a 0%, #fffdf8 38%, #c8db45 68%, #c4a9d0 100%);
+  --spectrum: linear-gradient(90deg, #e6352a 0%, #ffffff 38%, #c8db45 68%, #c4a9d0 100%);
   /* Display face — Peridot PE Variable, served from the Adobe Fonts web
      project (kit bhj7dgq, loaded in layout.tsx). Named separately from
      --font-display so the @theme mapping below isn't self-referential. */
@@ -158,7 +158,7 @@ html.lenis body {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 2px;
-  box-shadow: 0 0 0 3px #fffdf8;
+  box-shadow: 0 0 0 3px #ffffff;
 }
 
 /* Rotating conic-gradient angle for animated button borders. @property lets
@@ -366,7 +366,7 @@ html.reveal-mounted [data-reveal].is-visible {
   top: 1rem;
   outline: 2px solid var(--accent);
   outline-offset: 3px;
-  box-shadow: 0 0 0 3px #fffdf8;
+  box-shadow: 0 0 0 3px #ffffff;
 }
 
 /* Portfolio layout: captions sit outside the artwork, using the existing brand tokens. */
@@ -409,4 +409,37 @@ html.reveal-mounted [data-reveal].is-visible {
 @media (prefers-reduced-motion: reduce) {
   .hover-tile-media { transition: none; }
   .hover-tile:hover .hover-tile-media { transform: none; }
+}
+
+/* Discovery and project reading use the portfolio's existing colours and type. */
+#work, #services, #about, #contact { scroll-margin-top: 56px; }
+.work-controls { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: -1rem 0 2rem; }
+.work-filters { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; }
+.work-filters button { min-height: 44px; border-bottom: 2px solid transparent; padding: .5rem 0; color: var(--muted); cursor: pointer; }
+.work-filters button[aria-pressed="true"] { border-color: var(--accent); color: var(--ink); }
+.work-count { flex-shrink: 0; font-size: 10px; color: var(--muted); }
+.project-page-link { display: inline-block; margin-top: .85rem; color: var(--ink); font-size: .875rem; text-decoration: underline; text-underline-offset: 4px; padding-block: .35rem; }
+.project-page-link:hover { color: var(--accent-link); }
+.modal-layout { min-height: 100%; }
+.modal-media { height: 60vh; }
+.modal-header > button { flex-shrink: 0; }
+.project-detail { padding: 7.5rem 40px 4rem; }
+.project-detail-layout { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 3rem; margin-top: 2rem; align-items: start; }
+.project-detail-media { height: min(70vh, 800px); overflow: hidden; background: var(--ink); }
+.project-detail-copy .section-heading { font-size: clamp(1.7rem, 3vw, 3rem); line-height: 1.05; overflow-wrap: anywhere; }
+.service-static-panel h3 { font-size: clamp(1.8rem, 5.5vw, 3rem); overflow-wrap: anywhere; }
+@media (max-width: 767px) {
+  .work-controls { align-items: flex-start; flex-direction: column; gap: .5rem; }
+  .modal-media { height: auto; aspect-ratio: 1; width: 100%; }
+  .project-detail { padding: 6.5rem 24px 3rem; }
+  .project-detail-layout { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+  .project-detail-media { height: auto; aspect-ratio: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.reveal-mounted [data-reveal] { opacity: 1; transform: none; transition: none; }
+  .animate-ping { animation: none; }
+}
+
+@media (max-width: 767px) {
+  #work, #services, #about, #contact { scroll-margin-top: 68px; }
 }

@@ -1,6 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { projectAttribution } from "@/lib/portfolio";
+import Link from "next/link";
+import { useMediaQuery } from "@/lib/use-media-query";
 import { AnimatePresence, motion } from "motion/react";
 import { EASE } from "@/lib/motion";
 import { memo, useEffect, useRef, useState } from "react";
@@ -8,6 +11,7 @@ import { createPortal } from "react-dom";
 import type { Project } from "@/lib/content";
 import { useMounted } from "@/lib/use-mounted";
 import {
+  FALLING_FIRST_FRAME,
   FALLING_FRAME_COUNT,
   FALLING_FRAME_HEIGHT,
   FALLING_FRAME_WIDTH,
@@ -138,14 +142,14 @@ export default function ProjectModal({ project, onClose }: Props) {
             onClick={(e) => e.stopPropagation()}
             className="absolute inset-4 md:inset-10 overflow-hidden rounded-[2px] bg-paper text-ink flex flex-col focus:outline-none"
           >
-            <div className="flex items-center justify-between px-6 md:px-10 py-5 border-b border-line">
-              <div className="flex items-baseline gap-6">
+            <div className="modal-header flex shrink-0 items-center justify-between gap-4 px-6 md:px-10 py-5 border-b border-line">
+              <div className="flex min-w-0 items-baseline gap-3 md:gap-6">
                 <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
                   {project.category}
                 </div>
                 <h2
                   id="project-modal-title"
-                  className="font-display text-2xl md:text-3xl leading-none tracking-tight"
+                  className="font-display text-xl md:text-3xl leading-tight tracking-tight"
                 >
                   {project.title}
                 </h2>
@@ -171,29 +175,23 @@ export default function ProjectModal({ project, onClose }: Props) {
               </button>
             </div>
 
-            {/* No internal scroll — media + details adapt to fit the modal
-                together. Media fills the available space, the detail column
-                sits beside it on desktop and below it on mobile. */}
-            <div className="min-h-0 flex-1 p-5 md:p-8">
-              <div className="flex h-full flex-col gap-5 md:flex-row md:gap-8">
+            {/* One scroll area keeps the complete project story and controls reachable. */}
+            <div data-lenis-prevent className="modal-body min-h-0 flex-1 overflow-y-auto p-5 md:p-8">
+              <div className="modal-layout flex flex-col gap-5 md:flex-row md:gap-8">
                 <div
                   // Stable hook for the visual test suite (visual.spec.ts) —
                   // class-based selectors here have gone stale before.
                   data-modal-media
-                  // min-h-[45%] (mobile only): with the column layout, a long
-                  // overview would otherwise squeeze the media to a sliver —
-                  // the aside's copy scrolls within the remainder instead.
-                  className="relative min-h-[45%] flex-1 overflow-hidden rounded-[2px] md:min-h-0 md:flex-[1.7]"
+                  // Media keeps its own height while the complete body scrolls.
+                  className="modal-media relative shrink-0 overflow-hidden rounded-[2px] md:flex-[1.7]"
                   style={{ background: project.bg ?? "#0a0a0a" }}
                 >
-                  <ModalMedia project={project} />
+                  <ProjectMedia project={project} />
                 </div>
 
-                <aside className="flex min-h-0 flex-col gap-5 overflow-hidden md:w-[clamp(17rem,30%,23rem)] md:shrink-0">
-                  {/* Scrollable on mobile so the full blurb stays reachable
-                      once the media takes its guaranteed share; desktop keeps
-                      the no-internal-scroll fit. */}
-                  <div className="min-h-0 overflow-y-auto md:overflow-hidden">
+                <aside className="flex min-w-0 flex-col gap-5 md:w-[clamp(17rem,30%,23rem)] md:shrink-0">
+                  {/* Overview stays in the same scroll area as metadata and enquiry. */}
+                  <div className="project-overview">
                     <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
                       Overview
                     </div>
@@ -203,14 +201,15 @@ export default function ProjectModal({ project, onClose }: Props) {
                   </div>
 
                   <dl className="grid shrink-0 grid-cols-2 gap-x-4 gap-y-4 border-t border-line pt-5">
-                    <Meta k="Client" v={project.client} />
+                    <Meta k={projectAttribution(project).label} v={projectAttribution(project).value} />
                     <Meta k="Year" v={project.year} />
                     <Meta k="Category" v={project.category} />
                     <Meta k="Tags" v={project.tags.join(" · ")} />
                   </dl>
 
                   <div className="mt-auto shrink-0 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
-                    More detail on request.{" "}
+                    <Link href={`/projects/${project.slug}`} className="project-page-link mb-4 block" prefetch={false}>View project</Link>
+                    Discuss a similar project.{" "}
                     <a
                       href={`mailto:hello@tjcreate.co.uk?subject=${encodeURIComponent("RE: " + project.title)}`}
                       className="text-ink hover:text-accent-link transition-colors"
@@ -243,29 +242,20 @@ function Meta({ k, v }: { k: string; v: string }) {
 
 // Memoised — only re-renders when the project reference changes (i.e. when a
 // different tile is opened), not on every parent state tick.
-const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
+export const ProjectMedia = memo(function ProjectMedia({ project }: { project: Project }) {
   const kind = project.kind ?? "image";
-  const [isTouchDevice] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(pointer: coarse)").matches
-  );
-  // Reduced-motion users get the poster/first frame; they can start
-  // playback themselves where controls exist (WCAG 2.2.2).
-  const [prefersReducedMotion] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
+  const mounted = useMounted();
+  const isTouchDevice = useMediaQuery("(pointer: coarse)");
+  const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [dayNightIsNight, setDayNightIsNight] = useState(false);
 
   useEffect(() => {
-    if (!isTouchDevice || kind !== "day-night") return;
+    if (!isTouchDevice || prefersReducedMotion || kind !== "day-night") return;
     const id = window.setInterval(() => {
       setDayNightIsNight((prev) => !prev);
     }, 3200); // 3.2 s per state — slow enough to feel intentional, not a rapid flash
     return () => window.clearInterval(id);
-  }, [isTouchDevice, kind]);
+  }, [isTouchDevice, kind, prefersReducedMotion]);
 
   // An "image" tile can still carry a motion piece: the grid shows the still,
   // but the modal plays this video. Takes precedence over the static image.
@@ -275,7 +265,7 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
         src={project.modalVideo}
         poster={project.image}
         preload="none"
-        autoPlay={!prefersReducedMotion}
+        autoPlay={mounted && !prefersReducedMotion}
         muted
         loop
         playsInline
@@ -289,7 +279,7 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
   if (project.previewYouTubeId) {
     return (
       <iframe
-        src={`https://www.youtube.com/embed/${project.previewYouTubeId}?autoplay=1&mute=1&loop=1&playlist=${project.previewYouTubeId}&controls=1&rel=0&modestbranding=1&playsinline=1`}
+        src={`https://www.youtube.com/embed/${project.previewYouTubeId}?autoplay=${mounted && !prefersReducedMotion ? 1 : 0}&mute=1&loop=1&playlist=${project.previewYouTubeId}&controls=1&rel=0&modestbranding=1&playsinline=1`}
         allow="autoplay; encrypted-media; picture-in-picture"
         allowFullScreen
         className="absolute inset-0 h-full w-full border-0"
@@ -323,7 +313,7 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
           alt={project.alt ? `${project.alt} (day)` : `${project.title} (day)`}
           fill
           sizes="66vw"
-          className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-100 group-hover:opacity-0"
+          className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-100 motion-safe:group-hover:opacity-0"
           style={{ opacity: isTouchDevice ? (dayNightIsNight ? 0 : 1) : undefined }}
         />
         <Image
@@ -331,7 +321,7 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
           alt={project.alt ? `${project.alt} (night)` : `${project.title} (night)`}
           fill
           sizes="66vw"
-          className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-0 group-hover:opacity-100"
+          className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-0 motion-safe:group-hover:opacity-100"
           style={{ opacity: isTouchDevice ? (dayNightIsNight ? 1 : 0) : undefined }}
         />
         <div className="absolute bottom-3 right-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90 bg-ink/70 px-2 py-1 rounded-[2px] pointer-events-none">
@@ -347,7 +337,7 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
         src={project.video}
         poster={project.videoPoster}
         preload="none"
-        autoPlay={!prefersReducedMotion}
+        autoPlay={mounted && !prefersReducedMotion}
         muted
         loop
         playsInline
@@ -384,10 +374,12 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
           <video
             src={project.video}
             muted
-            autoPlay={!prefersReducedMotion}
+            autoPlay={mounted && !prefersReducedMotion}
             loop
             playsInline
-            preload="auto"
+            controls
+            poster={project.videoPoster}
+            preload="metadata"
             className={`absolute inset-0 h-full w-full ${fitClass}`}
             style={{ objectPosition: focalPosition }}
           />
@@ -397,7 +389,12 @@ const ModalMedia = memo(function ModalMedia({ project }: { project: Project }) {
   }
 
   if (kind === "falling") {
-    return <FallingModalMedia />;
+    return prefersReducedMotion || !mounted ? (
+      <div className="absolute inset-0">
+        <Image src="/work/imported/bg/sky-long.avif" alt="" fill sizes="66vw" className="object-cover" />
+        <Image src={FALLING_FIRST_FRAME} alt={project.alt ?? project.title} fill sizes="66vw" className="object-contain p-12" />
+      </div>
+    ) : <FallingModalMedia />;
   }
 
   return null;

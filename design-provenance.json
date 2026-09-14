@@ -1,0 +1,13 @@
+{
+  "tokens": [
+    {"name":"paper","category":"color","kind":"source","evidence":["src/app/globals.css :root --paper, unchanged from baseline"]},
+    {"name":"ink","category":"color","kind":"source","evidence":["src/app/globals.css :root --ink, unchanged from baseline"]},
+    {"name":"accent","category":"color","kind":"source","evidence":["src/app/globals.css :root --accent, unchanged from baseline"]},
+    {"name":"display","category":"typography","kind":"source","evidence":["src/app/globals.css Peridot PE, unchanged from baseline"]},
+    {"name":"body","category":"typography","kind":"source","evidence":["src/app/layout.tsx Schibsted Grotesk, unchanged from baseline"]},
+    {"name":"label","category":"typography","kind":"source","evidence":["src/app/layout.tsx IBM Plex Mono, unchanged from baseline"]}
+  ],
+  "exceptions": [],
+  "scope": "Incremental improvements to TJCreate's own existing portfolio. No new font or colour tokens. Existing modal backdrop and licensed brand assets preserved.",
+  "verification": "Manual source and screenshot comparison. The installed website-rebuild-orchestrator skill references scripts/check-design-conformance.mjs, but that file is absent; no automated conformance pass is claimed."
+}

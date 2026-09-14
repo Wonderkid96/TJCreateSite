@@ -22,7 +22,7 @@ export default function SiteFooter() {
       data-no-reveal
       style={
         {
-          "--paper": "#fffdf8",
+          "--paper": "#ffffff",
           "--ink": "#0a0a0a",
         } as React.CSSProperties
       }

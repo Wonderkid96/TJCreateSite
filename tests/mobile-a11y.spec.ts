@@ -16,7 +16,7 @@ test.describe("Mobile a11y + interaction", () => {
       .catch(() => {});
     await page.waitForTimeout(800);
 
-    const tile = page.locator("#work button").first();
+    const tile = page.locator("#work button.portfolio-project").first();
     await tile.tap();
     await page.waitForTimeout(1000);
 
@@ -101,11 +101,11 @@ test.describe("Mobile a11y + interaction", () => {
     await page.goto("/", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(2000);
 
-    const tiles = await page.locator("#work button").count();
+    const tiles = await page.locator("#work button.portfolio-project").count();
     let foundVideo = false;
 
     for (let i = 0; i < tiles && !foundVideo; i++) {
-      const tile = page.locator("#work button").nth(i);
+      const tile = page.locator("#work button.portfolio-project").nth(i);
       const hasVideo = await tile.evaluate((el) => {
         const video = el.querySelector("video");
         return !!video;

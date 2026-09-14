@@ -9,6 +9,10 @@ export default function BackToTop() {
   const visible = useScrolledPast(PAST_HERO_SCROLL_Y);
 
   const goTop = () => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      window.scrollTo({ top: 0, behavior: "instant" });
+      return;
+    }
     const lenis = getLenis();
     if (lenis) {
       lenis.scrollTo(0, { duration: 1.05 });

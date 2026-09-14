@@ -7,7 +7,7 @@ This is the Next.js portfolio site for Toby Johnson (TJCreate). Live at tjcreate
 ## Brain integration
 
 Toby maintains a personal knowledge system at:
-`/Users/Music/Developer/Mind/Brain/`
+`/Users/Music/Developer/Personal/Mind/Brain/`
 
 You may **read** these pages for context:
 - `Brain/wiki/freelance/portfolio-site.md` (stack, hosting, in-flight work)

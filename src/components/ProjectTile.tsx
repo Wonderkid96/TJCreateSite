@@ -52,7 +52,8 @@ function ProjectTile({
   // tiles each running their own scroll-progress tracker, mobile native
   // scroll + JS-driven transforms get out of sync and the parallax visibly
   // judders. Touch and reduced-motion users get a static media layer.
-  const enableParallax = !isTouchDevice && !prefersReducedMotion;
+  const enableParallax = !isTouchDevice && !prefersReducedMotion && !project.mediaAspectRatio;
+  const mediaFit = project.mediaAspectRatio ? "object-contain" : "object-cover";
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
@@ -306,6 +307,7 @@ function ProjectTile({
           : `View ${project.title}`
       }
       className="portfolio-project hover-tile group relative block w-full text-left"
+      data-native-frame={project.mediaAspectRatio ? "" : undefined}
       // Pin --paper/--ink locally so overlay text stays readable on both
       // light and dark themes (tiles always sit over darkened imagery).
       style={
@@ -315,7 +317,10 @@ function ProjectTile({
         } as React.CSSProperties
       }
     >
-      <div className="project-image relative aspect-square w-full overflow-hidden rounded-[2px]">
+      <div
+        className="project-image relative aspect-square w-full overflow-hidden rounded-[2px]"
+        style={{ aspectRatio: project.mediaAspectRatio }}
+      >
         <div
           className="hover-tile-media absolute inset-0 transition-transform duration-[900ms] ease-[var(--ease)]"
           style={{ background: project.bg ?? "#0a0a0a" }}
@@ -342,7 +347,7 @@ function ProjectTile({
                 alt={project.alt ?? project.title}
                 fill
                 sizes="(max-width: 639px) calc(100vw - 48px), (max-width: 1023px) 50vw, 33vw"
-                className="object-cover"
+                className={mediaFit}
                 style={{ objectPosition: project.focal }}
               />
             )}
@@ -387,7 +392,7 @@ function ProjectTile({
                   el.currentTime = 0;
                   el.play().catch(() => {});
                 }}
-                className="absolute inset-0 h-full w-full object-cover"
+                className={`absolute inset-0 h-full w-full ${mediaFit}`}
                 style={{ objectPosition: project.focal }}
               />
             )}
@@ -404,7 +409,7 @@ function ProjectTile({
                     alt={project.alt ?? project.title}
                     fill
                     sizes="(max-width: 639px) calc(100vw - 48px), (max-width: 1023px) 50vw, 33vw"
-                    className={`object-cover transition-opacity duration-300 ease-[var(--ease)] ${
+                    className={`${mediaFit} transition-opacity duration-300 ease-[var(--ease)] ${
                       isTouchDevice || hoverVideoIdle ? "opacity-100" : "opacity-0"
                     }`}
                     style={{ objectPosition: project.focal }}
@@ -431,7 +436,7 @@ function ProjectTile({
                       if (!hv || !hoverVideoActiveRef.current || !hv.paused) return;
                       hv.play().catch(() => {});
                     }}
-                    className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ease-[var(--ease)] ${
+                    className={`absolute inset-0 h-full w-full ${mediaFit} transition-opacity duration-300 ease-[var(--ease)] ${
                       hoverVideoIdle ? "opacity-0" : "opacity-100"
                     }`}
                     style={{ objectPosition: project.focal }}

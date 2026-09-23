@@ -30,6 +30,8 @@ export type Project = {
    * Defaults to cover.
    */
   modalFit?: "contain";
+  /** Preserve this width/height ratio throughout the gallery and project views, without zoom or parallax cropping. */
+  mediaAspectRatio?: number;
   /**
    * CSS object-position for the square grid tile crop, e.g. "60% 50%".
    * Steers which part of a non-square image survives the centre crop.
@@ -41,6 +43,23 @@ export type Project = {
 };
 
 export const PROJECTS: Project[] = [
+  {
+    slug: "twelfth-man",
+    title: "Twelfth Man",
+    client: "Angel & Anchor × Cult",
+    year: "2026",
+    category: "3D",
+    tags: ["3D", "Motion", "Coffee"],
+    blurb:
+      "3D coin animation commissioned by Angel & Anchor for Twelfth Man, its collaboration coffee with Cult celebrating the studio's 12th birthday. The concept borrows from football's twelfth man: the supporters behind the team, reflecting the studio's support for its clients. I modelled, textured, lit and animated a silver referee's coin in Blender using Angel & Anchor's supplied artwork, then composited and graded the flip in After Effects for social and carousel content.",
+    video: "/work/imported/motion/twelfth-man-coin.mp4",
+    videoPoster: "/work/imported/posters-video/twelfth-man-coin.avif",
+    alt: "Silver coin engraved with Twelfth Man and A&A x Cult lettering, flipping against a blue sky, 3D animation by Toby Johnson",
+    kind: "hover-video",
+    modalFit: "contain",
+    mediaAspectRatio: 3 / 4,
+    bg: "#476b88",
+  },
   {
     slug: "together-we-stand",
     title: "Together We Stand",

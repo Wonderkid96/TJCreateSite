@@ -65,7 +65,15 @@ export default async function ProjectPage({ params }: Props) {
         </Link>
 
         <div className="project-detail-layout">
-          <div className="project-detail-media relative aspect-square md:aspect-auto md:min-h-[400px]">
+          <div
+            className="project-detail-media relative aspect-square md:aspect-auto md:min-h-[400px]"
+            style={project.mediaAspectRatio ? {
+              aspectRatio: project.mediaAspectRatio,
+              height: "auto",
+              minHeight: 0,
+              background: project.bg,
+            } : undefined}
+          >
             <ProjectMedia project={project} />
           </div>
 

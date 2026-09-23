@@ -4,7 +4,7 @@ import { PROJECTS } from "@/lib/content";
 const BASE = "https://www.tjcreate.co.uk";
 
 // Content dates are changed deliberately, never stamped with build time.
-const CONTENT_LAST_UPDATED = "2026-09-11";
+const CONTENT_LAST_UPDATED = "2026-09-23";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   // App support/legal routes (/ferret, /filmio, /phony, /trivia-crown,

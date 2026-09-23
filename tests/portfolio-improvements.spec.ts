@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { PROJECTS } from "../src/lib/content";
+import { FEATURED_SLUGS } from "../src/lib/portfolio";
 
 // Opt in to the installed Chrome when bundled browsers are unavailable.
 if (process.env.PLAYWRIGHT_CHANNEL) {
@@ -9,13 +10,48 @@ test.use({ contextOptions: { reducedMotion: "reduce" } });
 
 const featured = PROJECTS.find((project) => project.slug === "together-we-stand")!;
 
+test("Twelfth Man keeps its full portrait frame in the gallery, quick view and project page", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/#work");
+  const tile = page.getByRole("button", { name: "View Twelfth Man", exact: true });
+  await tile.scrollIntoViewIfNeeded();
+  await tile.hover();
+  const frame = tile.locator(".project-image");
+  await expect.poll(async () => {
+    const box = await frame.boundingBox();
+    return box ? Math.abs(box.width / box.height - 0.75) : 1;
+  }).toBeLessThan(0.01);
+  await expect(tile.locator(".hover-tile-media")).toHaveCSS("transform", "none");
+  await expect(tile.locator("img")).toHaveCSS("object-fit", "contain");
+  const mediaBox = await tile.locator(".hover-tile-media > div").boundingBox();
+  const frameBox = await frame.boundingBox();
+  expect(Math.abs(mediaBox!.height - frameBox!.height)).toBeLessThan(1);
+  expect(Math.abs(mediaBox!.y - frameBox!.y)).toBeLessThan(1);
+
+  await tile.click();
+  const dialog = page.getByRole("dialog");
+  const video = dialog.locator("video");
+  await expect(video).toHaveCSS("object-fit", "contain");
+  await expect.poll(async () => {
+    const box = await dialog.locator("[data-modal-media]").boundingBox();
+    return box ? Math.abs(box.width / box.height - 0.75) : 1;
+  }).toBeLessThan(0.01);
+  await dialog.getByRole("link", { name: "View project", exact: true }).click();
+  await expect(page).toHaveURL(/\/projects\/twelfth-man$/);
+  await expect.poll(async () => {
+    const box = await page.locator(".project-detail-media").boundingBox();
+    return box ? Math.abs(box.width / box.height - 0.75) : 1;
+  }).toBeLessThan(0.01);
+  await expect(page.locator("video")).toHaveCSS("object-fit", "contain");
+});
+
 test("work filters select real disciplines and reset without losing project links", async ({ page }) => {
   await page.goto("/#work");
   const work = page.locator("#work");
   const filters = page.getByRole("group", { name: "Filter work" });
   await expect(filters).toBeVisible();
   await expect(filters.getByRole("button", { name: "Selected", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await expect(work.getByRole("link", { name: /view project/i })).toHaveCount(6);
+  await expect(work.getByRole("link", { name: /view project/i })).toHaveCount(FEATURED_SLUGS.length);
   const cases = [
     { label: "Graphic", categories: ["Graphic", "Identity", "Print", "Music"] },
     { label: "Motion", categories: ["Motion"] },

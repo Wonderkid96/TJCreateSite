@@ -3,7 +3,7 @@ import type { Project } from "./content";
 // A compact opening selection spanning campaign, identity, motion and 3D.
 // All projects remain available through the discipline and All work filters.
 export const FEATURED_SLUGS = [
-  "together-we-stand", "offcut", "jb-wrong-places",
+  "together-we-stand", "twelfth-man", "offcut", "jb-wrong-places",
   "jgrrey", "headphone-animation", "health-plus",
 ];
 

@@ -184,7 +184,12 @@ export default function ProjectModal({ project, onClose }: Props) {
                   data-modal-media
                   // Media keeps its own height while the complete body scrolls.
                   className="modal-media relative shrink-0 overflow-hidden rounded-[2px] md:flex-[1.7]"
-                  style={{ background: project.bg ?? "#0a0a0a" }}
+                  style={{
+                    background: project.bg ?? "#0a0a0a",
+                    aspectRatio: project.mediaAspectRatio,
+                    height: project.mediaAspectRatio ? "auto" : undefined,
+                    alignSelf: project.mediaAspectRatio ? "flex-start" : undefined,
+                  }}
                 >
                   <ProjectMedia project={project} />
                 </div>

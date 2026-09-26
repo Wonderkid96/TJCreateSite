@@ -165,10 +165,16 @@ const structuredData = {
         "Music visuals",
         "Typography",
       ],
+      // Music profiles tie the designer to the musician Toby Johnson
+      // (Mahogany, 2018-2022) as one entity for name searches.
       sameAs: [
         "https://www.linkedin.com/in/tobyjohnsoncreate/",
         "https://www.instagram.com/tj.create",
         "https://www.behance.net/tobyjohnson5",
+        "https://open.spotify.com/artist/6aWiYkCceJsc6lorPBdvIg",
+        "https://music.apple.com/gb/artist/toby-johnson/1326311341",
+        "https://soundcloud.com/tobyjohnsonmusic",
+        "https://tobyjohnsonmusic.bandcamp.com/",
       ],
     },
     {

@@ -22,7 +22,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const project = getProject(slug);
-  const title = `${project.title} · ${project.category} design`;
+  const title = `${project.title} · ${project.category} design by Toby Johnson`;
   const url = `${SITE_URL}/projects/${project.slug}`;
   const image = project.image ?? project.videoPoster;
   const images = image
@@ -66,8 +66,8 @@ export default async function ProjectPage({ params }: Props) {
 
         <div className="project-detail-layout">
           <div
-            className={`project-detail-media relative aspect-square md:aspect-auto md:min-h-[400px]${
-              project.mediaAspectRatio ? " media-fit" : ""
+            className={`project-detail-media relative aspect-square md:aspect-auto md:min-h-[400px] ${
+              project.mediaAspectRatio ? "media-fit" : ""
             }`}
             style={project.mediaAspectRatio ? {
               aspectRatio: project.mediaAspectRatio,

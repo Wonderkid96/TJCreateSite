@@ -168,6 +168,7 @@ const structuredData = {
       sameAs: [
         "https://www.linkedin.com/in/tobyjohnsoncreate/",
         "https://www.instagram.com/tj.create",
+        "https://www.behance.net/tobyjohnson5",
       ],
     },
     {
@@ -208,6 +209,7 @@ const structuredData = {
       sameAs: [
         "https://www.linkedin.com/in/tobyjohnsoncreate/",
         "https://www.instagram.com/tj.create",
+        "https://www.behance.net/tobyjohnson5",
       ],
     },
     {

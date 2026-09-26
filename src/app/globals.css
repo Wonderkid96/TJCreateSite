@@ -400,10 +400,18 @@ html.reveal-mounted [data-reveal].is-visible {
   .work-intro { max-width: none; }
 }
 @media (max-width: 639px) {
-  .work-grid { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
+  /* Phones: a two-up tiled grid with short captions. Client and disciplines
+     hold to one line each, and the grid's "View project" link stays in the
+     accessibility tree but not on screen, since the tile already opens it. */
+  .work-grid { gap: 1.75rem .75rem; }
   .work-heading .section-heading { font-size: clamp(1.6rem, 6.2vw, 2.25rem); }
-  .project-caption h3 { font-size: 1.2rem; }
-  .project-caption { padding-top: 1rem; }
+  .project-caption { padding-top: .6rem; }
+  .project-caption-top { gap: .5rem; }
+  .project-caption h3 { font-size: .95rem; }
+  .project-client, .project-disciplines { margin-top: .2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .project-client { font-size: .8rem; }
+  .project-disciplines { font-size: 9px; letter-spacing: .08em; }
+  .work-cell > .project-page-link { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .contact-section h2 { font-size: clamp(1.9rem, 7.6vw, 3rem); }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -13,7 +13,7 @@ import ProjectTile from "./ProjectTile";
 const ProjectModal = dynamic(() => import("./ProjectModal"), { ssr: false });
 
 // Per-tile parallax strength (px) for the inner media layer.
-const PARALLAX = [30, 40, 55, 25, 45, 50, 20, 42, 60];
+const PARALLAX = [10, 14, 18, 8, 15, 16, 7, 13, 18];
 
 /**
  * Selected work pairs unobscured imagery with client and discipline captions.

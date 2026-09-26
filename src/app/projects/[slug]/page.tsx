@@ -66,13 +66,14 @@ export default async function ProjectPage({ params }: Props) {
 
         <div className="project-detail-layout">
           <div
-            className="project-detail-media relative aspect-square md:aspect-auto md:min-h-[400px]"
+            className={`project-detail-media relative aspect-square md:aspect-auto md:min-h-[400px]${
+              project.mediaAspectRatio ? " media-fit" : ""
+            }`}
             style={project.mediaAspectRatio ? {
               aspectRatio: project.mediaAspectRatio,
-              height: "auto",
-              minHeight: 0,
+              "--media-ratio": project.mediaAspectRatio,
               background: project.bg,
-            } : undefined}
+            } as React.CSSProperties : undefined}
           >
             <ProjectMedia project={project} />
           </div>

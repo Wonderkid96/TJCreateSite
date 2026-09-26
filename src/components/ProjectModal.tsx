@@ -183,13 +183,16 @@ export default function ProjectModal({ project, onClose }: Props) {
                   // class-based selectors here have gone stale before.
                   data-modal-media
                   // Media keeps its own height while the complete body scrolls.
-                  className="modal-media relative shrink-0 overflow-hidden rounded-[2px] md:flex-[1.7]"
+                  className={`modal-media relative shrink-0 overflow-hidden rounded-[2px] md:flex-[1.7]${
+                    project.mediaAspectRatio ? " media-fit" : ""
+                  }`}
                   style={{
                     background: project.bg ?? "#0a0a0a",
-                    aspectRatio: project.mediaAspectRatio,
-                    height: project.mediaAspectRatio ? "auto" : undefined,
-                    alignSelf: project.mediaAspectRatio ? "flex-start" : undefined,
-                  }}
+                    ...(project.mediaAspectRatio && {
+                      aspectRatio: project.mediaAspectRatio,
+                      "--media-ratio": project.mediaAspectRatio,
+                    }),
+                  } as React.CSSProperties}
                 >
                   <ProjectMedia project={project} />
                 </div>

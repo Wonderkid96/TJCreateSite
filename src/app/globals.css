@@ -443,6 +443,15 @@ html.reveal-mounted [data-reveal].is-visible {
   .project-detail-layout { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
   .project-detail-media { height: auto; aspect-ratio: 1; }
 }
+/* Media with its own shape (mediaAspectRatio, e.g. a portrait coin) is sized
+   by the screen height as well as the column, so the whole frame fits on
+   screen and sits centred. --fit-h is the height left once the surrounding
+   chrome is taken away. */
+.media-fit { --fit-h: calc(100svh - 12rem); height: auto; min-height: 0; flex: 0 0 auto; align-self: flex-start; width: min(100%, calc(var(--fit-h) * var(--media-ratio))); margin-inline: auto; }
+.modal-media.media-fit { --fit-h: calc(100svh - 15rem); }
+@media (max-width: 767px) {
+  .media-fit, .modal-media.media-fit { --fit-h: 60svh; }
+}
 @media (prefers-reduced-motion: reduce) {
   html.reveal-mounted [data-reveal] { opacity: 1; transform: none; transition: none; }
   .animate-ping { animation: none; }

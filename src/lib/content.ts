@@ -30,7 +30,7 @@ export type Project = {
    * Defaults to cover.
    */
   modalFit?: "contain";
-  /** Preserve this width/height ratio throughout the gallery and project views, without zoom or parallax cropping. */
+  /** Preserve this width/height ratio in the quick view and project page. Grid tiles stay square like the rest. */
   mediaAspectRatio?: number;
   /**
    * CSS object-position for the square grid tile crop, e.g. "60% 50%".

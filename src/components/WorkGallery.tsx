@@ -21,7 +21,7 @@ const PARALLAX = [30, 40, 55, 25, 45, 50, 20, 42, 60];
  * external link when it has one. No scroll pinning: plain vertical scroll.
  */
 export default function WorkGallery() {
-  const [filter, setFilter] = useState("Selected");
+  const [filter, setFilter] = useState("All work");
   const visibleProjects = filter === "Selected"
     ? FEATURED_SLUGS.flatMap((slug) => PROJECTS.filter((project) => project.slug === slug))
     : PROJECTS.filter((project) =>
@@ -57,7 +57,7 @@ export default function WorkGallery() {
         </div>
         <div className="work-controls px-6 md:px-10">
           <div role="group" aria-label="Filter work" className="work-filters">
-            {["Selected", "All work", "Graphic", "Motion", "3D"].map((label) => (
+            {["All work", "Selected", "Graphic", "Motion", "3D"].map((label) => (
               <button key={label} type="button" aria-pressed={filter === label}
                 onClick={() => setFilter(label)}>{label}</button>
             ))}

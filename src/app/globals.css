@@ -198,7 +198,7 @@ html.lenis body {
 /* Tile zoom on hover — fine-pointer only, so a tap on mobile doesn't leave a
    tile stuck enlarged. */
 @media (hover: hover) and (pointer: fine) {
-  .hover-tile:not([data-native-frame]):hover .hover-tile-media {
+  .hover-tile:hover .hover-tile-media {
     transform: scale(1.06);
   }
 }

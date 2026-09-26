@@ -9,6 +9,7 @@ import RevealObserver from "@/components/RevealObserver";
 import ScrollProgress from "@/components/ScrollProgress";
 import BackToTop from "@/components/BackToTop";
 import Nav from "@/components/Nav";
+import CursorTrail from "@/components/CursorTrail";
 
 // Header / display face — Peridot PE Variable (Extended Heavy), served from
 // the Adobe Fonts web project `bhj7dgq`. Adobe's licence does not permit
@@ -303,6 +304,7 @@ export default function RootLayout({
         <Nav />
         {children}
         <BackToTop />
+        <CursorTrail />
         <SpeedInsights />
       </body>
     </html>

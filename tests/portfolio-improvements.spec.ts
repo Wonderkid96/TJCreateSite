@@ -10,23 +10,16 @@ test.use({ contextOptions: { reducedMotion: "reduce" } });
 
 const featured = PROJECTS.find((project) => project.slug === "together-we-stand")!;
 
-test("Twelfth Man keeps its full portrait frame in the gallery, quick view and project page", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "no-preference" });
+test("Twelfth Man crops square in the gallery and keeps its portrait frame in quick view and project page", async ({ page }) => {
   await page.goto("/#work");
   const tile = page.getByRole("button", { name: "View Twelfth Man", exact: true });
   await tile.scrollIntoViewIfNeeded();
-  await tile.hover();
   const frame = tile.locator(".project-image");
   await expect.poll(async () => {
     const box = await frame.boundingBox();
-    return box ? Math.abs(box.width / box.height - 0.75) : 1;
+    return box ? Math.abs(box.width / box.height - 1) : 1;
   }).toBeLessThan(0.01);
-  await expect(tile.locator(".hover-tile-media")).toHaveCSS("transform", "none");
-  await expect(tile.locator("img")).toHaveCSS("object-fit", "contain");
-  const mediaBox = await tile.locator(".hover-tile-media > div").boundingBox();
-  const frameBox = await frame.boundingBox();
-  expect(Math.abs(mediaBox!.height - frameBox!.height)).toBeLessThan(1);
-  expect(Math.abs(mediaBox!.y - frameBox!.y)).toBeLessThan(1);
+  await expect(tile.locator("img")).toHaveCSS("object-fit", "cover");
 
   await tile.click();
   const dialog = page.getByRole("dialog");
@@ -50,7 +43,9 @@ test("work filters select real disciplines and reset without losing project link
   const work = page.locator("#work");
   const filters = page.getByRole("group", { name: "Filter work" });
   await expect(filters).toBeVisible();
-  await expect(filters.getByRole("button", { name: "Selected", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(filters.getByRole("button", { name: "All work", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(work.getByRole("link", { name: /view project/i })).toHaveCount(PROJECTS.length);
+  await filters.getByRole("button", { name: "Selected", exact: true }).click();
   await expect(work.getByRole("link", { name: /view project/i })).toHaveCount(FEATURED_SLUGS.length);
   const cases = [
     { label: "Graphic", categories: ["Graphic", "Identity", "Print", "Music"] },

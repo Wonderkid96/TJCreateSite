@@ -37,6 +37,11 @@ const APPLY = process.argv.includes("--apply");
  */
 const DESIRED = [
   {
+    id: "email_obfuscation",
+    value: "off",
+    why: "The public contact address is intentional and already appears in site metadata. Keep mailto links readable in served HTML for visitors without JavaScript and text-only crawlers.",
+  },
+  {
     id: "early_hints",
     value: "on",
     why: "Sends a 103 Early Hints response carrying the page's preconnect/preload hints, so the browser can open the Adobe Typekit connection while the origin is still generating the HTML. The display face is render-blocking and cross-origin, so this is the single biggest free LCP win available here.",

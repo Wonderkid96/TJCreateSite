@@ -2,7 +2,9 @@ import { test, expect } from "@playwright/test";
 
 if (process.env.PLAYWRIGHT_CHANNEL) test.use({ channel: process.env.PLAYWRIGHT_CHANNEL });
 
-test.use({ reducedMotion: "reduce" });
+test.use({ contextOptions: { reducedMotion: "reduce" } });
+
+const FORM_SUBMIT_URL = /^https:\/\/formsubmit\.co\/ajax\/hello(?:@|%40)tjcreate\.co\.uk$/i;
 
 test.describe("Contact", () => {
   test("desktop places contact details beside the form and keeps direct email available", async ({ page }) => {
@@ -43,9 +45,9 @@ test.describe("Contact", () => {
 
   test("successful submission posts form data and announces success", async ({ page }) => {
     let posted: Record<string, string> | undefined;
-    await page.route("**/api/contact", async (route) => {
+    await page.route(FORM_SUBMIT_URL, async (route) => {
       posted = route.request().postDataJSON();
-      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true }) });
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true }) });
     });
     await page.goto("/#contact");
 
@@ -56,18 +58,25 @@ test.describe("Contact", () => {
     await page.getByRole("button", { name: "Send enquiry" }).click();
 
     await expect(page.locator("#contact").getByRole("status")).toContainText("Thanks, your message has been sent.");
-    expect(posted).toEqual({
+    expect(posted).toEqual(expect.objectContaining({
       name: "Toby Johnson",
       email: "toby@example.com",
       company: "TJCreate",
       message: "A short project brief.",
-      website: "",
-    });
+      _subject: expect.any(String),
+      _replyto: "toby@example.com",
+      _honey: "",
+      _template: expect.any(String),
+    }));
     await expect(page.getByLabel("Name")).toHaveValue("");
   });
 
   test("provider failure announces error and preserves entered data", async ({ page }) => {
-    await page.route("**/api/contact", (route) => route.fulfill({ status: 503, body: "Unavailable" }));
+    await page.route(FORM_SUBMIT_URL, (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ success: false, message: "Provider rejected request" }),
+    }));
     await page.goto("/#contact");
 
     await page.getByLabel("Name").fill("Toby Johnson");
@@ -82,5 +91,28 @@ test.describe("Contact", () => {
     await expect(page.getByLabel("Company")).toHaveValue("TJCreate");
     await expect(page.getByLabel("Project details")).toHaveValue("Please retain this message.");
     await expect(page.getByRole("link", { name: "Email me directly" })).toHaveAttribute("href", /^mailto:hello@tjcreate\.co\.uk\?/);
+  });
+
+  test("reads browser autofill values without input events", async ({ page }) => {
+    let posted: Record<string, string> | undefined;
+    await page.route(FORM_SUBMIT_URL, async (route) => {
+      posted = route.request().postDataJSON();
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: "true" }) });
+    });
+    await page.goto("/#contact");
+
+    await page.locator("#contact-name").evaluate((node) => { (node as HTMLInputElement).value = "Autofilled Name"; });
+    await page.locator("#contact-email").evaluate((node) => { (node as HTMLInputElement).value = "autofill@example.com"; });
+    await page.locator("#contact-company").evaluate((node) => { (node as HTMLInputElement).value = "Autofill Co"; });
+    await page.getByLabel("Project details").fill("Message entered after autofill.");
+    await page.getByRole("button", { name: "Send enquiry" }).click();
+
+    await expect(page.locator("#contact").getByRole("status")).toContainText("Thanks, your message has been sent.");
+    expect(posted).toEqual(expect.objectContaining({
+      name: "Autofilled Name",
+      email: "autofill@example.com",
+      company: "Autofill Co",
+      message: "Message entered after autofill.",
+    }));
   });
 });

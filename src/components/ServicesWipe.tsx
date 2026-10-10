@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   motion,
   useMotionValueEvent,
@@ -10,8 +10,6 @@ import {
 import { useMediaQuery } from "@/lib/use-media-query";
 import { SERVICES } from "@/lib/content";
 import { EASE } from "@/lib/motion";
-import WorkPackages from "./WorkPackages";
-import { getLenis } from "@/lib/lenis";
 
 /**
  * Services as a wipe sequence: each discipline is a full-screen brand-colour
@@ -46,7 +44,6 @@ const THEMES: PanelTheme[] = [
   { bg: "#ffffff", fg: "#0a0a0a", accent: "#0a0a0a" }, // Paper — Graphic
   { bg: "#0a0a0a", fg: "#ffffff", accent: "#ffffff" }, // Ink   — Motion
   { bg: "#ffffff", fg: "#0a0a0a", accent: "#0a0a0a" }, // Paper — 3D
-  { bg: "#0a0a0a", fg: "#ffffff", accent: "#ffffff" }, // Ink — Packages
 ];
 
 // Runway height per panel, in svh. Taller means each panel holds fully on
@@ -74,7 +71,6 @@ export default function ServicesWipe() {
     offset: ["start start", "end end"],
   });
 
-  const atPackageDestination = useRef(true);
   const total = SERVICES.length;
   // Which panels are currently called up. Panel 0 is the base, always shown;
   // the others flip as their trigger points pass. Kept as discrete booleans so
@@ -101,64 +97,6 @@ export default function ServicesWipe() {
     });
   });
 
-  // Remember proximity before a resize: the new layout can move the anchor
-  // outside the viewport before the resize callback gets to inspect it.
-  useEffect(() => {
-    let frame = 0;
-    let aligning = false;
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    const align = () => {
-      if (window.location.hash !== "#packages" || !atPackageDestination.current) return;
-      cancelAnimationFrame(frame);
-      aligning = true;
-      frame = requestAnimationFrame(() => {
-        const anchor = document.getElementById("packages");
-        if (anchor) {
-          const lenis = getLenis();
-          if (lenis) {
-            lenis.resize();
-            lenis.scrollTo(anchor, { immediate: true, force: true });
-          } else {
-            anchor.scrollIntoView({ behavior: "instant", block: "start" });
-          }
-          if (!compact && !reduced) setShown(SERVICES.map(() => true));
-        }
-        width = window.innerWidth;
-        height = window.innerHeight;
-        aligning = false;
-      });
-    };
-    const trackPosition = () => {
-      if (window.location.hash !== "#packages") {
-        atPackageDestination.current = false;
-        return;
-      }
-      if (aligning || width !== window.innerWidth || height !== window.innerHeight) return;
-      const anchor = document.getElementById("packages");
-      atPackageDestination.current = !!anchor && Math.abs(anchor.getBoundingClientRect().top) < height / 2;
-    };
-    const resize = () => {
-      align();
-      width = window.innerWidth;
-      height = window.innerHeight;
-    };
-    const hashChange = () => {
-      atPackageDestination.current = window.location.hash === "#packages";
-      align();
-    };
-    align();
-    window.addEventListener("hashchange", hashChange);
-    window.addEventListener("resize", resize);
-    window.addEventListener("scroll", trackPosition, { passive: true });
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("hashchange", hashChange);
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("scroll", trackPosition);
-    };
-  }, [compact, reduced]);
-
   // Reduced motion: no pin, no clip — just the panels stacked full-height so
   // every service is reachable by plain scrolling.
   if (reduced || compact) {
@@ -166,7 +104,7 @@ export default function ServicesWipe() {
       <div ref={ref} id="services" className="services-static" role="region" aria-label="Services — what I do">
         <h2 className="sr-only">Services</h2>
         {SERVICES.map((s, i) => (
-          <div key={s.title} id={s.title === "Packages" ? "packages" : undefined} tabIndex={s.title === "Packages" ? -1 : undefined} style={s.title === "Packages" ? { scrollMarginTop: 68 } : undefined}>
+          <div key={s.title}>
             <PanelFace service={s} theme={THEMES[i % THEMES.length]} index={i} compact />
           </div>
         ))}
@@ -184,13 +122,6 @@ export default function ServicesWipe() {
       style={{ height: `${total * RUNWAY_PER_PANEL_VH}svh` }}
     >
       <h2 className="sr-only">Services</h2>
-      <div
-        id="packages"
-        tabIndex={-1}
-        aria-label="Packages"
-        className="pointer-events-none absolute h-px w-px"
-        style={{ top: "calc(85% - 85svh)", scrollMarginTop: 0 }}
-      />
       <div className="sticky top-0 h-svh overflow-hidden">
         {SERVICES.map((s, i) => (
           <WipePanel
@@ -258,7 +189,6 @@ function PanelFace({
 
   return (
     <div
-      data-no-reveal={service.title === "Packages" ? true : undefined}
       className={compact ? "service-static-panel relative w-full px-6 py-14" : "relative h-svh w-full overflow-hidden"}
       style={{ backgroundColor: theme.bg, color: theme.fg }}
     >
@@ -279,7 +209,6 @@ function PanelFace({
         >
           {service.title}.
         </h3>
-        {service.title === "Packages" ? <WorkPackages compact={compact} /> : <>
         <p
           className="mt-6 max-w-xl text-lg leading-relaxed"
           style={{ opacity: 0.9 }}
@@ -307,7 +236,6 @@ function PanelFace({
             ))}
           </ul>
         </div>
-        </>}
       </div>
     </div>
   );

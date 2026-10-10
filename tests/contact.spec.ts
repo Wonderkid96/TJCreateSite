@@ -1,0 +1,86 @@
+import { test, expect } from "@playwright/test";
+
+if (process.env.PLAYWRIGHT_CHANNEL) test.use({ channel: process.env.PLAYWRIGHT_CHANNEL });
+
+test.use({ reducedMotion: "reduce" });
+
+test.describe("Contact", () => {
+  test("desktop places contact details beside the form and keeps direct email available", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/#contact");
+
+    const section = page.locator("#contact");
+    const details = section.getByRole("heading", { name: "Say hello.", exact: true });
+    const form = section.getByRole("heading", { name: "Start a conversation.", exact: true });
+    const detailsBox = await details.boundingBox();
+    const formBox = await form.boundingBox();
+    expect(detailsBox).not.toBeNull();
+    expect(formBox).not.toBeNull();
+    expect(formBox!.x).toBeGreaterThan(detailsBox!.x);
+    const columns = section.locator(".grid > div");
+    const left = await columns.nth(0).boundingBox();
+    const right = await columns.nth(1).boundingBox();
+    expect(right!.x).toBeGreaterThanOrEqual(left!.x + left!.width);
+    expect(left!.y).toBeLessThan(right!.y + right!.height);
+
+    await expect(section.getByRole("link", { name: "hello@tjcreate.co.uk", exact: true })).toBeVisible();
+  });
+
+  test("mobile stacks the form below the contact details", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/#contact");
+
+    const section = page.locator("#contact");
+    const details = section.getByRole("heading", { name: "Say hello.", exact: true });
+    const form = section.getByRole("heading", { name: "Start a conversation.", exact: true });
+    const detailsBox = await details.boundingBox();
+    const formBox = await form.boundingBox();
+    expect(detailsBox).not.toBeNull();
+    expect(formBox).not.toBeNull();
+    expect(formBox!.y).toBeGreaterThan(detailsBox!.y + detailsBox!.height);
+    expect(formBox!.x).toBeGreaterThanOrEqual(detailsBox!.x - 1);
+  });
+
+  test("successful submission posts form data and announces success", async ({ page }) => {
+    let posted: Record<string, string> | undefined;
+    await page.route("**/api/contact", async (route) => {
+      posted = route.request().postDataJSON();
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true }) });
+    });
+    await page.goto("/#contact");
+
+    await page.getByLabel("Name").fill("Toby Johnson");
+    await page.getByRole("textbox", { name: "Email", exact: true }).fill("toby@example.com");
+    await page.getByLabel("Company").fill("TJCreate");
+    await page.getByLabel("Project details").fill("A short project brief.");
+    await page.getByRole("button", { name: "Send enquiry" }).click();
+
+    await expect(page.locator("#contact").getByRole("status")).toContainText("Thanks, your message has been sent.");
+    expect(posted).toEqual({
+      name: "Toby Johnson",
+      email: "toby@example.com",
+      company: "TJCreate",
+      message: "A short project brief.",
+      website: "",
+    });
+    await expect(page.getByLabel("Name")).toHaveValue("");
+  });
+
+  test("provider failure announces error and preserves entered data", async ({ page }) => {
+    await page.route("**/api/contact", (route) => route.fulfill({ status: 503, body: "Unavailable" }));
+    await page.goto("/#contact");
+
+    await page.getByLabel("Name").fill("Toby Johnson");
+    await page.getByRole("textbox", { name: "Email", exact: true }).fill("toby@example.com");
+    await page.getByLabel("Company").fill("TJCreate");
+    await page.getByLabel("Project details").fill("Please retain this message.");
+    await page.getByRole("button", { name: "Send enquiry" }).click();
+
+    await expect(page.locator("#contact").getByRole("alert")).toContainText("That didn't send. Your details are still here.");
+    await expect(page.getByLabel("Name")).toHaveValue("Toby Johnson");
+    await expect(page.getByRole("textbox", { name: "Email", exact: true })).toHaveValue("toby@example.com");
+    await expect(page.getByLabel("Company")).toHaveValue("TJCreate");
+    await expect(page.getByLabel("Project details")).toHaveValue("Please retain this message.");
+    await expect(page.getByRole("link", { name: "Email me directly" })).toHaveAttribute("href", /^mailto:hello@tjcreate\.co\.uk\?/);
+  });
+});

@@ -608,10 +608,5 @@ export const SERVICES: Service[] = [
       "Motion integration",
     ],
   },
-  {
-    title: "Packages",
-    blurb: "Scoped support for campaign versioning, lyric videos, static artwork animation and design work.",
-    items: ["Campaign Versioning", "Lyric Videos", "Static to Motion", "Design Support"],
-  },
 
 ];

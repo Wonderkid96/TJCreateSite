@@ -92,9 +92,15 @@ export default function DustUpSupportPage() {
               for runs out.
             </p>
             <p>
-              <strong>Cancelling never deletes anything.</strong> Your seasons
-              and your history stay exactly where they are, hidden rather than
-              erased, and they all come back if you subscribe again.
+              <strong>Ending a subscription does not itself delete household
+              records.</strong> Access to older records may change. See the{" "}
+              <Link
+                href="/dustup/privacy"
+                className="text-accent-link hover:text-accent-link/80 underline"
+              >
+                Privacy Policy
+              </Link>{" "}
+              for information about retention.
             </p>
           </div>
 
@@ -117,9 +123,11 @@ export default function DustUpSupportPage() {
               It cannot be undone, and it does not cancel a subscription.
             </p>
             <p>
-              To delete your account altogether, email us at the address above
-              from the address you signed up with and we will remove it within
-              30 days. See the{" "}
+              To request account deletion or ask what data may remain, email
+              us at the address above. A request can fail or stop part way, and
+              deletion from every device, backup, log or provider is not
+              verified. Shared game history and accepted game records may
+              remain. See the{" "}
               <Link
                 href="/dustup/privacy"
                 className="text-accent-link hover:text-accent-link/80 underline"

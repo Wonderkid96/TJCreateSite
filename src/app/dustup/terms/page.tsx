@@ -21,7 +21,7 @@ export default function DustUpTermsPage() {
       <div className="max-w-3xl mx-auto py-12 space-y-8">
         <div>
           <h1 className="text-4xl font-display font-bold mb-2">Dust-Up Terms of Use</h1>
-          <p className="text-ink-soft">Last updated: 26 August 2026</p>
+          <p className="text-ink-soft">Last updated: 11 October 2026</p>
         </div>
 
         <div className="prose prose-invert max-w-none space-y-6 text-base leading-relaxed">
@@ -58,68 +58,28 @@ export default function DustUpTermsPage() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">Subscriptions</h2>
             <p>
-              Dust-Up is free to play. The whole game — every job, the full
-              scoreboard, this week&apos;s numbers, the current season and all the
-              Extras — is free for two adults for as long as you like. Two
-              optional subscriptions add to it:
-            </p>
-            <ul className="list-disc list-inside space-y-2">
-              <li>
-                <strong>Dust-Up Pro</strong> — £1.99 per month, or £19.99 per
-                year. Adds the record: every past season, all-time numbers, and
-                the history of each individual job.
-              </li>
-              <li>
-                <strong>Dust-Up Deluxe</strong> — £4.99 per month, or £49.99
-                per year, and includes everything in Pro. Adds the house:
-                everybody past the free two, child seats, family mode and
-                shared-device seats.
-              </li>
-            </ul>
-            <p>
-              Prices are shown in the App Store in your own currency before you
-              buy, and the price shown there at the time of purchase is the one
-              that applies.
+              Dust-Up offers access through App Store subscriptions. The
+              available products, features, eligibility, price and billing
+              period are shown in the app and in Apple&apos;s purchase
+              confirmation before you buy. The offer shown there applies to
+              that purchase. We do not list fixed prices or renewal terms in
+              these terms because they can vary by storefront and current
+              offer.
             </p>
             <p>
-              <strong>
-                A subscription belongs to the household, not to the person who
-                paid for it.
-              </strong>{" "}
-              Everybody in the household gets it at once. New households get a
-              free 14-day trial of Deluxe, once.
+              Apple processes App Store payments. You can manage or cancel an
+              active subscription in your Apple Account settings. Apple&apos;s
+              purchase confirmation shows the terms that apply, including any
+              renewal details. Contact us if you need help with the app.
             </p>
-            <p>The usual App Store rules apply, and they are Apple&apos;s, not ours:</p>
-            <ul className="list-disc list-inside space-y-2">
-              <li>
-                Payment is charged to your Apple Account when you confirm the
-                purchase.
-              </li>
-              <li>
-                A subscription renews automatically unless you turn off
-                auto-renew at least 24 hours before the end of the current
-                period.
-              </li>
-              <li>
-                Your Apple Account is charged for the renewal within the 24
-                hours before the current period ends.
-              </li>
-              <li>
-                You can manage your subscription, or turn off auto-renew, in
-                your Apple Account settings after buying it. We cannot do it
-                for you.
-              </li>
-              <li>
-                Refunds are handled by Apple under their terms, not by us,
-                though do email us if something has gone wrong and we will help
-                where we can.
-              </li>
-            </ul>
             <p>
-              <strong>Nothing is deleted if a subscription ends.</strong> Your
-              record is still there; the parts a subscription unlocks simply
-              stop being shown until you subscribe again, and everything comes
-              back when you do.
+              Ending a subscription does not itself delete household records.
+              Access to older records or other features may change. See the{" "}
+              <Link href="/dustup/privacy" className="text-accent-link hover:text-accent-link/80 underline">
+                Privacy Policy
+              </Link>{" "}
+              for information about retention. Deleting your account does not
+              cancel an App Store subscription.
             </p>
           </div>
 
@@ -150,18 +110,21 @@ export default function DustUpTermsPage() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">Things you write</h2>
             <p>
-              You write your own job names, your own dares and forfeits, your
-              own shop favours and your own notes. We don&apos;t generate them and
-              we don&apos;t moderate them, because they never leave your
-              household — but you are responsible for what you write, and for
+              You write your own job names, dares and forfeits, shop favours
+              and notes. You are responsible for what you write and for
               keeping it lawful and appropriate for everybody who shares the
-              household with you. If children are in your household, the adults
-              in it are responsible for what those children can see.
+              household with you. If children use a child seat in your
+              household, adults are responsible for what they can see.
             </p>
             <p>
               You keep ownership of what you write. By putting it into the app
-              you give us permission to store it and show it to your own
-              household, and to nobody else.
+              you allow us to store and show it to your household to run the
+              service. The service providers that process data are described
+              in the{" "}
+              <Link href="/dustup/privacy" className="text-accent-link hover:text-accent-link/80 underline">
+                Privacy Policy
+              </Link>
+              .
             </p>
           </div>
 
@@ -191,9 +154,10 @@ export default function DustUpTermsPage() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">No warranty</h2>
             <p>
-              Dust-Up is provided as-is. We work to keep it reliable, and the
-              scoreboard is backed up, but we don&apos;t guarantee the app will be
-              error-free or available at all times. Nothing here limits any
+              Dust-Up is provided as-is. We work to keep it reliable. We
+              cannot confirm backup coverage or restoration behavior for
+              every record. We don&apos;t guarantee the app will be error-free or
+              available at all times. Nothing here limits any
               liability that cannot be limited by law, including your statutory
               rights as a consumer.
             </p>
@@ -202,14 +166,20 @@ export default function DustUpTermsPage() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">Ending your account</h2>
             <p>
-              You can clear your household&apos;s game at any time from Profile →
-              Start again, and you can ask us to delete your account by
-              emailing{" "}
+              You can clear your household&apos;s game from Profile → Start again.
+              You can ask us to delete your account by emailing{" "}
               <a href="mailto:hello@tjcreate.co.uk" className="text-accent-link hover:text-accent-link/80">
                 hello@tjcreate.co.uk
               </a>
-              . Deleting your account does not cancel a subscription — do that
-              in your Apple Account settings.
+              . A deletion request can fail or stop part way. Shared game
+              history and accepted game records may remain, and deletion is
+              not verified across every device, backup, log or provider. See
+              the{" "}
+              <Link href="/dustup/privacy" className="text-accent-link hover:text-accent-link/80 underline">
+                Privacy Policy
+              </Link>{" "}
+              for more information. Deleting your account does not cancel an
+              App Store subscription; manage that in your Apple Account settings.
             </p>
           </div>
 

@@ -71,6 +71,25 @@ test.describe("Contact", () => {
     await expect(page.getByLabel("Name")).toHaveValue("");
   });
 
+  test("retries once when the provider returns a server error", async ({ page }) => {
+    let calls = 0;
+    await page.route(FORM_SUBMIT_URL, (route) => {
+      calls += 1;
+      return calls === 1
+        ? route.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ message: "Server Error" }) })
+        : route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: "true" }) });
+    });
+    await page.goto("/#contact");
+
+    await page.getByLabel("Name").fill("Toby Johnson");
+    await page.getByRole("textbox", { name: "Email", exact: true }).fill("toby@example.com");
+    await page.getByLabel("Project details").fill("Retry check.");
+    await page.getByRole("button", { name: "Send enquiry" }).click();
+
+    await expect(page.locator("#contact").getByRole("status")).toContainText("Thanks, your message has been sent.");
+    expect(calls).toBe(2);
+  });
+
   test("provider failure announces error and preserves entered data", async ({ page }) => {
     await page.route(FORM_SUBMIT_URL, (route) => route.fulfill({
       status: 200,

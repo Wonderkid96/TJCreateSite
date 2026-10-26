@@ -26,21 +26,25 @@ export default function ContactForm({ email }: ContactFormProps) {
     }
 
     try {
-      const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(email)}`, {
+      const body = JSON.stringify({
+        name: value("name"),
+        email: value("email"),
+        message: value("message"),
+        company: value("company"),
+        _subject: "TJCreate website enquiry",
+        _replyto: value("email"),
+        _honey: value("website"),
+        _template: "table",
+      });
+      const send = () => fetch(`https://formsubmit.co/ajax/${encodeURIComponent(email)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         signal: AbortSignal.timeout(12000),
-        body: JSON.stringify({
-          name: value("name"),
-          email: value("email"),
-          message: value("message"),
-          company: value("company"),
-          _subject: "TJCreate website enquiry",
-          _replyto: value("email"),
-          _honey: value("website"),
-          _template: "table",
-        }),
+        body,
       });
+      let response = await send();
+      // FormSubmit occasionally answers a one-off 5xx "Server Error"; a single retry rides that out.
+      if (response.status >= 500) response = await send();
 
       if (!response.ok) throw new Error("Contact request failed");
       const result: unknown = await response.json();

@@ -17,7 +17,7 @@ export default function Contact() {
       style={{ "--paper": "#ffffff", "--ink": "#0a0a0a" } as React.CSSProperties}
       className="contact-section relative w-full overflow-hidden bg-ink px-6 py-16 text-paper md:px-10 md:py-20"
     >
-      <div className="mx-auto grid w-full max-w-7xl gap-12 md:grid-cols-2 md:items-center md:gap-16">
+      <div className="mx-auto grid w-full max-w-7xl gap-12 md:grid-cols-2 md:items-start md:gap-20">
         <div>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11px] uppercase tracking-[0.25em] text-paper/60">
             <span>Let&apos;s make something</span>

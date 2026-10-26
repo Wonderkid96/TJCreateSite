@@ -391,7 +391,7 @@ html.reveal-mounted [data-reveal].is-visible {
 @media (min-width: 768px) {
   .about-content h2 { max-width: 55%; font-size: clamp(2rem, 4vw, 4rem); }
   .about-lead, .about-body { max-width: min(45%, 32rem); }
-  .contact-details { flex-direction: row; justify-content: space-between; align-items: center; }
+  .contact-details { flex-direction: row; align-items: center; gap: 2.5rem; }
 }
 @media (max-width: 1023px) {
   .hero-introduction { flex-direction: column; align-items: flex-start; gap: 0; }

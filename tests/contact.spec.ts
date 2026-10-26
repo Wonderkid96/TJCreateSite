@@ -13,7 +13,7 @@ test.describe("Contact", () => {
 
     const section = page.locator("#contact");
     const details = section.getByRole("heading", { name: "Say hello.", exact: true });
-    const form = section.getByRole("heading", { name: "Start a conversation.", exact: true });
+    const form = section.getByRole("heading", { name: "Or tell me about it here", exact: true });
     const detailsBox = await details.boundingBox();
     const formBox = await form.boundingBox();
     expect(detailsBox).not.toBeNull();
@@ -34,7 +34,7 @@ test.describe("Contact", () => {
 
     const section = page.locator("#contact");
     const details = section.getByRole("heading", { name: "Say hello.", exact: true });
-    const form = section.getByRole("heading", { name: "Start a conversation.", exact: true });
+    const form = section.getByRole("heading", { name: "Or tell me about it here", exact: true });
     const detailsBox = await details.boundingBox();
     const formBox = await form.boundingBox();
     expect(detailsBox).not.toBeNull();

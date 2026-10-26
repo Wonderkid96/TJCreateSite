@@ -71,7 +71,8 @@ export default function ContactForm({ email }: ContactFormProps) {
       const send = () => fetch(`https://formsubmit.co/ajax/${encodeURIComponent(email)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        signal: AbortSignal.timeout(12000),
+        // FormSubmit has been measured at 15 to 60 seconds per request (26 Oct), so a short cap fails real enquiries.
+        signal: AbortSignal.timeout(60000),
         body,
       });
       let response = await send();
@@ -171,6 +172,7 @@ export default function ContactForm({ email }: ContactFormProps) {
           </button>
         </div>
         <p aria-live="polite" role={status === "error" ? "alert" : "status"} className="min-h-5 text-sm text-paper/75">
+          {status === "pending" && "Sending. This can take up to a minute."}
           {status === "error" && <>That didn&apos;t send. Your details are still here. <a className="underline underline-offset-4 hover:text-paper" href={`mailto:${email}?subject=${encodeURIComponent("Project enquiry")}`} onClick={(event) => {
             const form = event.currentTarget.closest("form");
             if (!form) return;

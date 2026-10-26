@@ -19,7 +19,7 @@ export default function PrivacyPage() {
       <div className="max-w-3xl mx-auto py-12 space-y-8">
         <div>
           <h1 className="text-4xl font-display font-bold mb-2">Privacy Policy</h1>
-          <p className="text-ink-soft">Last updated: 10 October 2026</p>
+          <p className="text-ink-soft">Last updated: 26 October 2026</p>
         </div>
 
         <div className="prose prose-invert max-w-none space-y-6 text-base leading-relaxed">
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
                 you are).
               </li>
               <li>Fonts are served by Adobe Fonts, which sees your IP address when it delivers them.</li>
-              <li>If you email me or use the contact form, I keep your details and message to reply and work with you. The form uses FormSubmit to deliver your name, email, optional company and message to my inbox. FormSubmit retains submissions for 30 days. Your details are not used for marketing or sold.</li>
+              <li>If you email me or use the contact form, I keep your details and message to reply and work with you. The form sends your name, email, optional company and message to my inbox using my own Google (Gmail) account. Your details are not used for marketing or sold.</li>
             </ul>
           </div>
 

@@ -4,7 +4,7 @@ if (process.env.PLAYWRIGHT_CHANNEL) test.use({ channel: process.env.PLAYWRIGHT_C
 
 test.use({ contextOptions: { reducedMotion: "reduce" } });
 
-const FORM_SUBMIT_URL = /^https:\/\/formsubmit\.co\/ajax\/hello(?:@|%40)tjcreate\.co\.uk$/i;
+const CONTACT_API = /\/api\/contact$/;
 
 test.describe("Contact", () => {
   test("desktop places contact details beside the form and keeps direct email available", async ({ page }) => {
@@ -45,9 +45,9 @@ test.describe("Contact", () => {
 
   test("successful submission posts form data and announces success", async ({ page }) => {
     let posted: Record<string, string> | undefined;
-    await page.route(FORM_SUBMIT_URL, async (route) => {
+    await page.route(CONTACT_API, async (route) => {
       posted = route.request().postDataJSON();
-      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true }) });
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true }) });
     });
     await page.goto("/#contact");
 
@@ -64,10 +64,7 @@ test.describe("Contact", () => {
       email: "toby@example.com",
       company: "TJCreate",
       message: "A short project brief.",
-      _subject: "Website enquiry from Toby Johnson (TJCreate)",
-      _replyto: "toby@example.com",
-      _honey: "",
-      _template: expect.any(String),
+      website: "",
     }));
     await page.getByRole("button", { name: "Send another message" }).click();
     await expect(page.getByLabel("Name")).toHaveValue("");
@@ -76,9 +73,9 @@ test.describe("Contact", () => {
 
   test("shows inline errors instead of submitting an incomplete form", async ({ page }) => {
     let calls = 0;
-    await page.route(FORM_SUBMIT_URL, (route) => {
+    await page.route(CONTACT_API, (route) => {
       calls += 1;
-      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: "true" }) });
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true }) });
     });
     await page.goto("/#contact");
 
@@ -96,30 +93,11 @@ test.describe("Contact", () => {
     await expect(page.getByText("Please add your name.")).toHaveCount(0);
   });
 
-  test("retries once when the provider returns a server error", async ({ page }) => {
-    let calls = 0;
-    await page.route(FORM_SUBMIT_URL, (route) => {
-      calls += 1;
-      return calls === 1
-        ? route.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ message: "Server Error" }) })
-        : route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: "true" }) });
-    });
-    await page.goto("/#contact");
-
-    await page.getByLabel("Name").fill("Toby Johnson");
-    await page.getByRole("textbox", { name: "Email", exact: true }).fill("toby@example.com");
-    await page.getByLabel("Project details").fill("Retry check.");
-    await page.getByRole("button", { name: "Send enquiry" }).click();
-
-    await expect(page.locator("#contact").getByRole("status")).toContainText("Message sent.");
-    expect(calls).toBe(2);
-  });
-
   test("provider failure announces error and preserves entered data", async ({ page }) => {
-    await page.route(FORM_SUBMIT_URL, (route) => route.fulfill({
-      status: 200,
+    await page.route(CONTACT_API, (route) => route.fulfill({
+      status: 502,
       contentType: "application/json",
-      body: JSON.stringify({ success: false, message: "Provider rejected request" }),
+      body: JSON.stringify({ ok: false, error: "Send failed" }),
     }));
     await page.goto("/#contact");
 
@@ -139,9 +117,9 @@ test.describe("Contact", () => {
 
   test("reads browser autofill values without input events", async ({ page }) => {
     let posted: Record<string, string> | undefined;
-    await page.route(FORM_SUBMIT_URL, async (route) => {
+    await page.route(CONTACT_API, async (route) => {
       posted = route.request().postDataJSON();
-      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: "true" }) });
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true }) });
     });
     await page.goto("/#contact");
 
@@ -158,5 +136,22 @@ test.describe("Contact", () => {
       company: "Autofill Co",
       message: "Message entered after autofill.",
     }));
+  });
+
+  test("contact API rejects bad origins and invalid fields without sending", async ({ request, baseURL }) => {
+    const origin = new URL(baseURL!).origin;
+    const valid = { name: "Test", email: "test@example.com", company: "", message: "Hello", website: "" };
+
+    const foreign = await request.post("/api/contact", { headers: { Origin: "https://evil.example" }, data: valid });
+    expect(foreign.status()).toBe(403);
+
+    const badEmail = await request.post("/api/contact", { headers: { Origin: origin }, data: { ...valid, email: "nope" } });
+    expect(badEmail.status()).toBe(400);
+
+    const empty = await request.post("/api/contact", { headers: { Origin: origin }, data: { ...valid, message: "  " } });
+    expect(empty.status()).toBe(400);
+
+    const bot = await request.post("/api/contact", { headers: { Origin: origin }, data: { ...valid, website: "spam" } });
+    expect(bot.status()).toBe(200);
   });
 });

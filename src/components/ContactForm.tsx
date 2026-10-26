@@ -58,37 +58,21 @@ export default function ContactForm({ email }: ContactFormProps) {
     }
 
     try {
-      const body = JSON.stringify({
-        name: value("name"),
-        email: value("email"),
-        message: value("message"),
-        company: value("company"),
-        _subject: `Website enquiry from ${value("name")}${value("company") ? ` (${value("company")})` : ""}`,
-        _replyto: value("email"),
-        _honey: value("website"),
-        _template: "table",
-      });
-      const send = () => fetch(`https://formsubmit.co/ajax/${encodeURIComponent(email)}`, {
+      const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        // FormSubmit has been measured at 15 to 60 seconds per request (26 Oct), so a short cap fails real enquiries.
-        signal: AbortSignal.timeout(60000),
-        body,
+        signal: AbortSignal.timeout(20000),
+        body: JSON.stringify({
+          name: value("name"),
+          email: value("email"),
+          company: value("company"),
+          message: value("message"),
+          website: value("website"),
+        }),
       });
-      let response = await send();
-      // FormSubmit occasionally answers a one-off 5xx "Server Error"; a single retry rides that out.
-      if (response.status >= 500) response = await send();
-
-      if (!response.ok) throw new Error("Contact request failed");
-      const result: unknown = await response.json();
-      if (
-        typeof result !== "object" ||
-        result === null ||
-        !("success" in result) ||
-        (result.success !== true && result.success !== "true") ||
-        ("message" in result && /activat/i.test(String(result.message)))
-      ) {
-        throw new Error("Contact provider did not confirm delivery");
+      const result: unknown = await response.json().catch(() => null);
+      if (!response.ok || typeof result !== "object" || result === null || !("ok" in result) || result.ok !== true) {
+        throw new Error("Contact request failed");
       }
       form.reset();
       setMessageLength(0);
@@ -172,7 +156,6 @@ export default function ContactForm({ email }: ContactFormProps) {
           </button>
         </div>
         <p aria-live="polite" role={status === "error" ? "alert" : "status"} className="min-h-5 text-sm text-paper/75">
-          {status === "pending" && "Sending. This can take up to a minute."}
           {status === "error" && <>That didn&apos;t send. Your details are still here. <a className="underline underline-offset-4 hover:text-paper" href={`mailto:${email}?subject=${encodeURIComponent("Project enquiry")}`} onClick={(event) => {
             const form = event.currentTarget.closest("form");
             if (!form) return;

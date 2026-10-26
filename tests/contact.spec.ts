@@ -57,18 +57,43 @@ test.describe("Contact", () => {
     await page.getByLabel("Project details").fill("A short project brief.");
     await page.getByRole("button", { name: "Send enquiry" }).click();
 
-    await expect(page.locator("#contact").getByRole("status")).toContainText("Thanks, your message has been sent.");
+    await expect(page.locator("#contact").getByRole("status")).toContainText("Message sent.");
+    await expect(page.locator("#contact").getByRole("status")).toContainText("Thanks, Toby Johnson. I'll reply to toby@example.com.");
     expect(posted).toEqual(expect.objectContaining({
       name: "Toby Johnson",
       email: "toby@example.com",
       company: "TJCreate",
       message: "A short project brief.",
-      _subject: expect.any(String),
+      _subject: "Website enquiry from Toby Johnson (TJCreate)",
       _replyto: "toby@example.com",
       _honey: "",
       _template: expect.any(String),
     }));
+    await page.getByRole("button", { name: "Send another message" }).click();
     await expect(page.getByLabel("Name")).toHaveValue("");
+    await expect(page.getByLabel("Name")).toBeFocused();
+  });
+
+  test("shows inline errors instead of submitting an incomplete form", async ({ page }) => {
+    let calls = 0;
+    await page.route(FORM_SUBMIT_URL, (route) => {
+      calls += 1;
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: "true" }) });
+    });
+    await page.goto("/#contact");
+
+    await page.getByRole("textbox", { name: "Email", exact: true }).fill("not-an-email");
+    await page.getByRole("button", { name: "Send enquiry" }).click();
+
+    await expect(page.getByText("Please add your name.")).toBeVisible();
+    await expect(page.getByText("That email address doesn't look right.")).toBeVisible();
+    await expect(page.getByText("Tell me a little about the project.")).toBeVisible();
+    await expect(page.getByLabel("Name")).toBeFocused();
+    await expect(page.getByLabel("Name")).toHaveAttribute("aria-invalid", "true");
+    expect(calls).toBe(0);
+
+    await page.getByLabel("Name").fill("Toby");
+    await expect(page.getByText("Please add your name.")).toHaveCount(0);
   });
 
   test("retries once when the provider returns a server error", async ({ page }) => {
@@ -86,7 +111,7 @@ test.describe("Contact", () => {
     await page.getByLabel("Project details").fill("Retry check.");
     await page.getByRole("button", { name: "Send enquiry" }).click();
 
-    await expect(page.locator("#contact").getByRole("status")).toContainText("Thanks, your message has been sent.");
+    await expect(page.locator("#contact").getByRole("status")).toContainText("Message sent.");
     expect(calls).toBe(2);
   });
 
@@ -126,7 +151,7 @@ test.describe("Contact", () => {
     await page.getByLabel("Project details").fill("Message entered after autofill.");
     await page.getByRole("button", { name: "Send enquiry" }).click();
 
-    await expect(page.locator("#contact").getByRole("status")).toContainText("Thanks, your message has been sent.");
+    await expect(page.locator("#contact").getByRole("status")).toContainText("Message sent.");
     expect(posted).toEqual(expect.objectContaining({
       name: "Autofilled Name",
       email: "autofill@example.com",

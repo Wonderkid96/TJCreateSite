@@ -1,22 +1,54 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 type FormValues = { name: string; email: string; message: string; company: string; website: string };
 type ContactFormProps = { email: string };
+type RequiredField = "name" | "email" | "message";
+type FieldErrors = Partial<Record<RequiredField, string>>;
 
-const FIELD_CLASS = "mt-1 min-h-11 w-full rounded-none border-0 border-b border-paper/25 bg-transparent px-0 py-2 text-base text-paper transition-colors placeholder:text-paper/35 hover:border-paper/50 focus:border-paper focus:shadow-[0_1px_0_0_var(--paper)] focus:outline-none focus-visible:outline-none";
+const REQUIRED_FIELDS: RequiredField[] = ["name", "email", "message"];
+
+/** Inline messages in place of the browser's validation bubbles, which don't match the dark panel. */
+function validate(form: HTMLFormElement): FieldErrors {
+  const errors: FieldErrors = {};
+  for (const name of REQUIRED_FIELDS) {
+    const field = form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement;
+    if (!field.value.trim()) errors[name] = name === "message" ? "Tell me a little about the project." : `Please add your ${name}.`;
+    else if (!field.validity.valid) errors[name] = "That email address doesn't look right.";
+  }
+  return errors;
+}
+
+const FIELD_CLASS = "contact-field mt-1 min-h-11 w-full rounded-none border-0 border-b border-paper/25 bg-transparent px-0 py-2 text-base text-paper transition-colors placeholder:text-paper/35 hover:border-paper/50";
 const LABEL_CLASS = "block font-mono text-[11px] uppercase tracking-[0.2em] text-paper/60";
+const INVALID_CLASS = "border-accent hover:border-accent";
+const ERROR_CLASS = "mt-2 text-xs text-accent";
 
 export default function ContactForm({ email }: ContactFormProps) {
   const [status, setStatus] = useState<"idle" | "pending" | "success" | "error">("idle");
   const [messageLength, setMessageLength] = useState(0);
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const [sentTo, setSentTo] = useState<{ name: string; email: string } | null>(null);
+  const confirmationRef = useRef<HTMLDivElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (status === "success") confirmationRef.current?.focus();
+  }, [status]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (status === "pending") return;
-    setStatus("pending");
     const form = event.currentTarget;
+    const invalid = validate(form);
+    setErrors(invalid);
+    const firstInvalid = REQUIRED_FIELDS.find((field) => invalid[field]);
+    if (firstInvalid) {
+      (form.elements.namedItem(firstInvalid) as HTMLElement).focus();
+      return;
+    }
+    setStatus("pending");
     const data = new FormData(form);
     const value = (field: keyof FormValues) => String(data.get(field) ?? "").trim();
 
@@ -31,7 +63,7 @@ export default function ContactForm({ email }: ContactFormProps) {
         email: value("email"),
         message: value("message"),
         company: value("company"),
-        _subject: "TJCreate website enquiry",
+        _subject: `Website enquiry from ${value("name")}${value("company") ? ` (${value("company")})` : ""}`,
         _replyto: value("email"),
         _honey: value("website"),
         _template: "table",
@@ -59,18 +91,44 @@ export default function ContactForm({ email }: ContactFormProps) {
       }
       form.reset();
       setMessageLength(0);
+      setSentTo({ name: value("name"), email: value("email") });
       setStatus("success");
     } catch {
       setStatus("error");
     }
   }
 
+  const fieldProps = (name: RequiredField) => ({
+    "aria-invalid": errors[name] ? true : undefined,
+    "aria-describedby": errors[name] ? `contact-${name}-error` : undefined,
+  });
+  const fieldError = (name: RequiredField) => errors[name] && <p id={`contact-${name}-error`} className={ERROR_CLASS}>{errors[name]}</p>;
+
+  if (status === "success" && sentTo) {
+    return (
+      <div data-no-auto-text-reveal>
+        <h3 className="font-mono text-[11px] font-normal uppercase tracking-[0.25em] text-paper/60">Or tell me about it here</h3>
+        <div ref={confirmationRef} tabIndex={-1} role="status" className="mt-6 border-t border-paper/25 pt-6 outline-none md:mt-8">
+          <p className="font-display text-2xl uppercase leading-tight md:text-3xl">Message sent<span className="text-accent">.</span></p>
+          <p className="mt-4 max-w-md text-base leading-relaxed text-paper/75">Thanks, {sentTo.name}. I&apos;ll reply to {sentTo.email}.</p>
+        </div>
+        <button type="button" onClick={() => {
+          setSentTo(null);
+          setStatus("idle");
+          requestAnimationFrame(() => nameRef.current?.focus());
+        }} className="mt-6 text-sm text-paper/75 underline underline-offset-4 transition-colors hover:text-paper">Send another message</button>
+      </div>
+    );
+  }
+
   return (
     <div data-no-auto-text-reveal>
       <h3 className="font-mono text-[11px] font-normal uppercase tracking-[0.25em] text-paper/60">Or tell me about it here</h3>
 
-      <form onSubmit={handleSubmit} autoComplete="on" onInput={(event) => {
+      <form onSubmit={handleSubmit} noValidate autoComplete="on" onInput={(event) => {
         if (status === "error") setStatus("idle");
+        const target = event.target as HTMLInputElement;
+        if (errors[target.name as RequiredField]) setErrors((current) => ({ ...current, [target.name]: undefined }));
         if (event.target instanceof HTMLTextAreaElement && event.target.name === "message") {
           setMessageLength(event.target.value.length);
         }
@@ -78,12 +136,14 @@ export default function ContactForm({ email }: ContactFormProps) {
         <div className="grid gap-7 sm:grid-cols-2 sm:gap-6">
           <div>
             <label htmlFor="contact-name" className={LABEL_CLASS}>Name <span aria-hidden="true" className="text-accent">*</span></label>
-            <input id="contact-name" name="name" autoComplete="name" required maxLength={120} defaultValue="" className={FIELD_CLASS} />
+            <input ref={nameRef} id="contact-name" name="name" autoComplete="name" required maxLength={120} defaultValue="" {...fieldProps("name")} className={`${FIELD_CLASS} ${errors.name ? INVALID_CLASS : ""}`} />
+            {fieldError("name")}
           </div>
 
           <div>
             <label htmlFor="contact-email" className={LABEL_CLASS}>Email <span aria-hidden="true" className="text-accent">*</span></label>
-            <input id="contact-email" name="email" type="email" autoComplete="email" required maxLength={254} defaultValue="" className={FIELD_CLASS} />
+            <input id="contact-email" name="email" type="email" autoComplete="email" required maxLength={254} defaultValue="" {...fieldProps("email")} className={`${FIELD_CLASS} ${errors.email ? INVALID_CLASS : ""}`} />
+            {fieldError("email")}
           </div>
         </div>
 
@@ -94,7 +154,8 @@ export default function ContactForm({ email }: ContactFormProps) {
 
         <div>
           <label htmlFor="contact-message" className={LABEL_CLASS}>Project details <span aria-hidden="true" className="text-accent">*</span></label>
-          <textarea id="contact-message" name="message" required maxLength={5000} rows={3} defaultValue="" className={`${FIELD_CLASS} min-h-24 resize-y`} />
+          <textarea id="contact-message" name="message" required maxLength={5000} rows={3} defaultValue="" {...fieldProps("message")} className={`${FIELD_CLASS} min-h-24 resize-y ${errors.message ? INVALID_CLASS : ""}`} />
+          {fieldError("message")}
           {messageLength > 4000 && <p className="mt-1 text-right font-mono text-[11px] text-paper/50">{messageLength}/5000</p>}
         </div>
 
@@ -110,7 +171,6 @@ export default function ContactForm({ email }: ContactFormProps) {
           </button>
         </div>
         <p aria-live="polite" role={status === "error" ? "alert" : "status"} className="min-h-5 text-sm text-paper/75">
-          {status === "success" && "Thanks, your message has been sent."}
           {status === "error" && <>That didn&apos;t send. Your details are still here. <a className="underline underline-offset-4 hover:text-paper" href={`mailto:${email}?subject=${encodeURIComponent("Project enquiry")}`} onClick={(event) => {
             const form = event.currentTarget.closest("form");
             if (!form) return;

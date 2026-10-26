@@ -388,6 +388,10 @@ html.reveal-mounted [data-reveal].is-visible {
 .about-lead { margin-top: 2rem; font-size: 1.35rem; line-height: 1.45; }
 .contact-section { min-height: 70svh; border-top: 1px solid rgb(255 253 248 / .18); }
 .contact-details { padding-top: 1.5rem; }
+/* Text fields take focus-visible on every click, so the global ring would box
+   each underlined field. They show focus as a solid 2px paper rule instead. */
+.contact-field:focus-visible { outline: none; border-radius: 0; border-color: var(--paper); box-shadow: 0 1px 0 0 var(--paper); }
+.contact-field[aria-invalid="true"]:focus-visible { border-color: var(--accent); box-shadow: 0 1px 0 0 var(--accent); }
 @media (min-width: 768px) {
   .about-content h2 { max-width: 55%; font-size: clamp(2rem, 4vw, 4rem); }
   .about-lead, .about-body { max-width: min(45%, 32rem); }

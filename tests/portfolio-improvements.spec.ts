@@ -29,7 +29,7 @@ test("Twelfth Man crops square in the gallery and keeps its portrait frame in qu
     const box = await dialog.locator("[data-modal-media]").boundingBox();
     return box ? Math.abs(box.width / box.height - 0.75) : 1;
   }).toBeLessThan(0.01);
-  await dialog.getByRole("link", { name: "View project", exact: true }).click();
+  await dialog.getByRole("link", { name: /^View project/ }).click();
   await expect(page).toHaveURL(/\/projects\/twelfth-man$/);
   await expect.poll(async () => {
     const box = await page.locator(".project-detail-media").boundingBox();
@@ -44,9 +44,9 @@ test("work filters select real disciplines and reset without losing project link
   const filters = page.getByRole("group", { name: "Filter work" });
   await expect(filters).toBeVisible();
   await expect(filters.getByRole("button", { name: "All work", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await expect(work.getByRole("link", { name: /view project/i })).toHaveCount(PROJECTS.length);
+  await expect(work.locator("a.project-title-link")).toHaveCount(PROJECTS.length);
   await filters.getByRole("button", { name: "Selected", exact: true }).click();
-  await expect(work.getByRole("link", { name: /view project/i })).toHaveCount(FEATURED_SLUGS.length);
+  await expect(work.locator("a.project-title-link")).toHaveCount(FEATURED_SLUGS.length);
   const cases = [
     { label: "Graphic", categories: ["Graphic", "Identity", "Print", "Music"] },
     { label: "Motion", categories: ["Motion"] },
@@ -58,7 +58,7 @@ test("work filters select real disciplines and reset without losing project link
     await expect(filters.getByRole("button", { name: label, exact: true })).toHaveAttribute("aria-pressed", "true");
     await expect(filters.locator('[aria-pressed="true"]')).toHaveCount(1);
     const expected = PROJECTS.filter((project) => !categories || categories.includes(project.category));
-    const links = work.getByRole("link", { name: /view project/i });
+    const links = work.locator("a.project-title-link");
     await expect(links).toHaveCount(expected.length);
     await expect(work.getByRole("status")).toContainText(String(expected.length));
     expect(await links.evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")))).toEqual(

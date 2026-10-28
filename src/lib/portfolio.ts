@@ -9,6 +9,15 @@ export const FEATURED_SLUGS = [
 
 // Preserve the distinction already present in the project blurbs. An artist's
 // own release is personal work; concept renders are not brand commissions.
+/**
+ * True when the project's media is a hosted loop with a poster and a known
+ * length. The sitemap's video entry and the page's VideoObject both use this,
+ * so a project is never a video in one and a still in the other.
+ */
+export function hasVideoEntry(project: Project) {
+  return Boolean(project.video && project.videoPoster && project.videoDuration);
+}
+
 export function projectAttribution(project: Project) {
   if (project.client === "TJCreate") return { label: "Project type", value: "Self-initiated" };
   if (["Toby Johnson", "Wonderkid"].includes(project.client)) return { label: "Project type", value: "Personal project" };

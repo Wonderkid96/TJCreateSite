@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { PROJECTS } from "@/lib/content";
+import { hasVideoEntry } from "@/lib/portfolio";
 import { SITE_URL } from "@/lib/site";
 
 // Content dates are changed deliberately, never stamped with build time.
@@ -34,15 +35,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       // Google's image and video sitemap extensions: the share image is the
       // page's representative image, and the loop is its video.
       images: [`${SITE_URL}/og/${project.slug}.jpg`],
-      ...(project.video && project.videoPoster && project.videoDuration
+      ...(hasVideoEntry(project)
         ? {
             videos: [
               {
                 title: xml(project.pageTitle ?? project.title),
                 thumbnail_loc: `${SITE_URL}${project.videoPoster}`,
                 description: xml(project.summary ?? project.blurb),
-                content_loc: `${SITE_URL}${project.video}`,
-                duration: Math.round(project.videoDuration),
+                ...(project.previewYouTubeId
+                  ? { player_loc: `https://www.youtube.com/embed/${project.previewYouTubeId}` }
+                  : { content_loc: `${SITE_URL}${project.video}`, duration: Math.round(project.videoDuration!) }),
                 publication_date: project.published,
                 family_friendly: "yes" as const,
               },

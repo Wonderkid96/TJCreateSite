@@ -165,6 +165,9 @@ export default function Clients() {
           />,
           document.body
         )}
+          <noscript>
+        <style>{`.logo-mark{background-color:var(--paper)!important;-webkit-mask-image:var(--logo)!important;mask-image:var(--logo)!important}`}</style>
+      </noscript>
     </section>
   );
 }
@@ -197,18 +200,21 @@ function LogoCell({ name, logo, url, ready, onHover }: LogoCellProps) {
           // it, so wordmarks and compact marks read at a consistent size.
           className="logo-mark block h-10 w-[130px] md:h-12 md:w-[160px]"
           style={{
-            // Transparent until the mask is attached, so the box never flashes
-            // as a white rectangle before the SVG arrives.
+            // The URL lives in a custom property, which fetches nothing until
+            // a real property reads it. Transparent until the mask is attached
+            // so the box never flashes as a white rectangle; the noscript rule
+            // below paints it when JavaScript never runs.
+            "--logo": `url(${logo})`,
             backgroundColor: ready ? "var(--paper)" : "transparent",
-            WebkitMaskImage: ready ? `url(${logo})` : undefined,
-            maskImage: ready ? `url(${logo})` : undefined,
+            WebkitMaskImage: ready ? "var(--logo)" : undefined,
+            maskImage: ready ? "var(--logo)" : undefined,
             WebkitMaskSize: "contain",
             maskSize: "contain",
             WebkitMaskRepeat: "no-repeat",
             maskRepeat: "no-repeat",
             WebkitMaskPosition: "center",
             maskPosition: "center",
-          }}
+          } as React.CSSProperties}
         />
       ) : (
         <span className="font-sans text-xl font-bold leading-tight tracking-tight md:text-2xl">

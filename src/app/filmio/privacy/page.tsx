@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function FilmioPrivacyPage() {
   return (
-    <main className="min-h-screen bg-paper text-ink p-6">
+    <main id="main" className="min-h-screen bg-paper text-ink p-6">
       <div className="max-w-3xl mx-auto py-12 space-y-8">
         <div>
           <h1 className="text-4xl font-display font-bold mb-2">FILMIO Privacy Policy</h1>

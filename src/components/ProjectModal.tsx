@@ -345,6 +345,7 @@ export const ProjectMedia = memo(function ProjectMedia({ project }: { project: P
           fill
           sizes="66vw"
           className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-100 motion-safe:group-hover:opacity-0"
+          aria-hidden={dayNightIsNight}
           style={{ opacity: isTouchDevice || manualFlip ? (dayNightIsNight ? 0 : 1) : undefined }}
         />
         <Image
@@ -353,19 +354,21 @@ export const ProjectMedia = memo(function ProjectMedia({ project }: { project: P
           fill
           sizes="66vw"
           className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-0 motion-safe:group-hover:opacity-100"
+          aria-hidden={!dayNightIsNight}
           style={{ opacity: isTouchDevice || manualFlip ? (dayNightIsNight ? 1 : 0) : undefined }}
         />
         {/* Keyboard and touch control for the lighting flip; mouse users can
             still hover, but the button is the one path that works for all. */}
         <button
           type="button"
+          aria-pressed={dayNightIsNight}
           onClick={() => {
             setManualFlip(true);
             setDayNightIsNight((prev) => !prev);
           }}
           className="absolute bottom-3 right-3 z-10 rounded-[2px] bg-ink/70 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90 transition-colors hover:bg-ink/90 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
-          Day / Night<span className="sr-only">: flip the lighting</span>
+          Night<span className="sr-only"> lighting</span>
         </button>
       </div>
     );
@@ -408,7 +411,7 @@ export const ProjectMedia = memo(function ProjectMedia({ project }: { project: P
             sizes="(max-width: 768px) 100vw, 66vw"
             className={fitClass}
             style={{ objectPosition: focalPosition }}
-            priority
+            preload
           />
         )}
         {project.video && (

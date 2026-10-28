@@ -3,6 +3,7 @@ import { Schibsted_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
+import { preload } from "react-dom";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import RevealObserver from "@/components/RevealObserver";
@@ -237,6 +238,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Starts the Typekit CSS request from the HTML instead of from the loader
+  // script below, which Next runs after its own bootstrap.
+  preload(TYPEKIT_CSS, { as: "style" });
   return (
     <html
       lang="en-GB"
@@ -246,8 +250,12 @@ export default function RootLayout({
         {/* Display face from Adobe Fonts. Preconnect first so the stylesheet
             and the woff2 it points at aren't waiting on two cold TLS
             handshakes — this face paints the nav and every heading. */}
-        <link rel="preconnect" href="https://use.typekit.net" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://use.typekit.net" />
         <link rel="preconnect" href="https://p.typekit.net" crossOrigin="anonymous" />
+        {/* The CSS is a no-cors fetch, so its preconnect carries no crossorigin
+            (only the woff2 files from p.typekit.net are CORS). Its preload is
+            the preload() call above: a <link rel="preload"> rendered here is
+            emitted twice by React 19 (Flight hint plus hoisted element). */}
         {/* Loaded non-blocking: measured 2.75s to fetch on a throttled mobile
             connection, and as a plain <link rel="stylesheet"> that blocks
             first paint until it resolves. The script below creates the link

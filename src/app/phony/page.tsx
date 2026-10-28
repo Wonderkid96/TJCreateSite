@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function PhonyPage() {
   return (
-    <main className="min-h-screen bg-paper text-ink flex items-center justify-center p-6">
+    <main id="main" className="min-h-screen bg-paper text-ink flex items-center justify-center p-6">
       <div className="max-w-2xl w-full space-y-8">
         <div className="space-y-4">
           <h1 className="text-5xl font-display font-bold">Phony</h1>

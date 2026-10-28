@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProjectMedia } from "@/components/ProjectModal";
-import { projectAttribution } from "@/lib/portfolio";
+import { hasVideoEntry, projectAttribution } from "@/lib/portfolio";
 import { PROJECTS, type Project } from "@/lib/content";
 import { FALLING_FIRST_FRAME } from "@/lib/falling-frames";
 import { CONTACT_EMAIL, ORG_ID, PERSON_ID, SITE_NAME, SITE_URL, WEBSITE_ID } from "@/lib/site";
@@ -102,7 +102,7 @@ function structuredData(project: Project) {
   const title = pageTitle(project);
   const still = stillImage(project);
   const stillUrl = still ? absolute(still) : shareImage(project);
-  const isVideo = Boolean(project.video && project.videoPoster && discipline(project) !== "graphic");
+  const isVideo = hasVideoEntry(project);
   const mediaId = `${url}#${isVideo ? "video" : "image"}`;
   const keywords = project.tags.join(", ");
 
@@ -113,12 +113,12 @@ function structuredData(project: Project) {
         name: title,
         description: description(project),
         thumbnailUrl: [absolute(project.videoPoster!)],
-        contentUrl: absolute(project.video!),
+        // The page shows the YouTube embed when there is one, so that is the
+        // video described; otherwise the hosted loop, whose length we know.
         ...(project.previewYouTubeId
           ? { embedUrl: `https://www.youtube.com/embed/${project.previewYouTubeId}` }
-          : {}),
+          : { contentUrl: absolute(project.video!), duration: `PT${Math.round(project.videoDuration!)}S` }),
         ...(project.published ? { uploadDate: project.published } : {}),
-        ...(project.videoDuration ? { duration: `PT${Math.round(project.videoDuration)}S` } : {}),
         inLanguage: "en-GB",
         isFamilyFriendly: true,
         keywords,
@@ -147,8 +147,7 @@ function structuredData(project: Project) {
         "@id": `${url}#breadcrumb`,
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
-          { "@type": "ListItem", position: 2, name: "Work", item: `${SITE_URL}/#work` },
-          { "@type": "ListItem", position: 3, name: project.title, item: url },
+          { "@type": "ListItem", position: 2, name: project.title, item: url },
         ],
       },
       {

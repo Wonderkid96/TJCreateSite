@@ -130,11 +130,11 @@ export const PROJECTS: Project[] = [
       "Tour poster for Jgrrey's \"Playing gigs just so I can see you\" run, advertising her Radio 1 Big Weekend slot, Bristol's Dot to Dot and Last Time Out, Leeds. Floating moons built as 3D spheres in Blender, run through Photoshop threshold and gradients to sit flat against the blueprint indigo. Heavy stock print.",
     pageTitle: "Jgrrey tour poster, blueprint indigo print",
     summary:
-      "Tour poster for Jgrrey's Playing gigs just so I can see you run: 3D moons from Blender, flattened in Photoshop on blueprint indigo. Heavy stock print.",
+      "Tour poster for Jgrrey's “Playing gigs just so I can see you” run: 3D moons from Blender, flattened in Photoshop on blueprint indigo. Heavy stock print.",
     tools: ["Blender", "Photoshop"],
     published: "2026-04-20",
     image: "/work/imported/posters/jgrrey-mu.webp",
-    alt: "Jgrrey tour poster in blueprint indigo with floating moons and the Playing gigs just so I can see you dates",
+    alt: "Jgrrey tour poster in blueprint indigo with floating moons and the “Playing gigs just so I can see you” dates",
     kind: "image",
     bg: "#1a1a1a",
   },
@@ -743,12 +743,12 @@ export const FAQS: Faq[] = [
   {
     question: "Where are you based, and do you work remotely?",
     answer:
-      "Lincoln, UK. I work remotely with clients and agency teams across the UK, and the two years I spent in-house at Marathon Music Group were remote with a London team.",
+      "Lincoln, UK. I work remotely with clients and agency teams, and the two years I spent in-house at Marathon Music Group were remote with a London team.",
   },
   {
     question: "Do you make lyric videos, Spotify Canvas loops and animated cover art?",
     answer:
-      "Yes. Lyric videos are a big part of the motion work (Liar Liar for Common Request, Wrong Places for Joshua Baraka), and release animations get cut down into Spotify Canvas loops and Apple Music animated cover art, as with Joshua Baraka's Recess. I built LyriSync to time lyrics for exactly this kind of job.",
+      "Yes. Lyric videos for Common Request (Liar Liar) and Joshua Baraka (Wrong Places), and release animations cut down into Spotify Canvas loops and Apple Music animated cover art, as with Joshua Baraka's Recess. LyriSync, my lyric-timing tool, came out of exactly this kind of job.",
   },
   {
     question: "Can you do 3D product renders and packshots?",
@@ -763,7 +763,7 @@ export const FAQS: Faq[] = [
   {
     question: "Can you animate an existing logo or brand?",
     answer:
-      "Yes. Logo animations, idents and animated typography built from existing brand assets, keeping to the brand's own guidelines and motion rules where it has them.",
+      "Yes. Logo animations and animated typography built from existing brand assets, following the brand's own guidelines and motion rules where it has them.",
   },
   {
     question: "Do you make visuals for live shows and LED screens?",
@@ -773,7 +773,7 @@ export const FAQS: Faq[] = [
   {
     question: "What software do you use?",
     answer:
-      "After Effects, Photoshop, Illustrator and Premiere Pro, with Blender for 3D and Figma for layout. Deliverables come as print-ready artwork or video exports in the formats each platform wants.",
+      "After Effects, Photoshop, Illustrator and Premiere Pro, with Blender for 3D and Figma for layout. Deliverables come as print-ready artwork or video exports sized for each platform.",
   },
   {
     question: "How long have you been designing?",

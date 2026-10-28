@@ -98,7 +98,8 @@ export default function ShowreelHero() {
         src={VIDEO_POSTER}
         alt=""
         fill
-        priority
+        preload
+        fetchPriority="high"
         sizes="100vw"
         className="object-contain md:object-cover"
       />

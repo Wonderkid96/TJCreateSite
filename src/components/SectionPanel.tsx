@@ -1,13 +1,7 @@
 type Props = {
   children: React.ReactNode;
-  /**
-   * Background/utility classes for the panel.
-   */
+  /** Background/utility classes for the panel. */
   className?: string;
-  /** Kept for call-site compatibility; no longer affects layout. */
-  last?: boolean;
-  /** Kept for call-site compatibility; no longer affects layout. */
-  dwellVh?: number;
 };
 
 /**

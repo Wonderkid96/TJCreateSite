@@ -1,18 +1,31 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { projectAttribution } from "@/lib/portfolio";
 import { motion, useScroll, useTransform } from "motion/react";
 import { memo, useEffect, useRef, useState } from "react";
 import type { Project } from "@/lib/content";
 import { useMediaQuery } from "@/lib/use-media-query";
 import {
+  FALLING_FIRST_FRAME,
   FALLING_FRAME_COUNT,
   FALLING_FRAME_HEIGHT,
   FALLING_FRAME_WIDTH,
   getFallingFrameByIndex,
   preloadFallingFrames,
 } from "@/lib/falling-frames";
+
+// The work grid is three across from 1024px and two across below it, so a
+// tile is never wider than half the viewport on a phone. Shared by every
+// tile image so the srcset pick stays consistent.
+const TILE_SIZES = "(max-width: 1023px) 50vw, 33vw";
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+// Soft vignette on the falling figure so it sits into the sky.
+const FRAME_MASK: React.CSSProperties = {
+  WebkitMaskImage: "radial-gradient(ellipse 60% 70% at 50% 50%, black 55%, transparent 92%)",
+  maskImage: "radial-gradient(ellipse 60% 70% at 50% 50%, black 55%, transparent 92%)",
+};
 
 type Props = {
   project: Project;
@@ -189,8 +202,12 @@ function ProjectTile({
   useEffect(() => {
     if (!isTouchDevice || prefersReducedMotion || project.kind !== "day-night")
       return;
+    // One round trip (day, night, day) then stop: auto-playing motion needs
+    // an end (WCAG 2.2.2), and the modal has a manual toggle for more.
+    let flips = 0;
     const id = window.setInterval(() => {
       setDayNightIsNight((prev) => !prev);
+      if (++flips >= 2) window.clearInterval(id);
     }, 3200);
     return () => window.clearInterval(id);
   }, [isTouchDevice, prefersReducedMotion, project.kind]);
@@ -289,6 +306,7 @@ function ProjectTile({
   const kind = project.kind ?? "image";
 
   return (
+    <>
     <button
       ref={ref}
       type="button"
@@ -341,7 +359,7 @@ function ProjectTile({
                 src={project.image}
                 alt={project.alt ?? project.title}
                 fill
-                sizes="(max-width: 639px) calc(100vw - 48px), (max-width: 1023px) 50vw, 33vw"
+                sizes={TILE_SIZES}
                 className="object-cover"
                 style={{ objectPosition: project.focal }}
               />
@@ -353,7 +371,7 @@ function ProjectTile({
                   src={project.image}
                   alt={project.alt ? `${project.alt} (day)` : `${project.title} (day)`}
                   fill
-                  sizes="(max-width: 639px) calc(100vw - 48px), (max-width: 1023px) 50vw, 33vw"
+                  sizes={TILE_SIZES}
                   className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-100 group-hover:opacity-0"
                   style={{ objectPosition: project.focal, opacity: isTouchDevice ? (dayNightIsNight ? 0 : 1) : undefined }}
                 />
@@ -361,7 +379,7 @@ function ProjectTile({
                   src={project.imageHover}
                   alt={project.alt ? `${project.alt} (night)` : `${project.title} (night)`}
                   fill
-                  sizes="(max-width: 639px) calc(100vw - 48px), (max-width: 1023px) 50vw, 33vw"
+                  sizes={TILE_SIZES}
                   className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-0 group-hover:opacity-100"
                   style={{ objectPosition: project.focal, opacity: isTouchDevice ? (dayNightIsNight ? 1 : 0) : undefined }}
                 />
@@ -403,7 +421,7 @@ function ProjectTile({
                     src={project.videoPoster}
                     alt={project.alt ?? project.title}
                     fill
-                    sizes="(max-width: 639px) calc(100vw - 48px), (max-width: 1023px) 50vw, 33vw"
+                    sizes={TILE_SIZES}
                     className={`object-cover transition-opacity duration-300 ease-[var(--ease)] ${
                       isTouchDevice || hoverVideoIdle ? "opacity-100" : "opacity-0"
                     }`}
@@ -446,15 +464,23 @@ function ProjectTile({
 
 
       </div>
-      <div className="project-caption">
-        <div className="project-caption-top">
-          <h3 className="font-display">{project.title}</h3>
-          <span className="project-year font-mono">{project.year}</span>
-        </div>
-        <p className="project-client">{projectAttribution(project).value}</p>
-        <p className="project-disciplines font-mono">{project.tags.join(" / ")}</p>
-      </div>
     </button>
+    {/* Caption sits beside the button, not inside it: a heading inside a
+        button loses its heading semantics, and the title is a real link to
+        the project page, which is the crawlable path the grid needs. */}
+    <div className="project-caption">
+      <div className="project-caption-top">
+        <h3 className="font-display">
+          <Link href={`/projects/${project.slug}`} prefetch={false} className="project-title-link">
+            {project.title}
+          </Link>
+        </h3>
+        <span className="project-year font-mono">{project.year}</span>
+      </div>
+      <p className="project-client">{projectAttribution(project).value}</p>
+      <p className="project-disciplines font-mono">{project.tags.join(" / ")}</p>
+    </div>
+    </>
   );
 }
 
@@ -470,6 +496,11 @@ function FallingOnSky() {
   // both are fetch-triggering and both belong to one below-the-fold tile,
   // so one observer promotes both together instead of running two.
   const [tileNear, setTileNear] = useState(false);
+  // Reduced motion: a single still as a plain image, with none of the frame
+  // sequence or the cloud layer fetched for a tile that will never animate.
+  // The server snapshot is false, so SSR renders the canvas branch and the
+  // client swaps to the still before any frame is requested.
+  const staticFrame = useMediaQuery(REDUCED_MOTION_QUERY);
 
   // The 82-frame sequence is 743KB across 42 requests (mobile stride) even
   // with fetchPriority "low" on every frame — low priority still consumes
@@ -479,6 +510,7 @@ function FallingOnSky() {
   // DOM, regardless of scroll position. Neither should start until this
   // tile (one of 15 in the grid) is actually near the viewport.
   useEffect(() => {
+    if (staticFrame) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const io = new IntersectionObserver(
@@ -494,32 +526,16 @@ function FallingOnSky() {
     );
     io.observe(canvas);
     return () => io.disconnect();
-  }, []);
+  }, [staticFrame]);
 
   // Ping-pong canvas draw loop — gated by IntersectionObserver so we only
   // burn CPU decoding + painting frames while the tile is actually visible.
   useEffect(() => {
+    if (staticFrame) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
-    // Reduced motion: draw the first frame once it has decoded, then stop —
-    // no ping-pong loop.
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      let raf = 0;
-      const drawOnce = () => {
-        const img = getFallingFrameByIndex(0);
-        if (!img || !img.complete || img.naturalWidth === 0) {
-          raf = requestAnimationFrame(drawOnce);
-          return;
-        }
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      };
-      raf = requestAnimationFrame(drawOnce);
-      return () => cancelAnimationFrame(raf);
-    }
 
     let isVisible = false;
     const io = new IntersectionObserver(
@@ -562,7 +578,7 @@ function FallingOnSky() {
     };
     raf = requestAnimationFrame(tick);
     return () => { io.disconnect(); cancelAnimationFrame(raf); };
-  }, []);
+  }, [staticFrame]);
 
   return (
     <>
@@ -570,7 +586,7 @@ function FallingOnSky() {
         src="/work/imported/bg/sky-long.avif"
         alt=""
         fill
-        sizes="(max-width: 639px) calc(100vw - 48px), (max-width: 1023px) 50vw, 33vw"
+        sizes={TILE_SIZES}
         className="object-cover object-center scale-110"
       />
       <div
@@ -579,19 +595,20 @@ function FallingOnSky() {
         }`}
       />
       <div className="absolute inset-0 flex items-center justify-center">
-        <canvas
-          ref={canvasRef}
-          aria-hidden="true"
-          width={FALLING_FRAME_WIDTH}
-          height={FALLING_FRAME_HEIGHT}
-          className="h-[55%] w-auto object-contain"
-          style={{
-            WebkitMaskImage:
-              "radial-gradient(ellipse 60% 70% at 50% 50%, black 55%, transparent 92%)",
-            maskImage:
-              "radial-gradient(ellipse 60% 70% at 50% 50%, black 55%, transparent 92%)",
-          }}
-        />
+        {staticFrame ? (
+          <div className="relative aspect-[726/699] h-[55%]" style={FRAME_MASK}>
+            <Image src={FALLING_FIRST_FRAME} alt="" fill sizes="20vw" className="object-contain" />
+          </div>
+        ) : (
+          <canvas
+            ref={canvasRef}
+            aria-hidden="true"
+            width={FALLING_FRAME_WIDTH}
+            height={FALLING_FRAME_HEIGHT}
+            className="h-[55%] w-auto object-contain"
+            style={FRAME_MASK}
+          />
+        )}
       </div>
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30 pointer-events-none" />
     </>

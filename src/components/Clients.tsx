@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "motion/react";
 import { EASE } from "@/lib/motion";
@@ -59,6 +59,26 @@ export default function Clients() {
   // (both render nothing here) — avoids a hydration mismatch.
   const mounted = useMounted();
 
+  // The 24 logo files are CSS masks, which the browser fetches as soon as the
+  // element exists, so they competed with the hero on first load. Attach the
+  // mask only once the panel is within 600px of the viewport.
+  const sectionRef = useRef<HTMLElement>(null);
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setNear(true);
+        io.disconnect();
+      },
+      { rootMargin: "600px 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   // Imperative so moving the cursor never re-renders the 19-logo grid. The
   // label flips to whichever side of the cursor keeps it on screen: cursor on
   // the right half → label sits to its left, and vice-versa.
@@ -86,16 +106,19 @@ export default function Clients() {
 
   return (
     <section
+      ref={sectionRef}
       id="clients"
-      aria-label="Brands I've worked with"
+      aria-label="Clients and collaborators"
       style={PANEL_VARS}
       className="relative flex min-h-screen flex-col justify-center bg-ink px-6 py-16 text-paper md:px-10 md:py-20"
     >
       <div className="mb-12 text-center md:mb-16">
         <SectionTitle>Worked with</SectionTitle>
-        <p className="mx-auto mt-4 max-w-md text-sm text-paper/60 md:text-base">
-          Selected clients, collaborators and projects across music, culture,
-          brand and product, including work delivered through agency teams.
+        <p className="mx-auto mt-4 max-w-2xl text-sm text-paper/60 md:text-base">
+          Labels, venues, management and agencies including Marathon Artists,
+          Brighton Dome, New Soil, Women in Jazz and Jazz Re:freshed, artists
+          including Courtney Barnett, Jgrrey and Joshua Baraka, and brand work
+          for RevenueCat, Replit and JetBrains delivered through Klutch Studio.
         </p>
       </div>
 
@@ -120,6 +143,7 @@ export default function Clients() {
               name={client.name}
               logo={client.logo}
               url={client.url}
+              ready={near}
               onHover={onHover}
             />
             {CREDITS[client.name] && (
@@ -149,10 +173,12 @@ type LogoCellProps = {
   name: string;
   logo: string | null;
   url?: string;
+  /** False until the panel is near the viewport: no mask, so no fetch. */
+  ready: boolean;
   onHover: (name: string | null, e?: React.MouseEvent) => void;
 };
 
-function LogoCell({ name, logo, url, onHover }: LogoCellProps) {
+function LogoCell({ name, logo, url, ready, onHover }: LogoCellProps) {
   // Drive the cursor-following name label: show + track on move, hide on leave.
   const hoverProps = {
     onMouseEnter: (e: React.MouseEvent) => onHover(name, e),
@@ -171,9 +197,11 @@ function LogoCell({ name, logo, url, onHover }: LogoCellProps) {
           // it, so wordmarks and compact marks read at a consistent size.
           className="logo-mark block h-10 w-[130px] md:h-12 md:w-[160px]"
           style={{
-            backgroundColor: "var(--paper)",
-            WebkitMaskImage: `url(${logo})`,
-            maskImage: `url(${logo})`,
+            // Transparent until the mask is attached, so the box never flashes
+            // as a white rectangle before the SVG arrives.
+            backgroundColor: ready ? "var(--paper)" : "transparent",
+            WebkitMaskImage: ready ? `url(${logo})` : undefined,
+            maskImage: ready ? `url(${logo})` : undefined,
             WebkitMaskSize: "contain",
             maskSize: "contain",
             WebkitMaskRepeat: "no-repeat",

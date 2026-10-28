@@ -1,21 +1,37 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/site";
+
+// Crawlers that feed AI answers (ChatGPT search runs on Bing's index plus
+// OAI-SearchBot; Claude, Perplexity and Apple have their own). The wildcard
+// rule already allows them; naming them records the intent so a future
+// blanket block does not take them out by accident. The app support and
+// legal pages carry meta noindex and are deliberately not disallowed here: a
+// robots block would stop crawlers reading that directive.
+const AI_CRAWLERS = [
+  "GPTBot",
+  "OAI-SearchBot",
+  "ChatGPT-User",
+  "ClaudeBot",
+  "Claude-SearchBot",
+  "Claude-User",
+  "PerplexityBot",
+  "Perplexity-User",
+  "Google-Extended",
+  "Bingbot",
+  "Applebot",
+  "Applebot-Extended",
+  "DuckAssistBot",
+  "Amazonbot",
+  "meta-externalagent",
+];
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      {
-        userAgent: "*",
-        allow: "/",
-        // /ferret/ and /filmio/ are deliberately NOT disallowed here: their
-        // pages carry meta noindex, and a robots.txt block would stop crawlers
-        // from ever reading that directive (URL could still get indexed bare).
-        // /cdn-cgi/ contains Cloudflare's internal routes, not site content.
-        // Keep them out of the sitemap crawler path even with email
-        // obfuscation disabled for this public contact address.
-        disallow: ["/api/", "/cdn-cgi/"],
-      },
+      { userAgent: "*", allow: "/" },
+      { userAgent: AI_CRAWLERS, allow: "/" },
     ],
-    sitemap: "https://www.tjcreate.co.uk/sitemap.xml",
-    host: "https://www.tjcreate.co.uk",
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }

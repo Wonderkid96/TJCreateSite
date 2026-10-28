@@ -3,6 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "FILMIO Support",
+  description:
+    "Support for FILMIO, the film tracking app by TJCreate: common questions and how to get help.",
   alternates: {
     canonical: "https://www.tjcreate.co.uk/filmio/support",
   },

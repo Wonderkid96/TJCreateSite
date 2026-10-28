@@ -4,6 +4,7 @@ import ServicesWipe from "@/components/ServicesWipe";
 import About from "@/components/About";
 import Clients from "@/components/Clients";
 import BuiltBy from "@/components/BuiltBy";
+import Faq from "@/components/Faq";
 import Contact from "@/components/Contact";
 import SiteFooter from "@/components/SiteFooter";
 import SectionPanel from "@/components/SectionPanel";
@@ -16,12 +17,13 @@ import SectionPanel from "@/components/SectionPanel";
  *   4. About         — who I am             ┐ stacked full-bleed
  *   5. Clients       — who I've worked with  │ sections
  *   6. Built by      — own products (LyriSync)│
- *   7. Contact       — get in touch          ┘
- *   8. Footer
+ *   7. FAQ           — what people ask       │
+ *   8. Contact       — get in touch          ┘
+ *   9. Footer
  */
 export default function Home() {
   return (
-    <main className="relative">
+    <main id="main" className="relative">
       <ShowreelHero />
       <WorkGallery />
       {/* Everything from Services down to the footer shares one black wrapper,
@@ -45,7 +47,10 @@ export default function Home() {
         <SectionPanel className="bg-ink">
           <BuiltBy />
         </SectionPanel>
-        <SectionPanel className="bg-ink" last>
+        <SectionPanel className="bg-ink">
+          <Faq />
+        </SectionPanel>
+        <SectionPanel className="bg-ink">
           <Contact />
         </SectionPanel>
         <SiteFooter />

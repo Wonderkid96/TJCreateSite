@@ -10,8 +10,8 @@ const BIO_LEAD = "A multidisciplinary designer working across ";
 const BIO_ACCENT = "graphic design, motion and 3D";
 const BIO_TAIL = " for brands, artists and agencies.";
 const BIO_SECONDARY = [
-  "I started in music, creating artwork and motion for artists and labels, including two years working with Marathon Music Group. My work now spans campaign visuals, social content and 3D for brands and agency teams.",
-  "I can work from an existing creative direction, join an agency team, or take a project from the first idea through to finished assets.",
+  "I started in music, making artwork and motion for artists and labels, including two years in-house at Marathon Music Group. Over eight years in, my work spans campaign visuals, release artwork, social content and 3D for brands, labels and agency teams.",
+  "I work remotely from Lincoln in After Effects, Photoshop, Illustrator and Blender, and I can work from an existing creative direction, join an agency team, or take a project from the first idea through to finished assets.",
 ];
 
 // Pin the palette dark so the overlaid copy stays readable in either theme,
@@ -37,7 +37,7 @@ export default function About() {
           mobile it covers the full panel. */}
       <div className="absolute inset-y-0 right-0 w-full md:w-[56%] lg:w-[48%]">
         <Image
-          src="/work/imported/portraits/toby-about.avif"
+          src="/work/imported/portraits/toby-about.webp"
           alt="Portrait of Toby Johnson"
           fill
           sizes="(max-width: 768px) 100vw, 50vw"

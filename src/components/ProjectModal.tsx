@@ -10,6 +10,8 @@ import { memo, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Project } from "@/lib/content";
 import { useMounted } from "@/lib/use-mounted";
+import { getLenis } from "@/lib/lenis";
+import { CONTACT_EMAIL } from "@/lib/site";
 import {
   FALLING_FIRST_FRAME,
   FALLING_FRAME_COUNT,
@@ -32,6 +34,19 @@ export default function ProjectModal({ project, onClose }: Props) {
   // Portal target's own top-level node — used to tell it apart from its
   // siblings in document.body when marking the rest of the page inert.
   const overlayRef = useRef<HTMLDivElement>(null);
+
+  // Lenis keeps driving the page on wheel input while the overlay is up, so
+  // a wheel over the backdrop or the dialog header scrolled the gallery
+  // behind it. Stop it for the lifetime of the modal; data-lenis-prevent on
+  // the body handles scrolling inside.
+  useEffect(() => {
+    if (!project) return;
+    const lenis = getLenis();
+    lenis?.stop();
+    return () => {
+      lenis?.start();
+    };
+  }, [project]);
 
   // Focus trap + return-focus: when the modal opens, remember whatever was
   // focused (the tile button), move focus to the close control, cycle Tab
@@ -216,13 +231,13 @@ export default function ProjectModal({ project, onClose }: Props) {
                   </dl>
 
                   <div className="mt-auto shrink-0 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
-                    <Link href={`/projects/${project.slug}`} className="project-page-link mb-4 block" prefetch={false}>View project</Link>
+                    <Link href={`/projects/${project.slug}`} className="project-page-link mb-4 block" prefetch={false}>View project<span className="sr-only">: {project.title}</span></Link>
                     Discuss a similar project.{" "}
                     <a
-                      href={`mailto:hello@tjcreate.co.uk?subject=${encodeURIComponent("RE: " + project.title)}`}
+                      href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("RE: " + project.title)}`}
                       className="text-ink hover:text-accent-link transition-colors"
                     >
-                      hello@tjcreate.co.uk
+                      {CONTACT_EMAIL}
                     </a>
                   </div>
                 </aside>
@@ -256,14 +271,20 @@ export const ProjectMedia = memo(function ProjectMedia({ project }: { project: P
   const isTouchDevice = useMediaQuery("(pointer: coarse)");
   const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [dayNightIsNight, setDayNightIsNight] = useState(false);
+  // Once the viewer presses the toggle, the auto flip stops and hover no
+  // longer overrides their choice.
+  const [manualFlip, setManualFlip] = useState(false);
 
   useEffect(() => {
-    if (!isTouchDevice || prefersReducedMotion || kind !== "day-night") return;
+    if (manualFlip || !isTouchDevice || prefersReducedMotion || kind !== "day-night") return;
+    // One round trip then stop (WCAG 2.2.2); the toggle takes over from there.
+    let flips = 0;
     const id = window.setInterval(() => {
       setDayNightIsNight((prev) => !prev);
-    }, 3200); // 3.2 s per state — slow enough to feel intentional, not a rapid flash
+      if (++flips >= 2) window.clearInterval(id);
+    }, 3200); // 3.2 s per state: slow enough to feel intentional, not a rapid flash
     return () => window.clearInterval(id);
-  }, [isTouchDevice, kind, prefersReducedMotion]);
+  }, [isTouchDevice, kind, manualFlip, prefersReducedMotion]);
 
   // An "image" tile can still carry a motion piece: the grid shows the still,
   // but the modal plays this video. Takes precedence over the static image.
@@ -278,6 +299,7 @@ export const ProjectMedia = memo(function ProjectMedia({ project }: { project: P
         loop
         playsInline
         controls
+        aria-label={`${project.title} video`}
         className="absolute inset-0 h-full w-full object-cover"
       />
     );
@@ -287,11 +309,12 @@ export const ProjectMedia = memo(function ProjectMedia({ project }: { project: P
   if (project.previewYouTubeId) {
     return (
       <iframe
-        src={`https://www.youtube.com/embed/${project.previewYouTubeId}?autoplay=${mounted && !prefersReducedMotion ? 1 : 0}&mute=1&loop=1&playlist=${project.previewYouTubeId}&controls=1&rel=0&modestbranding=1&playsinline=1`}
+        src={`https://www.youtube-nocookie.com/embed/${project.previewYouTubeId}?autoplay=${mounted && !prefersReducedMotion ? 1 : 0}&mute=1&loop=1&playlist=${project.previewYouTubeId}&controls=1&rel=0&modestbranding=1&playsinline=1`}
         allow="autoplay; encrypted-media; picture-in-picture"
         allowFullScreen
+        referrerPolicy="strict-origin-when-cross-origin"
         className="absolute inset-0 h-full w-full border-0"
-        title={project.title}
+        title={`${project.title} (video)`}
       />
     );
   }
@@ -322,7 +345,7 @@ export const ProjectMedia = memo(function ProjectMedia({ project }: { project: P
           fill
           sizes="66vw"
           className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-100 motion-safe:group-hover:opacity-0"
-          style={{ opacity: isTouchDevice ? (dayNightIsNight ? 0 : 1) : undefined }}
+          style={{ opacity: isTouchDevice || manualFlip ? (dayNightIsNight ? 0 : 1) : undefined }}
         />
         <Image
           src={project.imageHover}
@@ -330,11 +353,20 @@ export const ProjectMedia = memo(function ProjectMedia({ project }: { project: P
           fill
           sizes="66vw"
           className="object-cover transition-opacity duration-[1200ms] ease-[var(--ease)] opacity-0 motion-safe:group-hover:opacity-100"
-          style={{ opacity: isTouchDevice ? (dayNightIsNight ? 1 : 0) : undefined }}
+          style={{ opacity: isTouchDevice || manualFlip ? (dayNightIsNight ? 1 : 0) : undefined }}
         />
-        <div className="absolute bottom-3 right-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90 bg-ink/70 px-2 py-1 rounded-[2px] pointer-events-none">
-          {isTouchDevice ? "Day ↔ Night" : "Hover → flip"}
-        </div>
+        {/* Keyboard and touch control for the lighting flip; mouse users can
+            still hover, but the button is the one path that works for all. */}
+        <button
+          type="button"
+          onClick={() => {
+            setManualFlip(true);
+            setDayNightIsNight((prev) => !prev);
+          }}
+          className="absolute bottom-3 right-3 z-10 rounded-[2px] bg-ink/70 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/90 transition-colors hover:bg-ink/90 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          Day / Night<span className="sr-only">: flip the lighting</span>
+        </button>
       </div>
     );
   }
@@ -350,6 +382,7 @@ export const ProjectMedia = memo(function ProjectMedia({ project }: { project: P
         loop
         playsInline
         controls
+        aria-label={`${project.title} video`}
         className="absolute inset-0 h-full w-full object-cover"
       />
     );
@@ -386,6 +419,7 @@ export const ProjectMedia = memo(function ProjectMedia({ project }: { project: P
             loop
             playsInline
             controls
+            aria-label={`${project.title} video`}
             poster={project.videoPoster}
             preload="metadata"
             className={`absolute inset-0 h-full w-full ${fitClass}`}

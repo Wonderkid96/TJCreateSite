@@ -3,6 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Dust-Up Privacy Policy",
+  description:
+    "Privacy policy for Dust-Up, the household chore game by TJCreate: what the app collects, who processes it and how to delete your data.",
   // Root layout sets alternates.canonical to the homepage. Metadata merges
   // shallowly across segments, so without this the page would inherit that
   // and wrongly canonicalise to https://www.tjcreate.co.uk/.
@@ -51,60 +53,60 @@ export default function DustUpPrivacyPage() {
             <h2 className="text-2xl font-bold">What we collect</h2>
             <ul className="list-disc list-inside space-y-2">
               <li>
-                <strong>Email address</strong> — to create and secure your
+                <strong>Email address</strong>: to create and secure your
                 account, whether you sign up with Sign in with Apple or with
                 an email address and password. If you use Sign in with Apple
                 and choose to hide your address, we only ever see Apple&apos;s
                 private relay address.
               </li>
               <li>
-                <strong>Account identifier</strong> — a unique ID that keeps
+                <strong>Account identifier</strong>: a unique ID that keeps
                 your score attached to you.
               </li>
               <li>
-                <strong>How you appear in the game</strong> — the display name
+                <strong>How you appear in the game</strong>: the display name
                 you choose, your emoji and your colour. These can appear to
                 members of your household in game screens. Service providers
                 may process account and game data as described below.
               </li>
               <li>
-                <strong>The game itself</strong> — the jobs on your board, who
+                <strong>The game itself</strong>: the jobs on your board, who
                 did what and when, how long each took, points, streaks,
                 personal bests and past seasons. This is the whole point of the
                 app: it is the scoreboard.
               </li>
               <li>
-                <strong>Things people in your household write</strong> — the
+                <strong>Things people in your household write</strong>: the
                 names of jobs, dares, notes left when a job is sent back, and
                 titles of favours in the shop. These are shown within the
                 household that uses them.
               </li>
               <li>
-                <strong>An earlier battle cry, if you recorded one in a beta</strong> —
+                <strong>An earlier battle cry, if you recorded one in a beta</strong>:
                 a voice clip of up to five seconds. Recording and playback are
                 switched off. Earlier recordings may remain in storage, and
                 account deletion attempts to remove them.
               </li>
               <li>
-                <strong>Your household and who is in it</strong> — which
+                <strong>Your household and who is in it</strong>: which
                 household you belong to, when you joined, and the invite codes
                 used to let somebody in.
               </li>
               <li>
-                <strong>Notification tokens, if enabled</strong> — associated
+                <strong>Notification tokens, if enabled</strong>: associated
                 with signed-in devices so the app can deliver optional
                 household notifications. You can manage notification access
                 in your device settings.
               </li>
               <li>
-                <strong>Subscription and purchase information</strong> —
+                <strong>Subscription and purchase information</strong>:
                 household access status, purchase and entitlement details,
                 expiry information, and identifiers used to connect access
                 to an account. <strong>We do not hold your card details.</strong>{" "}
                 Apple handles App Store payment.
               </li>
               <li>
-                <strong>Score and technical records</strong> — records used to
+                <strong>Score and technical records</strong>: records used to
                 operate the game, investigate problems and support recovery,
                 plus technical and diagnostic information processed by the
                 services that run the app.
@@ -133,17 +135,17 @@ export default function DustUpPrivacyPage() {
             <h2 className="text-2xl font-bold">Who we share it with</h2>
             <ul className="list-disc list-inside space-y-2">
               <li>
-                <strong>Supabase</strong> (database and authentication hosting)
-                — stores account and household game data on our behalf,
+                <strong>Supabase</strong> (database and authentication hosting):
+                stores account and household game data on our behalf,
                 including earlier battle-cry recordings that remain in storage.
               </li>
               <li>
-                <strong>Apple</strong> — handles signing in with Apple if you
+                <strong>Apple</strong>: handles signing in with Apple if you
                 choose it, takes the payment for any subscription, and delivers
                 the notifications the app sends.
               </li>
               <li>
-                <strong>RevenueCat</strong> — tells our app whether your
+                <strong>RevenueCat</strong>: tells our app whether your
                 household&apos;s subscription access is active. It processes an
                 account identifier, purchase and entitlement information, and
                 technical information needed to provide its subscription service.
@@ -259,7 +261,7 @@ export default function DustUpPrivacyPage() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">Contact</h2>
             <p>
-              Toby Johnson (TJCreate), Lincoln, United Kingdom —{" "}
+              Toby Johnson (TJCreate), Lincoln, United Kingdom:{" "}
               <a href="mailto:hello@tjcreate.co.uk" className="text-accent-link hover:text-accent-link/80">
                 hello@tjcreate.co.uk
               </a>

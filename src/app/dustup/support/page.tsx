@@ -3,6 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Dust-Up Support",
+  description:
+    "Support for Dust-Up, the household chore game by TJCreate: common questions, purchases and how to get help.",
   // Root layout sets alternates.canonical to the homepage. Metadata merges
   // shallowly across segments, so without this the page would inherit that
   // and wrongly canonicalise to https://www.tjcreate.co.uk/.
@@ -51,7 +53,7 @@ export default function DustUpSupportPage() {
             </p>
             <p>
               A free household holds two people. If the app says the house is
-              full, that is what has happened — Deluxe lifts the limit.
+              full, that is what has happened. Deluxe lifts the limit.
             </p>
           </div>
 
@@ -69,7 +71,7 @@ export default function DustUpSupportPage() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">I paid and the app still says Free</h2>
             <p>
-              Give it a few seconds — the app checks with the App Store after a
+              Give it a few seconds; the app checks with the App Store after a
               purchase and updates itself. If it is still wrong, open the
               subscription screen and tap <strong>Restore purchases</strong>,
               which is the fix for a new phone as well. Make sure you are

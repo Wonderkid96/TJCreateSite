@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# tjcreate.co.uk
 
-## Getting Started
+Portfolio site for Toby Johnson (TJCreate), freelance graphic and motion designer in Lincoln. Live at https://www.tjcreate.co.uk on Vercel; pushing `main` deploys production.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Next.js 16 (App Router), React 19, Tailwind 4, `motion`, Lenis for desktop smooth scrolling, Playwright for tests. Node 22.18 or newer (the asset scripts import TypeScript directly).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Commands
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Task | Command |
+| --- | --- |
+| Dev server | `npm run dev` |
+| Production build and serve | `npm run build && npm start` |
+| Lint and typecheck | `npm run lint && npx tsc --noEmit` |
+| Tests against the live site | `npm run test:visual` |
+| Tests against a local server | `PLAYWRIGHT_BASE_URL=http://localhost:3000 npx playwright test` |
+| Regenerate share images | `node scripts/og-images.mjs` |
+| Regenerate icons and favicon | `node scripts/icons.mjs` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run the share-image script after changing any project's image, poster or background colour; run the icon script after changing `src/app/icon.svg`.
 
-## Learn More
+## Where things live
 
-To learn more about Next.js, take a look at the following resources:
+- `src/lib/site.ts`: site URL, names, contact email, social profiles and the schema.org `@id`s. Everything imports from here.
+- `src/lib/content.ts`: projects, services, clients and FAQ. The pages, the sitemap, the JSON-LD and `/llms.txt` are all generated from this file.
+- `src/app/layout.tsx`: metadata defaults and the JSON-LD entity graph (Person, ProfessionalService, SoftwareApplication, WebSite).
+- `src/app/projects/[slug]/page.tsx`: one page per project with breadcrumb, WebPage and VideoObject or ImageObject schema.
+- `src/app/sitemap.ts`, `robots.ts`, `manifest.ts`, `llms.txt/route.ts`: crawler surfaces. Bump `CONTENT_LAST_UPDATED` in the sitemap when copy changes.
+- `next.config.ts`: redirects for retired URLs, security headers and cache headers.
+- `src/app/<app>/`: landing, privacy, support and terms pages for the apps TJCreate publishes.
+- `public/og/`: generated share images, one per project. `public/icons/`: generated PWA icons.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Conventions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Images under `public/work` are WebP. Vercel's image optimiser passes AVIF through unresized, so do not add AVIF sources.
+- Only referenced files go in `public/`. Masters stay in the client project folders.
+- Auto-playing motion stops on its own and respects `prefers-reduced-motion` via the `useMediaQuery` hook.
+- Site copy is UK English with no em dashes, and the site never shows prices.
 
-## Deploy on Vercel
+## Checks before deploying
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Lint, typecheck and build clean; Playwright green against a local production build (`tests/seo.spec.ts` covers the schema, sitemap, redirects and headers); the change looked at in a browser at phone and desktop widths.

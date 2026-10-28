@@ -3,6 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Phony",
+  description:
+    "Phony is a party word game for iPhone. Everyone gets the same secret word except one bluffer; say a word each, then vote.",
   // Root layout sets alternates.canonical to the homepage. Metadata merges
   // shallowly across segments, so without this the page would inherit that
   // and wrongly canonicalise to https://www.tjcreate.co.uk/.

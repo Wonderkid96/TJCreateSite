@@ -3,6 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Ferret Privacy Policy",
+  description:
+    "Privacy policy for Ferret, the resale scanner app by TJCreate: what the app collects, which services process it and how to delete your data.",
   // Root layout sets alternates.canonical to the homepage. Metadata merges
   // shallowly across segments, so without this the page would inherit that
   // and wrongly canonicalise to https://www.tjcreate.co.uk/.
@@ -100,19 +102,19 @@ export default function PrivacyPage() {
             </p>
             <ul className="list-disc list-inside space-y-2">
               <li>
-                <strong>Supabase</strong> — account, authentication, and the usage/feedback records described above.
+                <strong>Supabase</strong>: account, authentication, and the usage/feedback records described above.
               </li>
               <li>
-                <strong>Google (Gemini API)</strong> — receives a scan image to identify the item. Used for processing only.
+                <strong>Google (Gemini API)</strong>: receives a scan image to identify the item. Used for processing only.
               </li>
               <li>
-                <strong>Anthropic (Claude API)</strong> — receives a scan image when you choose Deep Search (a Pro feature), to provide a closer second-opinion check. Used for processing only.
+                <strong>Anthropic (Claude API)</strong>: receives a scan image when you choose Deep Search (a Pro feature), to provide a closer second-opinion check. Used for processing only.
               </li>
               <li>
-                <strong>eBay</strong> — receives a text description of an identified item (not your photo) to return recent completed-listing prices, for Pro users.
+                <strong>eBay</strong>: receives a text description of an identified item (not your photo) to return recent completed-listing prices, for Pro users.
               </li>
               <li>
-                <strong>RevenueCat and Apple</strong> — subscription processing and Sign in with Apple.
+                <strong>RevenueCat and Apple</strong>: subscription processing and Sign in with Apple.
               </li>
             </ul>
             <p>
@@ -184,7 +186,7 @@ export default function PrivacyPage() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">9. Contact</h2>
             <p>
-              Toby Johnson (TJCreate), Lincoln, United Kingdom —{" "}
+              Toby Johnson (TJCreate), Lincoln, United Kingdom:{" "}
               <a href="mailto:hello@tjcreate.co.uk" className="text-accent-link hover:text-accent-link/80">
                 hello@tjcreate.co.uk
               </a>

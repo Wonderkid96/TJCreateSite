@@ -3,6 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Dust-Up Terms of Use",
+  description:
+    "Terms of use for Dust-Up, the household chore game by TJCreate.",
   // Root layout sets alternates.canonical to the homepage. Metadata merges
   // shallowly across segments, so without this the page would inherit that
   // and wrongly canonicalise to https://www.tjcreate.co.uk/.
@@ -203,7 +205,7 @@ export default function DustUpTermsPage() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">Contact</h2>
             <p>
-              Toby Johnson (TJCreate), Lincoln, United Kingdom —{" "}
+              Toby Johnson (TJCreate), Lincoln, United Kingdom:{" "}
               <a href="mailto:hello@tjcreate.co.uk" className="text-accent-link hover:text-accent-link/80">
                 hello@tjcreate.co.uk
               </a>

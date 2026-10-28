@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { useState } from "react";
 import { PROJECTS, type Project } from "@/lib/content";
 import { FEATURED_SLUGS } from "@/lib/portfolio";
@@ -76,14 +75,12 @@ export default function WorkGallery() {
               />
               {/* Case-study copy, server-rendered. The visual home for the
                   blurb is the modal, which mounts client-side after a click —
-                  invisible to crawlers. This sibling (deliberately outside the
-                  tile button, so it never bloats the button's accessible name)
-                  puts the copy in the served HTML for search engines and for
-                  AT users browsing the grid. */}
+                  invisible to crawlers. This sibling (outside the tile button,
+                  so it never bloats the button's accessible name) puts the
+                  copy in the served HTML for search engines and for AT users
+                  browsing the grid. The tile's caption carries the link to the
+                  project page. */}
               <p className="sr-only">{p.blurb}</p>
-              <Link className="project-page-link" href={`/projects/${p.slug}`} prefetch={false}>
-                View project<span className="sr-only">: {p.title}</span>
-              </Link>
             </div>
           ))}
         </div>

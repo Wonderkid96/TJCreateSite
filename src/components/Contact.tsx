@@ -4,8 +4,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { EASE } from "@/lib/motion";
 import { SocialLinks } from "./SocialIcons";
 import ContactForm from "./ContactForm";
-
-const CONTACT_EMAIL = "hello@tjcreate.co.uk";
+import { CONTACT_EMAIL } from "@/lib/site";
 
 /** Closing contact panel with direct details and an accessible enquiry form. */
 export default function Contact() {
@@ -13,7 +12,7 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      aria-label="Contact — say hello"
+      aria-label="Contact"
       style={{ "--paper": "#ffffff", "--ink": "#0a0a0a" } as React.CSSProperties}
       className="contact-section relative w-full overflow-hidden bg-ink px-6 py-16 text-paper md:px-10 md:py-20"
     >

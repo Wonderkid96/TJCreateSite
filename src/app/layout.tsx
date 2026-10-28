@@ -9,6 +9,19 @@ import RevealObserver from "@/components/RevealObserver";
 import ScrollProgress from "@/components/ScrollProgress";
 import BackToTop from "@/components/BackToTop";
 import Nav from "@/components/Nav";
+import { SERVICES } from "@/lib/content";
+import {
+  CONTACT_EMAIL,
+  MUSIC_PROFILE_URLS,
+  ORG_ID,
+  PERSON_ID,
+  SITE_DESC,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_URL,
+  SOCIAL_URLS,
+  WEBSITE_ID,
+} from "@/lib/site";
 
 // Header / display face — Peridot PE Variable (Extended Heavy), served from
 // the Adobe Fonts web project `bhj7dgq`. Adobe's licence does not permit
@@ -46,44 +59,17 @@ const mono = IBM_Plex_Mono({
   preload: false,
 });
 
-const SITE_URL = "https://www.tjcreate.co.uk";
-const SITE_NAME = "TJCreate · Toby Johnson";
-const SITE_DESC =
-  "Freelance graphic and motion designer based in Lincoln. Campaign artwork, motion graphics and 3D for brands, artists and agencies.";
-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Toby Johnson · Graphic & Motion Designer, Lincoln · TJCreate",
+    default: SITE_TITLE,
     template: "%s · TJCreate",
   },
   description: SITE_DESC,
   applicationName: "TJCreate",
-  authors: [{ name: "Toby Johnson", url: SITE_URL }],
+  authors: [{ name: "Toby Johnson" }],
   creator: "Toby Johnson",
   publisher: "TJCreate",
-  // Google ignores this tag outright, so it carries no ranking weight. Kept
-  // only because a few smaller engines still read it, and trimmed so it stops
-  // describing the business as music-only — the rest of the site's copy was
-  // broadened off that positioning. Deliverables stay (album artwork, lyric
-  // videos are real services); the identity-level framing goes.
-  keywords: [
-    "graphic designer",
-    "motion designer",
-    "freelance graphic designer",
-    "graphic designer Lincoln",
-    "brand identity",
-    "visual identity",
-    "campaign artwork",
-    "packaging design",
-    "motion graphics",
-    "3D design",
-    "3D product rendering",
-    "album artwork",
-    "lyric videos",
-    "Toby Johnson",
-    "TJCreate",
-  ],
   category: "Design",
   alternates: {
     canonical: SITE_URL,
@@ -124,99 +110,98 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-// JSON-LD structured data — three interlinked schemas in a single @graph
-// block so Google can read person, business, and site identity together.
-//   Person          → the human, his social identity + job title
-//   ProfessionalService → the business offering (discipline + area served)
-//   WebSite         → the site itself + publisher relationship
-// All three link via @id references so the knowledge graph stays connected.
+// JSON-LD structured data — one @graph so Google reads the person, the
+// business, the product and the site as one connected entity.
+//   Person              → the human, his job title and social identity
+//   ProfessionalService → the business, its services and the area it serves
+//   SoftwareApplication → LyriSync, owned by the business
+//   WebSite             → the site itself + publisher relationship
+// Every @id is shared with the project pages (src/lib/site.ts), which hang
+// their VideoObject / ImageObject nodes off the same Person and business.
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "Person",
-      "@id": `${SITE_URL}/#toby`,
+      "@id": PERSON_ID,
       name: "Toby Johnson",
       alternateName: "TJCreate",
       url: SITE_URL,
       image: `${SITE_URL}/opengraph-image.jpg`,
       jobTitle: "Graphic & Motion Designer",
       description: SITE_DESC,
-      email: "hello@tjcreate.co.uk",
-      worksFor: { "@id": `${SITE_URL}/#tjcreate` },
+      email: CONTACT_EMAIL,
+      worksFor: { "@id": ORG_ID },
       address: {
         "@type": "PostalAddress",
         addressLocality: "Lincoln",
         addressRegion: "Lincolnshire",
-        postalCode: "LN1",
         addressCountry: "GB",
       },
       knowsAbout: [
         "Graphic design",
         "Motion design",
+        "Motion graphics",
         "3D design",
-        "Brand identity",
-        "Packaging design",
-        "Campaign design",
+        "3D product rendering",
         "Product visualisation",
-        "Editorial design",
+        "Campaign artwork",
+        "Packaging design",
+        "Poster design",
         "Album artwork",
         "Lyric videos",
-        "Music visuals",
+        "Spotify Canvas",
+        "Logo animation",
         "Typography",
+        "After Effects",
+        "Blender",
       ],
-      // Music profiles tie the designer to the musician Toby Johnson
-      // (Mahogany, 2018-2022) as one entity for name searches.
-      sameAs: [
-        "https://www.linkedin.com/in/tobyjohnsoncreate/",
-        "https://www.instagram.com/tj.create",
-        "https://www.behance.net/tobyjohnson5",
-        "https://open.spotify.com/artist/6aWiYkCceJsc6lorPBdvIg",
-        "https://music.apple.com/gb/artist/toby-johnson/1326311341",
-        "https://soundcloud.com/tobyjohnsonmusic",
-        "https://tobyjohnsonmusic.bandcamp.com/",
-      ],
+      // Music profiles tie the designer to the musician Toby Johnson as one
+      // entity for name searches.
+      sameAs: [...SOCIAL_URLS, ...MUSIC_PROFILE_URLS],
     },
     {
       "@type": "ProfessionalService",
-      "@id": `${SITE_URL}/#tjcreate`,
+      "@id": ORG_ID,
       name: "TJCreate",
       alternateName: "Toby Johnson Create",
       url: SITE_URL,
-      founder: { "@id": `${SITE_URL}/#toby` },
+      founder: { "@id": PERSON_ID },
+      foundingDate: "2021-03",
       description:
-        "Design studio run by Toby Johnson: graphic and motion design for brands, agencies and businesses across sectors.",
+        "Freelance graphic and motion design by Toby Johnson in Lincoln: campaign artwork, motion graphics and 3D for brands, artists and agencies.",
       image: `${SITE_URL}/opengraph-image.jpg`,
       logo: `${SITE_URL}/icon.svg`,
-      email: "hello@tjcreate.co.uk",
-      priceRange: "££",
-      areaServed: [
-        { "@type": "Country", name: "United Kingdom" },
-        { "@type": "Place", name: "Worldwide (remote)" },
-      ],
+      email: CONTACT_EMAIL,
+      areaServed: { "@type": "Country", name: "United Kingdom" },
       address: {
         "@type": "PostalAddress",
         addressLocality: "Lincoln",
         addressRegion: "Lincolnshire",
-        postalCode: "LN1",
         addressCountry: "GB",
       },
       // Client-facing design disciplines; product authorship is described separately.
-      serviceType: [
-        "Graphic Design",
-        "Motion Design",
-        "3D Design",
-      ],
+      serviceType: ["Graphic Design", "Motion Design", "3D Design"],
+      // The three services exactly as the Services section describes them.
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "Design services",
+        itemListElement: SERVICES.map((service) => ({
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: service.title,
+            description: service.blurb,
+            provider: { "@id": ORG_ID },
+          },
+        })),
+      },
       // Own products, not clients. Declaring ownership here is what ties the
       // tjcreate.co.uk entity to lyrisync.com in the knowledge graph, so the
       // link in the "Also built" strip reads as a first-party relationship
       // rather than an unexplained outbound link.
       owns: [{ "@id": "https://lyrisync.com/#lyrisync" }],
-      sameAs: [
-        "https://www.linkedin.com/in/tobyjohnsoncreate/",
-        "https://www.instagram.com/tj.create",
-        "https://www.behance.net/tobyjohnson5",
-      ],
+      sameAs: SOCIAL_URLS,
     },
     {
       // LyriSync — a TJCreate product, described here rather than in
@@ -231,18 +216,18 @@ const structuredData = {
       operatingSystem: "Web",
       description:
         "Times your own lyrics against your own track and sends them into After Effects as real text layers. Also exports SRT, WebVTT, LRC and ASS karaoke.",
-      author: { "@id": `${SITE_URL}/#toby` },
-      publisher: { "@id": `${SITE_URL}/#tjcreate` },
+      author: { "@id": PERSON_ID },
+      publisher: { "@id": ORG_ID },
     },
     {
       "@type": "WebSite",
-      "@id": `${SITE_URL}/#site`,
+      "@id": WEBSITE_ID,
       name: SITE_NAME,
       url: SITE_URL,
       description: SITE_DESC,
       inLanguage: "en-GB",
-      publisher: { "@id": `${SITE_URL}/#tjcreate` },
-      author: { "@id": `${SITE_URL}/#toby` },
+      publisher: { "@id": ORG_ID },
+      author: { "@id": PERSON_ID },
     },
   ],
 };
@@ -303,7 +288,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-paper text-ink">
-        <a href="#work" className="skip-link">Skip to work</a>
+        <a href="#main" className="skip-link">Skip to content</a>
         <SmoothScroll />
         <RevealObserver />
         <ScrollProgress />

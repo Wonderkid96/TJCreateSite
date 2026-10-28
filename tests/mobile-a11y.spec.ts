@@ -37,33 +37,6 @@ test.describe("Mobile a11y + interaction", () => {
     await expect(closeBtn).toBeVisible();
   });
 
-  test("Envelope3D does not mount on touch devices", async ({ page }, testInfo) => {
-    if (page.viewportSize()!.width >= 768) {
-      testInfo.skip();
-      return;
-    }
-    await page.goto("/", { waitUntil: "domcontentloaded" });
-    await page.waitForTimeout(2000);
-
-    const contact = page.locator("#contact");
-    await contact.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(2000);
-
-    // Verify Envelope3D is not loaded by checking if pointer:coarse media query
-    // blocked the lazy component mount
-    const pointerCoarse = await page.evaluate(() => {
-      return window.matchMedia("(pointer: coarse)").matches;
-    });
-
-    // On a touch device, pointer:coarse should be true, and Envelope3D should skip mount
-    if (pointerCoarse) {
-      const threejsLoaded = await page.evaluate(() => {
-        return !!(window as Window & { THREE?: unknown }).THREE;
-      }).catch(() => false);
-      expect(threejsLoaded).toBe(false);
-    }
-  });
-
   test("Nav hamburger returns focus on Escape close", async ({ page }, testInfo) => {
     // Nav.tsx returns focus via an effect watching `open` -> false (the
     // wasOpenRef pattern), so the focus call lands after React's commit and

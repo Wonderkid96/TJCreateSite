@@ -3,6 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "FILMIO Privacy Policy",
+  description:
+    "Privacy policy for FILMIO, the film tracking app by TJCreate: what the app collects, which services process it and how to delete your data.",
   alternates: {
     canonical: "https://www.tjcreate.co.uk/filmio/privacy",
   },
@@ -37,33 +39,33 @@ export default function FilmioPrivacyPage() {
             <h2 className="text-2xl font-bold">What we collect</h2>
             <ul className="list-disc list-inside space-y-2">
               <li>
-                <strong>Email address</strong> — to create and secure your
+                <strong>Email address</strong>: to create and secure your
                 account, whether you sign up with Sign in with Apple or email
                 and password.
               </li>
               <li>
-                <strong>Account identifier</strong> — a unique ID tied to your
+                <strong>Account identifier</strong>: a unique ID tied to your
                 profile, used to keep your ratings, chat messages and social
                 connections attached to you.
               </li>
               <li>
-                <strong>Ratings, reviews and watch history</strong> — the
+                <strong>Ratings, reviews and watch history</strong>: the
                 films you rate, mark as seen, save to your watchlist, or mark
                 not interested. This is the core of the app: it&apos;s what
                 your recommendations are built from.
               </li>
               <li>
-                <strong>Chat messages and other content you post</strong> —
+                <strong>Chat messages and other content you post</strong>:
                 messages in circle chat, written reviews, your bio, username
                 and display name.
               </li>
               <li>
-                <strong>Profile photo</strong> — if you choose to upload one,
+                <strong>Profile photo</strong>: if you choose to upload one,
                 from your own photo library. We never access your photo
                 library without your explicit selection.
               </li>
               <li>
-                <strong>Friend and circle connections</strong> — who you&apos;re
+                <strong>Friend and circle connections</strong>: who you&apos;re
                 friends with, which circles you belong to, and what you&apos;ve
                 invited people to watch.
               </li>
@@ -91,16 +93,16 @@ export default function FilmioPrivacyPage() {
             <ul className="list-disc list-inside space-y-2">
               <li>
                 <strong>Supabase</strong> (database and authentication
-                hosting) — stores your account and app data securely on our
+                hosting): stores your account and app data securely on our
                 behalf.
               </li>
               <li>
-                <strong>The Movie Database (TMDB)</strong> — we send film
+                <strong>The Movie Database (TMDB)</strong>: we send film
                 titles and IDs to TMDB&apos;s API to fetch posters, cast and
                 metadata. We don&apos;t send your personal data to TMDB.
               </li>
               <li>
-                <strong>Apple</strong> — if you sign in with Apple, Apple
+                <strong>Apple</strong>: if you sign in with Apple, Apple
                 handles that authentication step; we only receive what you
                 choose to share (your email, or Apple&apos;s private relay
                 address).
@@ -173,7 +175,7 @@ export default function FilmioPrivacyPage() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">Contact</h2>
             <p>
-              Toby Johnson (TJCreate), Lincoln, United Kingdom —{" "}
+              Toby Johnson (TJCreate), Lincoln, United Kingdom:{" "}
               <a href="mailto:hello@tjcreate.co.uk" className="text-accent-link hover:text-accent-link/80">
                 hello@tjcreate.co.uk
               </a>

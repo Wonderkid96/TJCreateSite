@@ -149,7 +149,7 @@ export default function ContactForm({ email }: ContactFormProps) {
         </div>
 
         <div>
-          <label htmlFor="contact-company" className={LABEL_CLASS}>Company <span className="text-paper/40">(optional)</span></label>
+          <label htmlFor="contact-company" className={LABEL_CLASS}>Company <span className="text-paper/60">(optional)</span></label>
           <input id="contact-company" name="company" autoComplete="organization" maxLength={120} defaultValue="" className={FIELD_CLASS} />
         </div>
 
@@ -171,9 +171,11 @@ export default function ContactForm({ email }: ContactFormProps) {
             {status === "pending" ? "Sending…" : "Send enquiry"}
           </button>
         </div>
-        <p aria-live="polite" role={status === "error" ? "alert" : "status"} className="min-h-5 text-sm text-paper/75">
+        <p role="status" aria-live="polite" className="min-h-5 text-sm text-paper/75">
           {status === "pending" && "Sending. This can take up to a minute."}
-          {status === "error" && <>That didn&apos;t send. Your details are still here. <a className="underline underline-offset-4 hover:text-paper" href={`mailto:${email}?subject=${encodeURIComponent("Project enquiry")}`} onClick={(event) => {
+        </p>
+        {status === "error" && (
+          <p role="alert" className="text-sm text-paper/75">That didn&apos;t send. Your details are still here. <a className="underline underline-offset-4 hover:text-paper" href={`mailto:${email}?subject=${encodeURIComponent("Project enquiry")}`} onClick={(event) => {
             const form = event.currentTarget.closest("form");
             if (!form) return;
             const data = new FormData(form);
@@ -182,8 +184,8 @@ export default function ContactForm({ email }: ContactFormProps) {
             const message = String(data.get("message") ?? "").trim();
             const body = encodeURIComponent(`${message}\n\nFrom: ${name} (${replyEmail})`);
             event.currentTarget.href = `mailto:${email}?subject=${encodeURIComponent("Project enquiry")}&body=${body}`;
-          }}>Email me directly</a>.</>}
-        </p>
+          }}>Email me directly</a>.</p>
+        )}
       </form>
     </div>
   );

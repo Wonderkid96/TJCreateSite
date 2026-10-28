@@ -1,9 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "@/lib/use-media-query";
 
 const VIDEO_SRC = "/work/imported/videos/intro-section.mp4";
+// 960x540 encode of the same cut for phones: 1.2 MB against the 3.1 MB
+// desktop file, which was the mobile LCP. Picked by the <source media>
+// query once at load (it does not re-evaluate on resize, which is fine).
+const VIDEO_SRC_MOBILE = "/work/imported/videos/intro-section-960.mp4";
 const VIDEO_POSTER = "/work/imported/videos/intro-section-poster.webp";
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
@@ -19,6 +24,11 @@ const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
  * the sharp, uncropped reel. Autoplay is muted, looping and inline, and is
  * skipped for prefers-reduced-motion. The pause control is not optional
  * (WCAG 2.2.2 — anything moving over five seconds needs a stop).
+ *
+ * The poster is a real, preloaded <Image> under the video rather than the
+ * video's poster attribute: the first paint of the hero then never waits on
+ * the video pipeline, and the same optimised file serves the blurred mobile
+ * backdrop, so nothing is fetched twice.
  */
 export default function ShowreelHero() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -75,17 +85,26 @@ export default function ShowreelHero() {
       <h1 className="sr-only">Toby Johnson, freelance graphic and motion designer in Lincoln</h1>
 
       {/* Blurred poster backdrop: fills the portrait frame without downloading
-          and decoding a second copy of the showreel. Desktop remains full-bleed. */}
-      <div
-        aria-hidden
-        className="absolute inset-0 scale-110 bg-cover bg-center opacity-60 blur-2xl md:hidden"
-        style={{ backgroundImage: `url(${VIDEO_POSTER})` }}
+          and decoding a second copy of the showreel. Same src and sizes as
+          the poster below, so it is one request. Desktop remains full-bleed. */}
+      <div aria-hidden className="absolute inset-0 scale-110 opacity-60 blur-2xl md:hidden">
+        <Image src={VIDEO_POSTER} alt="" fill sizes="100vw" className="object-cover" />
+      </div>
+
+      {/* The poster, preloaded. The video above it is transparent until it has
+          a decoded frame, so this is what paints first, what shows while
+          paused, and all that reduced-motion users see. */}
+      <Image
+        src={VIDEO_POSTER}
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-contain md:object-cover"
       />
 
       <video
         ref={videoRef}
-        src={VIDEO_SRC}
-        poster={VIDEO_POSTER}
         muted
         loop
         playsInline
@@ -100,7 +119,10 @@ export default function ShowreelHero() {
           el.play().catch(() => {});
         }}
         className="absolute inset-0 h-full w-full object-contain md:object-cover"
-      />
+      >
+        <source src={VIDEO_SRC_MOBILE} type="video/mp4" media="(max-width: 767px)" />
+        <source src={VIDEO_SRC} type="video/mp4" />
+      </video>
 
       {/* Bottom-weighted scrim only: darkens the foot of the frame so the
           overlaid statement reads, while the top stays clear footage. */}

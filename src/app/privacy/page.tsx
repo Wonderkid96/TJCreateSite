@@ -3,6 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
+  description:
+    "Privacy policy for tjcreate.co.uk: what this site collects when you browse it or use the contact form, and how it is handled.",
   // Root layout canonicalises to the homepage; override so this page doesn't inherit it.
   alternates: {
     canonical: "https://www.tjcreate.co.uk/privacy",

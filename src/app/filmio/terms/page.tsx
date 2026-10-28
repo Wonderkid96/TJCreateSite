@@ -3,6 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "FILMIO Terms of Use",
+  description:
+    "Terms of use for FILMIO, the film tracking app by TJCreate.",
   alternates: {
     canonical: "https://www.tjcreate.co.uk/filmio/terms",
   },

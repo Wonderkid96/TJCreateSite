@@ -16,7 +16,6 @@
   --lilac: #c4a9d0;
   --line: rgba(10, 10, 10, 0.12);
   --signal: #80ef80;
-  --spectrum: linear-gradient(90deg, #e6352a 0%, #ffffff 38%, #c8db45 68%, #c4a9d0 100%);
   /* Display face — Peridot PE Variable, served from the Adobe Fonts web
      project (kit bhj7dgq, loaded in layout.tsx). Named separately from
      --font-display so the @theme mapping below isn't self-referential. */
@@ -161,20 +160,6 @@ html.lenis body {
   box-shadow: 0 0 0 3px #ffffff;
 }
 
-/* Rotating conic-gradient angle for animated button borders. @property lets
-   the browser interpolate a custom <angle> variable smoothly. */
-@property --hero-a {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes heroSpin {
-  to {
-    --hero-a: 360deg;
-  }
-}
-
 /* Cloud drift — used by the falling-on-sky tile + modal to pan the cloud
    layer slowly left. Declared globally (not via <style jsx>) so it stays
    visible to Tailwind's purge pass. */
@@ -203,31 +188,9 @@ html.lenis body {
   }
 }
 
-/* Hovered tile lifts and enlarges slightly — other tiles unaffected */
-.bento-cell {
-  transition: transform 420ms var(--ease),
-              box-shadow 420ms var(--ease);
-}
-
-.bento-cell:hover {
-  transform: scale(1.025);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
-  z-index: 1;
-}
-
-.mask-fade-b {
-  mask-image: linear-gradient(to bottom, black 70%, transparent);
-  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent);
-}
-
 .char {
   display: inline-block;
   will-change: transform;
-}
-
-.hero-line {
-  line-height: 0.85;
-  letter-spacing: -0.04em;
 }
 
 /* Cloud layers — the hero backdrop and the falling-on-sky tile/modal covers.
@@ -381,10 +344,11 @@ html.reveal-mounted [data-reveal].is-visible {
 .project-caption { padding-top: 1.25rem; }
 .project-caption-top { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
 .project-caption h3 { font-size: clamp(1.1rem, 1.65vw, 1.6rem); line-height: 1.2; letter-spacing: -.025em; }
+.project-title-link { color: inherit; text-decoration: none; }
 .project-year { color: var(--muted); font-size: 10px; flex-shrink: 0; }
 .project-client { margin-top: .5rem; font-size: .95rem; line-height: 1.5; }
 .project-disciplines { margin-top: .5rem; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; line-height: 1.6; color: var(--muted); }
-.portfolio-project:hover h3 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .25em; }
+.work-cell:hover h3, .project-title-link:focus-visible { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .25em; }
 .about-lead { margin-top: 2rem; font-size: 1.35rem; line-height: 1.45; }
 .contact-section { min-height: 70svh; border-top: 1px solid rgb(255 253 248 / .18); }
 .contact-details { padding-top: 1.5rem; }
@@ -405,8 +369,7 @@ html.reveal-mounted [data-reveal].is-visible {
 }
 @media (max-width: 639px) {
   /* Phones: a two-up tiled grid with short captions. Client and disciplines
-     hold to one line each, and the grid's "View project" link stays in the
-     accessibility tree but not on screen, since the tile already opens it. */
+     hold to one line each. */
   .work-grid { gap: 1.75rem .75rem; }
   .work-heading .section-heading { font-size: clamp(1.6rem, 6.2vw, 2.25rem); }
   .project-caption { padding-top: .6rem; }
@@ -415,7 +378,6 @@ html.reveal-mounted [data-reveal].is-visible {
   .project-client, .project-disciplines { margin-top: .2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .project-client { font-size: .8rem; }
   .project-disciplines { font-size: 9px; letter-spacing: .08em; }
-  .work-cell > .project-page-link { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .contact-section h2 { font-size: clamp(1.9rem, 7.6vw, 3rem); }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -424,7 +386,10 @@ html.reveal-mounted [data-reveal].is-visible {
 }
 
 /* Discovery and project reading use the portfolio's existing colours and type. */
-#work, #services, #about, #contact { scroll-margin-top: 56px; }
+/* Keep anchor targets and focused elements clear of the fixed header. On
+   html rather than per id so programmatic scrollIntoView and focus() get the
+   same clearance as the nav's anchor links. */
+html { scroll-padding-top: 56px; }
 .work-controls { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: -1rem 0 2rem; }
 .work-filters { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; }
 .work-filters button { min-height: 44px; border-bottom: 2px solid transparent; padding: .5rem 0; color: var(--muted); cursor: pointer; }
@@ -462,5 +427,5 @@ html.reveal-mounted [data-reveal].is-visible {
 }
 
 @media (max-width: 767px) {
-  #work, #services, #about, #contact { scroll-margin-top: 68px; }
+  html { scroll-padding-top: 68px; }
 }

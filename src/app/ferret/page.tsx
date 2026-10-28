@@ -3,6 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Ferret",
+  description:
+    "Ferret is an iPhone scanner for car boot sales and charity shops. It identifies resellable items and shows recent eBay completed-listing prices.",
   // Root layout sets alternates.canonical to the homepage. Metadata merges
   // shallowly across segments, so without this the page would inherit that
   // and wrongly canonicalise to https://www.tjcreate.co.uk/.

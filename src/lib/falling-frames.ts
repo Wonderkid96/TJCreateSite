@@ -46,14 +46,6 @@ let preloadStarted = false;
 let loadedCount = 0;
 let isReady = false;
 
-// "Scroll-ready": enough evenly-spaced frames have loaded that the
-// scroll-driven hero animation looks smooth even if gaps remain.
-// Threshold: every 3rd frame (≈28 frames). Remaining frames fill in
-// behind the scenes so the animation only gets smoother over time.
-const SCROLL_READY_STRIDE = 3;
-let isScrollReady = false;
-const scrollReadyCallbacks: Array<() => void> = [];
-
 const readyCallbacks: Array<() => void> = [];
 
 // How many images load simultaneously. Matches typical browser per-origin
@@ -83,29 +75,8 @@ function isMobileFrameSet(): boolean {
 function markOne() {
   loadedCount += 1;
 
-  // Check scroll-ready: do we have a frame at every STRIDE position of the
-  // planned set?
-  if (!isScrollReady) {
-    let scrollOk = plannedIndices.length > 0;
-    for (let k = 0; k < plannedIndices.length; k += SCROLL_READY_STRIDE) {
-      if (!images[plannedIndices[k]]) { scrollOk = false; break; }
-    }
-    if (scrollOk) {
-      isScrollReady = true;
-      for (const cb of scrollReadyCallbacks) cb();
-      scrollReadyCallbacks.length = 0;
-    }
-  }
-
   if (loadedCount >= plannedCount && !isReady) {
     isReady = true;
-    // Also fire scroll-ready callbacks in case stride check never passed
-    // (shouldn't happen, but belt-and-braces).
-    if (!isScrollReady) {
-      isScrollReady = true;
-      for (const cb of scrollReadyCallbacks) cb();
-      scrollReadyCallbacks.length = 0;
-    }
     for (const cb of readyCallbacks) cb();
     readyCallbacks.length = 0;
   }
@@ -188,28 +159,6 @@ export function preloadFallingFrames(onReady?: () => void) {
     loadQueue.push(i);
   }
   pumpQueue();
-}
-
-export function fallingFramesReady(): boolean {
-  return isReady;
-}
-
-/**
- * True once enough evenly-spaced frames have loaded for a smooth
- * scroll-driven animation. Currently unread: its only caller was the splash
- * screen (removed 2026-08-24), which had already stopped blocking on it.
- */
-export function fallingFramesScrollReady(): boolean {
-  return isScrollReady;
-}
-
-export function onScrollReady(cb: () => void) {
-  if (isScrollReady) cb();
-  else scrollReadyCallbacks.push(cb);
-}
-
-export function fallingFramesProgress(): number {
-  return plannedCount ? loadedCount / plannedCount : 0;
 }
 
 /**

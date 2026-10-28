@@ -5,10 +5,14 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.join(__dirname),
   },
+  // No X-Powered-By: it names the framework for nothing.
+  poweredByHeader: false,
   images: {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    // 384 and 512 cover the work-grid tiles (50vw / 33vw) on 1x screens,
+    // which otherwise jump straight to the 640 device size.
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384, 512],
   },
   compress: true,
   /* The rebuild to a single page left six URLs 404ing that Google had
@@ -22,8 +26,18 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/home", destination: "/", permanent: true },
-      // The about copy is a section of the one page now, not its own route.
+      // Section URLs people guess or type: each is a section of the one page.
       { source: "/about", destination: "/#about", permanent: true },
+      { source: "/work", destination: "/#work", permanent: true },
+      { source: "/projects", destination: "/#work", permanent: true },
+      { source: "/portfolio", destination: "/#work", permanent: true },
+      { source: "/services", destination: "/#services", permanent: true },
+      { source: "/contact", destination: "/#contact", permanent: true },
+      { source: "/faq", destination: "/#faq", permanent: true },
+      // The packshot packages page was a redirect() page; a config redirect
+      // is a 308 instead of a 307 and needs no route to build.
+      { source: "/packages/packshots", destination: "/#contact", permanent: true },
+      { source: "/packages", destination: "/#services", permanent: true },
       /* The blog is gone and nothing replaced it, so these land on the
          homepage. Listed individually AND caught by the wildcard: the three
          named ones are what Search Console actually reports, and the
@@ -45,9 +59,15 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
+            value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
           },
         ],
+      },
+      {
+        // The CV is linked from applications, never from the site, and it
+        // carries a phone number. Keep it out of search results.
+        source: "/toby-johnson-cv.pdf",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
       },
       {
         // Static media rarely changes. Cache for a week, then serve stale
@@ -55,6 +75,16 @@ const nextConfig: NextConfig = {
         // without pinning a stale file forever (filenames aren't
         // fingerprinted, so immutable would break in-place asset updates).
         source: "/work/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=604800, stale-while-revalidate=2592000",
+          },
+        ],
+      },
+      {
+        // Generated share images (scripts/og-images.mjs). Same policy as /work.
+        source: "/og/:path*",
         headers: [
           {
             key: "Cache-Control",

@@ -4,12 +4,12 @@ import { defineConfig, devices } from "@playwright/test";
  * Visual + smoke test harness. Runs the site through Chromium + WebKit +
  * Firefox at three viewports and captures screenshots per section.
  *
- * Default target is the live Vercel deployment so tests reflect what real
- * users see. Override with PLAYWRIGHT_BASE_URL=http://localhost:3000 to hit
- * the local dev server instead.
+ * Default target is the live site on its canonical host so tests reflect
+ * what real users see. Override with PLAYWRIGHT_BASE_URL=http://localhost:3000
+ * to hit a local server instead.
  */
 const BASE_URL =
-  process.env.PLAYWRIGHT_BASE_URL || "https://tj-create-site.vercel.app";
+  process.env.PLAYWRIGHT_BASE_URL || "https://www.tjcreate.co.uk";
 
 export default defineConfig({
   testDir: "./tests",

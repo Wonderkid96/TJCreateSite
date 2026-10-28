@@ -3,6 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "FILMIO",
+  description:
+    "FILMIO is taste-based film tracking for iPhone. Rate films, build a Top 10 and get recommendations from what you actually rate.",
   // Root layout sets alternates.canonical to the homepage. Metadata merges
   // shallowly across segments, so without this the page would inherit that
   // and wrongly canonicalise to https://www.tjcreate.co.uk/.

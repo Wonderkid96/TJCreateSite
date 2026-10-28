@@ -1,5 +1,4 @@
-// Central constant so the address only needs updating in one place.
-const CONTACT_EMAIL = "hello@tjcreate.co.uk";
+import { CONTACT_EMAIL } from "@/lib/site";
 
 /**
  * Site footer, stripped to the essentials: Terms and Privacy as small-print

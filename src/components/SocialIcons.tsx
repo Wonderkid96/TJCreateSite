@@ -6,9 +6,9 @@
  * close).
  */
 
-export const INSTAGRAM_URL = "https://instagram.com/tj.create";
-export const LINKEDIN_URL = "https://linkedin.com/in/tobyjohnsoncreate";
-export const BEHANCE_URL = "https://www.behance.net/tobyjohnson5";
+import { BEHANCE_URL, INSTAGRAM_URL, LINKEDIN_URL } from "@/lib/site";
+
+export { BEHANCE_URL, INSTAGRAM_URL, LINKEDIN_URL };
 
 export function InstagramIcon({ size = 18 }: { size?: number }) {
   return (

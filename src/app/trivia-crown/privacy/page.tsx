@@ -3,6 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Trivia Crown Privacy Policy",
+  description:
+    "Privacy policy for Trivia Crown, the quiz channel by TJCreate: what is collected and how to get in touch.",
   // Root layout sets alternates.canonical to the homepage. Metadata merges
   // shallowly across segments, so without this the page would inherit that
   // and wrongly canonicalise to https://www.tjcreate.co.uk/.

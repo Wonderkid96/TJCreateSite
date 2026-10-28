@@ -3,6 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Trivia Crown",
+  description:
+    "Trivia Crown is an evergreen general-knowledge quiz show published to YouTube by TJCreate, with every answer checked against a named source.",
   // Root layout sets alternates.canonical to the homepage. Metadata merges
   // shallowly across segments, so without this the page would inherit that
   // and wrongly canonicalise to https://www.tjcreate.co.uk/.

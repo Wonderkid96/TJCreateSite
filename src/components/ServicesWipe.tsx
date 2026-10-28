@@ -1,12 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import {
-  motion,
-  useMotionValueEvent,
-  useReducedMotion,
-  useScroll,
-} from "motion/react";
+import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import { useMediaQuery } from "@/lib/use-media-query";
 import { SERVICES } from "@/lib/content";
 import { EASE } from "@/lib/motion";
@@ -64,7 +59,7 @@ const REVEAL_HYSTERESIS = 0.06;
 
 export default function ServicesWipe() {
   const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
+  const reduced = useMediaQuery("(prefers-reduced-motion: reduce)");
   const compact = useMediaQuery("(max-width: 1023px), (max-height: 760px)");
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -101,7 +96,7 @@ export default function ServicesWipe() {
   // every service is reachable by plain scrolling.
   if (reduced || compact) {
     return (
-      <div ref={ref} id="services" className="services-static" role="region" aria-label="Services — what I do">
+      <div ref={ref} id="services" className="services-static" role="region" aria-label="Services">
         <h2 className="sr-only">Services</h2>
         {SERVICES.map((s, i) => (
           <div key={s.title}>
@@ -117,7 +112,7 @@ export default function ServicesWipe() {
       ref={ref}
       id="services"
       role="region"
-      aria-label="Services — what I do"
+      aria-label="Services"
       className="relative"
       style={{ height: `${total * RUNWAY_PER_PANEL_VH}svh` }}
     >

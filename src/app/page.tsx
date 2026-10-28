@@ -1,6 +1,6 @@
 import ShowreelHero from "@/components/ShowreelHero";
 import WorkGallery from "@/components/WorkGallery";
-import ServicesWipe from "@/components/ServicesWipe";
+import ServicesPreview from "@/components/ServicesPreview";
 import About from "@/components/About";
 import Clients from "@/components/Clients";
 import BuiltBy from "@/components/BuiltBy";
@@ -13,7 +13,7 @@ import SectionPanel from "@/components/SectionPanel";
  * Page narrative — the deliberate order the site reads in:
  *   1. Showreel hero — the reel is the hook (id="top")
  *   2. Selected Work — proof (three-column grid)
- *   3. Services      — what I do (full-screen wipe sequence)
+ *   3. Services      — what I do (pinned word grid)
  *   4. About         — who I am             ┐ stacked full-bleed
  *   5. Clients       — who I've worked with  │ sections
  *   6. Built by      — own products (LyriSync)│
@@ -33,11 +33,11 @@ export default function Home() {
           them. Inside a single ink container there is nothing to show through.
           Do not lift a black section back out to sit on <main>. */}
       <div className="relative bg-ink">
-        {/* Services is a full-screen wipe sequence, not a stacked panel: it
-            renders its own brand-colour boards over a pinned stage. It sits in
-            the ink wrapper so the black either side of it never shows a cream
-            seam. */}
-        <ServicesWipe />
+        {/* Services is a pinned word grid, not a stacked panel. It sits in
+            the ink wrapper so the black either side of it never shows a seam.
+            ServicesPreview also serves the old wipe (?services=wipe) and the
+            paper ground (?ground=paper) on this preview branch. */}
+        <ServicesPreview />
         <SectionPanel className="bg-ink">
           <About />
         </SectionPanel>

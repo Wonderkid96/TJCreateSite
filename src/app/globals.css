@@ -429,3 +429,102 @@ html { scroll-padding-top: 56px; }
 @media (max-width: 767px) {
   html { scroll-padding-top: 68px; }
 }
+
+/* Services word grid. ServicesGrid sets the ground as --g-bg, --g-fg and
+   --g-line on its wrapper. */
+.services-grid { background: var(--g-bg); color: var(--g-fg); }
+
+/* Pinned board: four columns by three rows under the fixed header, ruled by
+   1px gaps over the line colour. The top rule tucks under the header's own
+   bottom border once pinned, so the two never double up. */
+.services-grid-board {
+  position: absolute;
+  inset: 54px 0 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 1px;
+  padding-block: 1px;
+  background: var(--g-line);
+}
+.services-grid-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-width: 0;
+  padding: clamp(1.1rem, 1.7vw, 1.9rem);
+  background: var(--g-bg);
+}
+.services-grid-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+.services-grid-meta > span { opacity: 0.7; }
+.services-grid-cell.services-grid-meta { flex-direction: row; align-items: flex-start; }
+.services-grid-centre { justify-content: center; padding-block: clamp(2rem, 4.5vh, 3.25rem); }
+.services-grid-title {
+  text-transform: uppercase;
+  font-size: clamp(2.2rem, 4.4vw, 5rem);
+  line-height: 0.9;
+  letter-spacing: -0.025em;
+}
+.services-grid-copy { max-width: 36rem; font-size: clamp(1rem, 0.6rem + 0.55vw, 1.25rem); line-height: 1.6; }
+.services-grid-blurbs { display: grid; margin-top: 1.4rem; }
+.services-grid-blurbs > p { grid-area: 1 / 1; opacity: 0; transition: opacity 220ms var(--ease); }
+.services-grid-blurbs > p[data-active="true"] { opacity: 1; transition: opacity 480ms var(--ease) 200ms; }
+.services-grid-word {
+  text-transform: uppercase;
+  font-size: clamp(1.15rem, 1.8vw, 2rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+}
+
+/* A slot stacks its options in one grid area, so it takes the size of the
+   largest and clips the rest; the component moves them with translateY. */
+.slot { display: grid; overflow: hidden; }
+.slot-inline { display: inline-grid; vertical-align: bottom; }
+.slot-option {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  transition: transform 650ms var(--ease);
+}
+.slot-option > span { padding-block: 0.06em; }
+
+/* Static version (phones, short screens, reduced motion): a block per
+   discipline with its capabilities as a two-column ruled list. */
+.services-grid-block { padding: 3.5rem 1.5rem 4rem; }
+.services-grid-block + .services-grid-block { border-top: 1px solid var(--g-line); }
+.services-grid-block .services-grid-meta { margin-bottom: 2.5rem; }
+.services-grid-block .services-grid-title { font-size: clamp(2rem, 9vw, 3.4rem); overflow-wrap: anywhere; }
+.services-grid-block .services-grid-copy { margin-top: 1.25rem; font-size: 1rem; }
+.services-grid-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  padding-block: 1px;
+  max-width: 56rem;
+  margin-top: 2rem;
+  background: var(--g-line);
+  text-transform: uppercase;
+  /* The display face is extended, so the size tracks the column: at any
+     phone width from 360px the longest single word (VISUALISATION, about
+     11em) still fits a right-hand cell. */
+  font-size: clamp(0.75rem, calc(4.5vw - 4.5px), 1.25rem);
+  line-height: 0.95;
+}
+.services-grid-list > li { padding: 1.1rem 0.75rem 1rem 0; background: var(--g-bg); }
+.services-grid-list > li:nth-child(even) { padding-left: 0.75rem; }
+@media (min-width: 768px) {
+  .services-grid-block { padding-inline: 2.5rem; }
+}
+/* Below 360px two columns can't hold the longest words: one column. */
+@media (max-width: 359px) {
+  .services-grid-list { grid-template-columns: minmax(0, 1fr); font-size: 1rem; }
+  .services-grid-list > li:nth-child(even) { padding-left: 0; }
+  .services-grid-list > li[aria-hidden="true"] { display: none; }
+}

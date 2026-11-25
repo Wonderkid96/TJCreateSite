@@ -120,7 +120,6 @@ html.lenis body {
   .logo-scale {
     transform-origin: center;
     transition: transform 420ms var(--ease);
-    will-change: transform;
   }
 
   .logo-cell:hover .logo-scale,
@@ -140,12 +139,9 @@ html.lenis body {
   z-index: 60;
   opacity: 0.08;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .grain {
-    mix-blend-mode: multiply;
-  }
+  /* No mix-blend-mode: the noise is pure black with alpha, so normal blending
+     already gives the multiply result. A blend mode on this fixed full-screen
+     layer only forced the whole page through a blend pass on every frame. */
 }
 
 /* Keyboard focus — visible ring for a/button elements, hidden for mouse users.
@@ -173,10 +169,11 @@ html.lenis body {
 }
 
 /* Motion-gated helper for the drifting cloud layer — reduced-motion users
-   get a static cloud layer instead. */
+   get a static cloud layer instead. One pass, then it holds (WCAG 2.2.2); the
+   tile only adds the class once it is near the viewport. */
 @media (prefers-reduced-motion: no-preference) {
   .cloud-drift {
-    animation: cloudDrift 60s linear infinite;
+    animation: cloudDrift 60s linear 1 forwards;
   }
 }
 
@@ -207,7 +204,7 @@ html.lenis body {
   mix-blend-mode: screen;
 }
 .cloud-bg {
-  background-image: url(/work/imported/bg/cloud-long.avif);
+  background-image: url(/work/imported/bg/cloud-long.webp);
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -244,7 +241,9 @@ html.reveal-mounted [data-reveal] {
   transition-duration: var(--reveal-dur);
   transition-timing-function: var(--ease);
   transition-delay: var(--reveal-delay);
-  will-change: opacity, transform;
+  /* No will-change: the browser promotes each element for the length of its
+     transition anyway. Declaring it held ~140 compositor layers for the life
+     of the page. */
 }
 
 html.reveal-mounted [data-reveal].is-visible {

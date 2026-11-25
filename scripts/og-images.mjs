@@ -22,7 +22,7 @@ const WIDTH = 1200;
 const HEIGHT = 630;
 const PAD = 48;
 const FALLING_FRAME = "/work/frames/frame_0001.webp";
-const SKY = "/work/imported/bg/sky-long.avif";
+const SKY = "/work/imported/bg/sky-long.webp";
 
 await mkdir(OUT, { recursive: true });
 

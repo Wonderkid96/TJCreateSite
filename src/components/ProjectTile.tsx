@@ -583,15 +583,15 @@ function FallingOnSky() {
   return (
     <>
       <Image
-        src="/work/imported/bg/sky-long.avif"
+        src="/work/imported/bg/sky-long.webp"
         alt=""
         fill
         sizes={TILE_SIZES}
         className="object-cover object-center scale-110"
       />
       <div
-        className={`cloud-drift bg-center absolute inset-0 opacity-60 ${
-          tileNear ? "cloud-bg cloud-blend" : ""
+        className={`bg-center absolute inset-0 opacity-60 ${
+          tileNear ? "cloud-drift cloud-bg cloud-blend" : ""
         }`}
       />
       <div className="absolute inset-0 flex items-center justify-center">

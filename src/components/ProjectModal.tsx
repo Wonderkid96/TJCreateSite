@@ -436,7 +436,7 @@ export const ProjectMedia = memo(function ProjectMedia({ project }: { project: P
   if (kind === "falling") {
     return prefersReducedMotion || !mounted ? (
       <div className="absolute inset-0">
-        <Image src="/work/imported/bg/sky-long.avif" alt="" fill sizes="66vw" className="object-cover" />
+        <Image src="/work/imported/bg/sky-long.webp" alt="" fill sizes="66vw" className="object-cover" />
         <Image src={FALLING_FIRST_FRAME} alt={project.alt ?? project.title} fill sizes="66vw" className="object-contain p-12" />
       </div>
     ) : <FallingModalMedia />;
@@ -499,7 +499,7 @@ function FallingModalMedia() {
   return (
     <>
       <Image
-        src="/work/imported/bg/sky-long.avif"
+        src="/work/imported/bg/sky-long.webp"
         alt=""
         fill
         sizes="66vw"

@@ -17,11 +17,13 @@ export default function SmoothScroll() {
       return;
     }
 
-    // Desktop only: keep a little smoothing, but make it feel much closer
-    // to native input so the page tracks the wheel immediately.
+    // Desktop only: a light follow (lerp) rather than a fixed-duration glide,
+    // so trackpad momentum isn't smoothed a second time and the page tracks
+    // input closely. No `duration` or `easing` here: either one switches Lenis
+    // to a fixed-duration glide (easing alone defaults duration to 1s).
+    // BackToTop passes its own duration and easing.
     const lenis = new Lenis({
-      duration: 0.55,
-      easing: (t) => 1 - Math.pow(1 - t, 3),
+      lerp: 0.2,
       smoothWheel: true,
       syncTouch: false,
       wheelMultiplier: 1,

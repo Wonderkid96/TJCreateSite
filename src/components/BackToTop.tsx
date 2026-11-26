@@ -15,7 +15,7 @@ export default function BackToTop() {
     }
     const lenis = getLenis();
     if (lenis) {
-      lenis.scrollTo(0, { duration: 1.05 });
+      lenis.scrollTo(0, { duration: 1.05, easing: (t) => 1 - Math.pow(1 - t, 3) });
       return;
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
